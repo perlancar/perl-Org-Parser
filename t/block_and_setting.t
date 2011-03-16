@@ -133,6 +133,23 @@ _
     },
 );
 
+test_parse_setting(
+    name => 'setting: drawers',
+    doc  => <<'_',
+#+DRAWERS: D1 D2
+_
+    num  => 1,
+    test_after_parse => sub {
+        my ($orgp, $bs) = @_;
+        is($bs->[0]{setting}, "DRAWERS", "args: setting");
+        is_deeply($bs->[0]{drawers}, [qw/D1 D2/],
+                  "args: priorities");
+        ok("D1" ~~ @{$orgp->drawers}, "D1 added to list of known drawers");
+        ok("D2" ~~ @{$orgp->drawers}, "D2 added to list of known drawers");
+        ok("CLOCK" ~~ @{$orgp->drawers}, "default drawers still known");
+    },
+);
+
 done_testing();
 
 sub test_parse_setting {

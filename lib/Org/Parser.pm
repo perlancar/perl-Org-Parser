@@ -15,8 +15,12 @@ has raw                     => (is => 'rw');
 has todo_states             => (is => 'rw', default => sub{[qw/TODO/]});
 has done_states             => (is => 'rw', default => sub{[qw/DONE/]});
 has priorities              => (is => 'rw', default => sub{[qw/A B C/]});
+has drawers                 => (is => 'rw', default => sub{[
+    qw/CLOCK LOGBOOK PROPERTIES/]});
 
 my $tags_re = qr/:(?:[^:]+:)+/;
+my $ls_     = qr/(?:(?<=[\015\012])|\A)/;
+my $le      = qr/(?:\R|\z)/;
 
 # parse blocks + settings + headlines
 sub _parse {
@@ -24,8 +28,6 @@ sub _parse {
     my $raw = $self->raw;
     die "BUG: raw attribute has not been set" unless defined($raw);
 
-    state $ls_ = qr/(?:(?<=[\015\012])|\A)/;
-    state $le  = qr/(?:\R|\z)/;
     state $re  = qr/(?<block>    $ls_ \#\+BEGIN_(?<sname>\w+)
                                  (?:.|\R)*
                                  \R\#\+END_\k<sname> $le) |
@@ -64,11 +66,99 @@ sub _parse {
     @other = ();
 }
 
-# parse text: timestamp, drawers, links, markups (*bold*, _underline_, /italic/,
-# ~verbatim~, =code=, +strike+)
+# parse text: timestamps, drawers
 sub _parse2 {
     my ($self, $raw) = @_;
     $log->tracef("-> _parse2(%s)", $raw);
+    state $re = qr/(?<timestamp_pair>          \[\d{4}-\d{2}-\d{2} [^\]]*\]--
+                                               \[\d{4}-\d{2}-\d{2} [^\]]*\]) |
+                   (?<timestamp>               \[\d{4}-\d{2}-\d{2} [^\]]*\]) |
+                   (?<schedule_timestamp_pair> <\d{4}-\d{2}-\d{2} [^\]]*>--
+                                               <\d{4}-\d{2}-\d{2} [^\]]*>) |
+                   (?<schedule_timestamp>      <\d{4}-\d{2}-\d{2} [^\]]*>) |
+                   (?<drawer>                  $ls_ [ \t]* :\w+: [ \t]*\R
+                                               .*?
+                                               $ls_ [ \t]* :END:) |
+                   (?<other>                   [^\[<:]+ | # to lump things more
+                                               .+?)
+                  /sx;
+    my @other;
+    while ($raw =~ /$re/g) {
+        $log->tracef("match: %s", \%+);
+        if (defined $+{other}) {
+            push @other, $+{other};
+            next;
+        } else {
+            if (@other) {
+                $self->_parse_text(join "", @other);
+            }
+            @other = ();
+        }
+
+        if      ($+{timestamp_pair}) {
+            $self->_parse_timestamp_pair($+{timestamp_pair});
+        } elsif ($+{timestamp}) {
+            $self->_parse_timestamp($+{timestamp});
+        } elsif ($+{timestamp_pair}) {
+            $self->_parse_scheduling_timestamp_pair(
+                $+{scheduling_timestamp_pair});
+        } elsif ($+{scheduling_timestamp}) {
+            $self->_parse_scheduling_timestamp($+{scheduling_timestamp});
+        } elsif ($+{drawer}) {
+            $self->_parse_drawer($+{drawer});
+        }
+    }
+
+    # remaining text
+    if (@other) {
+        $self->_parse_text(join "", @other);
+    }
+    @other = ();
+}
+
+# XXX parse3? parse2? links, markups (*bold*, _underline_, /italic/, ~verbatim~,
+# =code=, +strike+)
+
+sub _parse_text {
+    my ($self, $raw) = @_;
+    $self->handler->($self, "element", {element=>"text", raw=>$raw});
+}
+
+sub _parse_timestamp_pair {
+}
+
+sub _parse_timestamp {
+}
+
+sub _parse_scheduling_timestamp_pair {
+}
+
+sub _parse_scheduling_timestamp {
+}
+
+sub _parse_drawer {
+    my ($self, $raw) = @_;
+    $log->tracef("-> _parse_drawer(%s)", $raw);
+    state $re = qr/\A\s*:(\w+):\s*\R
+                   ((?:.|\R)*?)    # content
+                   [ \t]*:END:\z   # closing
+                  /x;
+    $raw =~ $re or die "Invalid syntax in drawer: $raw";
+    my ($d, $rc) = ($1, $2);
+    my $args = {element=>"drawer", drawer=>$d, raw=>$raw, raw_content=>$rc};
+    $d ~~ @{ $self->drawers } or die "Unknown drawer name $d: $raw";
+
+    if ($d eq 'PROPERTIES') {
+        $args->{properties} = {};
+        for (split /\R/, $rc) {
+            next unless /\S/;
+            die "Invalid line in PROPERTY drawer: $_"
+                unless /^\s*:(\w+):\s+(.+?)\s*$/;
+            $args->{properties}{$1} = $2;
+        }
+    }
+
+    $self->handler->($self, "element", $args);
 }
 
 sub __split_tags {
@@ -95,6 +185,11 @@ sub _parse_setting {
     } elsif ($setting eq 'DATE') {
     } elsif ($setting eq 'DESCRIPTION') {
     } elsif ($setting eq 'DRAWERS') {
+        my $d = [split /\s+/, $raw_arg];
+        $args->{drawers} = $d;
+        for (@$d) {
+            push @{ $self->drawers }, $_ unless $_ ~~ @{ $self->drawers };
+        }
     } elsif ($setting eq 'EMAIL') {
     } elsif ($setting eq 'EXPORT_EXCLUDE_TAGS') {
     } elsif ($setting eq 'EXPORT_SELECT_TAGS') {
