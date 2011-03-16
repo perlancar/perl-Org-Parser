@@ -70,12 +70,12 @@ sub _parse {
 sub _parse2 {
     my ($self, $raw) = @_;
     $log->tracef("-> _parse2(%s)", $raw);
-    state $re = qr/(?<timestamp_pair>          \[\d{4}-\d{2}-\d{2} [^\]]*\]--
-                                               \[\d{4}-\d{2}-\d{2} [^\]]*\]) |
-                   (?<timestamp>               \[\d{4}-\d{2}-\d{2} [^\]]*\]) |
-                   (?<schedule_timestamp_pair> <\d{4}-\d{2}-\d{2} [^\]]*>--
-                                               <\d{4}-\d{2}-\d{2} [^\]]*>) |
-                   (?<schedule_timestamp>      <\d{4}-\d{2}-\d{2} [^\]]*>) |
+    state $re = qr/(?<timestamp_pair>          \[\d{4}-\d{2}-\d{2} \s[^\]]*\]--
+                                               \[\d{4}-\d{2}-\d{2} \s[^\]]*\]) |
+                   (?<timestamp>               \[\d{4}-\d{2}-\d{2} \s[^\]]*\]) |
+                   (?<schedule_timestamp_pair> <\d{4}-\d{2}-\d{2}  \s[^>]*>--
+                                               <\d{4}-\d{2}-\d{2}  \s[^>]*>) |
+                   (?<schedule_timestamp>      <\d{4}-\d{2}-\d{2}  \s[^>]*>) |
                    (?<drawer>                  $ls_ [ \t]* :\w+: [ \t]*\R
                                                .*?
                                                $ls_ [ \t]* :END:) |
@@ -99,11 +99,11 @@ sub _parse2 {
             $self->_parse_timestamp_pair($+{timestamp_pair});
         } elsif ($+{timestamp}) {
             $self->_parse_timestamp($+{timestamp});
-        } elsif ($+{timestamp_pair}) {
-            $self->_parse_scheduling_timestamp_pair(
-                $+{scheduling_timestamp_pair});
-        } elsif ($+{scheduling_timestamp}) {
-            $self->_parse_scheduling_timestamp($+{scheduling_timestamp});
+        } elsif ($+{schedule_timestamp_pair}) {
+            $self->_parse_schedule_timestamp_pair(
+                $+{schedule_timestamp_pair});
+        } elsif ($+{schedule_timestamp}) {
+            $self->_parse_schedule_timestamp($+{schedule_timestamp});
         } elsif ($+{drawer}) {
             $self->_parse_drawer($+{drawer});
         }
@@ -119,21 +119,43 @@ sub _parse2 {
 # XXX parse3? parse2? links, markups (*bold*, _underline_, /italic/, ~verbatim~,
 # =code=, +strike+)
 
+sub __parse_timestamp {
+    require DateTime;
+    my ($ts) = @_;
+    $ts =~ /^(\d{4})-(\d{2})-(\d{2}) \s
+            (?:\w{2,3}
+                (?:\s (\d{2}):(\d{2}))?)?$/x
+        or return;
+    my %dt_args = (year => $1, month=>$2, day=>$3);
+    if (defined($4)) { $dt_args{hour} = $4; $dt_args{minute} = $5 }
+    DateTime->new(%dt_args);
+}
+
 sub _parse_text {
     my ($self, $raw) = @_;
     $self->handler->($self, "element", {element=>"text", raw=>$raw});
 }
 
 sub _parse_timestamp_pair {
+    die "Sorry, not yet implemented";
 }
 
 sub _parse_timestamp {
+    die "Sorry, not yet implemented";
 }
 
-sub _parse_scheduling_timestamp_pair {
+sub _parse_schedule_timestamp_pair {
+    die "Sorry, not yet implemented";
 }
 
-sub _parse_scheduling_timestamp {
+sub _parse_schedule_timestamp {
+    my ($self, $raw) = @_;
+    state $re = qr/^<(.+)>$/;
+    $raw =~ $re or die "Invalid syntax in timestamp: $raw";
+    my $args = {element => "schedule timestamp", raw=>$raw};
+    $args->{timestamp} = __parse_timestamp($1)
+        or die "Can't parse timestamp $1";
+    $self->handler->($self, "element", $args);
 }
 
 sub _parse_drawer {
@@ -455,7 +477,9 @@ Currently we assume it to be the same as the other two.
 
 =item * Parse link & link abbreviations (#+LINK)
 
-=item * Parse repeats in scheduling timestamps
+=item * Parse timestamps & timestamp pairs
+
+=item * Parse repeats in schedule timestamps
 
 =item * Parse tables
 
