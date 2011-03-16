@@ -141,14 +141,14 @@ sub _parse_single_line_setting {
 sub _parse_multi_line_setting {
     my ($self, $raw) = @_;
     $log->tracef("-> _parse_multi_line_setting(%s)", $raw);
-    state $re = qr/\A\#\+(?:BEGIN_(EXAMPLE|SRC))\R
-                   (.+)
+    state $re = qr/\A\#\+(?:BEGIN_(EXAMPLE|SRC))(?:\s+(\S.*))\R
+                   ((?:.|\R)*)
                    \#\+\w+\R?\z
-                  /sx;
+                  /x;
     $raw =~ $re or die "Invalid/unknown multi-line setting: $raw";
     $self->handler->($self, "element", {
         element=>"setting", setting=>$1, is_multiline=>1,
-        raw_arg=>$2,
+        raw_arg=>$2//"", raw_content=>$3,
         raw=>$raw});
 }
 

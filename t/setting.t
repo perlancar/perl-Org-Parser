@@ -104,7 +104,7 @@ _
 test_parse_setting(
     name => 'multiline: BEGIN_EXAMPLE + END_EXAMPLE',
     doc  => <<'_',
-#+BEGIN_EXAMPLE
+#+BEGIN_EXAMPLE -t -w 40
 #+INSIDE
 #+END_EXAMPLE
 _
@@ -112,7 +112,8 @@ _
     test_after_parse => sub {
         my ($orgp, $settings) = @_;
         is($settings->[0]{setting}, "EXAMPLE", "args: setting");
-        is($settings->[0]{raw_arg}, "#+INSIDE\n", "args: raw_arg");
+        is($settings->[0]{raw_arg}, "-t -w 40", "args: raw_arg");
+        is($settings->[0]{raw_content}, "#+INSIDE\n", "args: raw_content");
     },
 );
 
