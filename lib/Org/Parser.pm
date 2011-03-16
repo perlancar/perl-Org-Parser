@@ -4,9 +4,10 @@ package Org::Parser;
 use 5.010;
 use strict;
 use warnings;
+use Log::Any '$log';
 
 use File::Slurp;
-use Log::Any '$log';
+use Scalar::Util qw(blessed);
 
 use Moo;
 has handler                 => (is => 'rw', default => sub{ sub{1} });
@@ -74,7 +75,8 @@ sub _parse_single_line_setting {
     state $re = qr/\A\#\+(\w+): \s+ (.+?) \s* \R?\z/x;
     $raw =~ $re or die "Invalid single-line setting syntax: $raw";
     my ($setting, $raw_arg) = ($1, $2);
-    my $args = {setting=>$setting, raw_arg=>$raw_arg, raw=>$raw};
+    my $args = {element=>'setting', setting=>$setting,
+                raw_arg=>$raw_arg, raw=>$raw};
     if      ($setting eq 'ARCHIVE') {
     } elsif ($setting eq 'CATEGORY') {
     } elsif ($setting eq 'COLUMNS') {
@@ -115,6 +117,7 @@ sub _parse_single_line_setting {
         for (my $i=0; $i<@args; $i++) {
             my $arg = $args[$i];
             if ($arg eq '|') { $done++; next }
+            $done++ if !$done && @args > 1 && $i == @args-1;
             my $ary = $done ? $self->done_states : $self->todo_states;
             push @$ary, $arg unless $arg ~~ @$ary;
         }
@@ -127,7 +130,7 @@ sub _parse_single_line_setting {
 sub _parse_multi_line_setting {
     my ($self, $raw) = @_;
     $log->tracef("-> _parse_multi_line_setting(%s)", $raw);
-    state $re = qr/\A\#\+(BEGIN_EXAMPLE)\R
+    state $re = qr/\A\#\+(?:BEGIN_(EXAMPLE))\R
                    (.+)
                    \#\+\w+\R?\z
                   /sx;
@@ -150,7 +153,7 @@ sub parse {
     if (my $r = ref($arg)) {
         if ($r eq 'ARRAY') {
             $self->raw(join "", @$arg);
-        } elsif ($r eq 'GLOB' || $arg->isa('IO::Handle')) {
+        } elsif ($r eq 'GLOB' || blessed($arg) && $arg->isa('IO::Handle')) {
             $self->raw(join "", <$arg>);
         } elsif ($r eq 'CODE') {
             my @chunks;
