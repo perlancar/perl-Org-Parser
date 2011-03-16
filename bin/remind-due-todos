@@ -2,6 +2,9 @@
 
 # a simple example script to print all due todos
 
+# workaround for dzil
+package remind_due_todos;
+
 use 5.010;
 use strict;
 use warnings;
@@ -67,4 +70,4 @@ sub get_due_todos {
     [200, "OK", \@res];
 }
 
-run(load=>0, module => 'main', sub=>'get_due_todos');
+run(load=>0, module => 'remind_due_todos', sub=>'get_due_todos');
