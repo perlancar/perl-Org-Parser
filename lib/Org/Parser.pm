@@ -141,7 +141,7 @@ sub _parse_single_line_setting {
 sub _parse_multi_line_setting {
     my ($self, $raw) = @_;
     $log->tracef("-> _parse_multi_line_setting(%s)", $raw);
-    state $re = qr/\A\#\+(?:BEGIN_(EXAMPLE))\R
+    state $re = qr/\A\#\+(?:BEGIN_(EXAMPLE|SRC))\R
                    (.+)
                    \#\+\w+\R?\z
                   /sx;
