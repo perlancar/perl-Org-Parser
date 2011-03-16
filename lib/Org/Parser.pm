@@ -14,8 +14,11 @@ has handler                 => (is => 'rw', default => sub{ sub{1} });
 has raw                     => (is => 'rw');
 has todo_states             => (is => 'rw', default => sub{[qw/TODO/]});
 has done_states             => (is => 'rw', default => sub{[qw/DONE/]});
+has priorities              => (is => 'rw', default => sub{[qw/A B C/]});
 
-# parse settings + headline
+my $tags_re = qr/:(?:[^:]+:)+/;
+
+# parse settings + headlines
 sub _parse {
     my ($self) = @_;
     my $raw = $self->raw;
@@ -61,10 +64,15 @@ sub _parse {
     @other = ();
 }
 
-# parse text: drawer, link, *bold*, _underline_, /italic/
+# parse text: drawers, links, markups (*bold*, _underline_, /italic/,
+# ~verbatim~, =code=, +strike+)
 sub _parse2 {
     my ($self, $raw) = @_;
     $log->tracef("-> _parse2(%s)", $raw);
+}
+
+sub __split_tags {
+    [$_[0] =~ /:([^:]+)/g];
 }
 
 sub _parse_single_line_setting {
@@ -82,12 +90,15 @@ sub _parse_single_line_setting {
     } elsif ($setting eq 'COLUMNS') {
     } elsif ($setting eq 'CONSTANTS') {
     } elsif ($setting eq 'FILETAGS') {
-        $raw_arg =~ /^:([^:]+:)+$/ or
+        $raw_arg =~ /^$tags_re$/ or
             die "Invalid argument syntax for FILEARGS: $raw";
-        $args->{tags} = [$raw_arg =~ /:([^:]+)/g];
+        $args->{tags} = __split_tags($raw_arg);
     } elsif ($setting eq 'DRAWERS') {
     } elsif ($setting eq 'LINK') {
     } elsif ($setting eq 'PRIORITIES') {
+        my $p = [split /\s+/, $raw_arg];
+        $args->{priorities} = $p;
+        $self->priorities($p);
     } elsif ($setting eq 'PROPERTY') {
     } elsif ($setting eq 'SETUPFILE') {
     } elsif ($setting eq 'STARTUP') {
@@ -144,6 +155,31 @@ sub _parse_multi_line_setting {
 sub _parse_headline {
     my ($self, $raw) = @_;
     $log->tracef("-> _parse_headline(%s)", $raw);
+    state $re = qr/\A(\*+)\s+(.*?)(?:\s+($tags_re))?\s*\R?\z/x;
+    $raw =~ $re or die "Invalid headline syntax: $raw";
+    my ($bullet, $title, $tags) = ($1, $2, $3);
+    my $args = {element=>"headline", raw=>$raw, level=>length($bullet)};
+    $args->{tags} = __split_tags($tags) if $tags;
+
+    # XXX cache re
+    my $todo_kw_re = "(?:".
+        join("|", map {quotemeta}
+                 @{$self->todo_states}, @{$self->done_states}) . ")";
+    if ($title =~ s/^($todo_kw_re)\s+//) {
+        my $state = $1;
+        $args->{is_todo} = 1;
+        $args->{todo_state} = $state;
+        $args->{is_done} = 1 if $state ~~ @{ $self->done_states };
+        # XXX cache re
+        my $prio_re = "(?:".
+            join("|", map {quotemeta} @{$self->priorities}) . ")";
+        if ($title =~ s/\[#($prio_re)\]\s*//) {
+            $args->{todo_priority} = $1;
+        }
+    }
+
+    $args->{title} = $title;
+    $self->handler->($self, "element", $args);
 }
 
 sub parse {
@@ -239,6 +275,9 @@ Will output something like:
 
 =head1 DESCRIPTION
 
+NOTE: This module is in alpha stage. See L</"BUGS/TODO/LIMITATIONS"> for the
+list of stuffs not yet implemented.
+
 This module parses Org documents. See http://orgmode.org/ for more details on
 Org documents.
 
@@ -301,7 +340,7 @@ using them. For example, when declaring custom TODO keywords:
 
 and not:
 
- * FIXED blah
+ * FIXED blah (at this point, custom TODO keywords not yet recognized)
 
  #+TODO: TODO | DONE
  #+TODO: BUG WISHLIST | FIXED CANTREPRO
@@ -319,6 +358,8 @@ Currently we assume it to be the same as the other two.
 =item * Parse tables
 
 =item * Parse text markups
+
+=item * Parse headline percentage
 
 =item * Parse {unordered,ordered,description,check) lists
 

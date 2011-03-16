@@ -14,6 +14,7 @@ test_parse_setting(
 _
     num => 0,
 );
+
 test_parse_setting(
     name => 'non-setting (not on first column)',
     doc  => <<'_',
@@ -21,6 +22,7 @@ test_parse_setting(
 _
     num => 0,
 );
+
 test_parse_setting(
     name => 'syntax error (missing colon)',
     doc  => <<'_',
@@ -28,6 +30,7 @@ test_parse_setting(
 _
     dies => 1,
 );
+
 test_parse_setting(
     name => 'unknown single-line setting',
     doc  => <<'_',
@@ -35,6 +38,7 @@ test_parse_setting(
 _
     dies => 1,
 );
+
 test_parse_setting(
     name => 'todo',
     doc  => <<'_',
@@ -47,10 +51,13 @@ _
     test_after_parse => sub {
         my ($orgp, $settings) = @_;
         is($settings->[0]{setting}, "TODO", "args: setting");
-        is_deeply($orgp->todo_states, [qw/TODO A B D F G/], "todo_states");
-        is_deeply($orgp->done_states, [qw/DONE C C2 E H/],  "done_states");
+        is_deeply($orgp->todo_states, [qw/TODO A B D F G/],
+                  "parser's todo_states attribute");
+        is_deeply($orgp->done_states, [qw/DONE C C2 E H/],
+                  "parser's done_states attribute");
     },
 );
+
 test_parse_setting(
     name => 'filetags: argument syntax error',
     doc  => <<'_',
@@ -58,6 +65,7 @@ test_parse_setting(
 _
     dies => 1,
 );
+
 test_parse_setting(
     name => 'filetags',
     doc  => <<'_',
@@ -71,6 +79,7 @@ _
         is_deeply($settings->[0]{tags}, [qw/tag1 tag2 tag3/],  "args: tags");
     },
 );
+
 test_parse_setting(
     name => 'unknown multi-line setting',
     doc  => <<'_',
@@ -80,6 +89,7 @@ bar
 _
     dies => 1,
 );
+
 test_parse_setting(
     name => 'multiline: BEGIN_EXAMPLE + END_EXAMPLE: undetected (no END)',
     doc  => <<'_',
@@ -90,6 +100,7 @@ test_parse_setting(
 _
     dies => 1,
 );
+
 test_parse_setting(
     name => 'multiline: BEGIN_EXAMPLE + END_EXAMPLE',
     doc  => <<'_',
@@ -102,6 +113,22 @@ _
         my ($orgp, $settings) = @_;
         is($settings->[0]{setting}, "EXAMPLE", "args: setting");
         is($settings->[0]{raw_arg}, "#+INSIDE\n", "args: raw_arg");
+    },
+);
+
+test_parse_setting(
+    name => 'priorities',
+    doc  => <<'_',
+#+PRIORITIES: A1 A2 B1 B2 C1 C2
+_
+    num  => 1,
+    test_after_parse => sub {
+        my ($orgp, $settings) = @_;
+        is($settings->[0]{setting}, "PRIORITIES", "args: setting");
+        is_deeply($settings->[0]{priorities}, [qw/A1 A2 B1 B2 C1 C2/],
+                  "args: priorities");
+        is_deeply($orgp->priorities, [qw/A1 A2 B1 B2 C1 C2/],
+                  "parser's priorities attribute");
     },
 );
 
