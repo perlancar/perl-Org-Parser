@@ -94,6 +94,7 @@ sub _parse_setting {
             die "Invalid argument syntax for FILEARGS: $raw";
         $args->{tags} = __split_tags($raw_arg);
     } elsif ($setting eq 'DRAWERS') {
+    } elsif ($setting eq 'INCLUDE') {
     } elsif ($setting eq 'LINK') {
     } elsif ($setting eq 'PRIORITIES') {
         my $p = [split /\s+/, $raw_arg];
@@ -362,6 +363,8 @@ Currently we assume it to be the same as the other two.
 =item * Parse headline percentageS
 
 =item * Parse {unordered,ordered,description,check) lists
+
+=item * Process includes (#+INCLUDE)
 
 =back
 
