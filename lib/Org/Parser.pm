@@ -80,6 +80,9 @@ sub _parse_single_line_setting {
     } elsif ($setting eq 'COLUMNS') {
     } elsif ($setting eq 'CONSTANTS') {
     } elsif ($setting eq 'FILETAGS') {
+        $raw_arg =~ /^:([^:]+:)+$/ or
+            die "Invalid argument syntax for FILEARGS: $raw";
+        $args->{tags} = [$raw_arg =~ /:([^:]+)/g];
     } elsif ($setting eq 'DRAWERS') {
     } elsif ($setting eq 'LINK') {
     } elsif ($setting eq 'PRIORITIES') {
@@ -283,7 +286,7 @@ Just like parse(), but will load document from file instead.
 
 =over 4
 
-=item * LIMITATION Single-pass parser
+=item * Single-pass parser
 
 Parser is currently a single-pass parser, so you need to preset stuffs before
 using them. For example, when declaring custom TODO keywords:
@@ -300,15 +303,21 @@ and not:
  #+TODO: TODO | DONE
  #+TODO: BUG WISHLIST | FIXED CANTREPRO
 
-=item * TODO What's the syntax for multiple in-buffer settings on a single line?
+=item * What's the syntax for multiple in-buffer settings on a single line?
 
 Currently the parser assumes a single in-buffer settings per line
 
-=item * TODO Difference between TYP_TODO and TODO/SEQ_TODO?
+=item * Difference between TYP_TODO and TODO/SEQ_TODO?
 
 Currently we assume it to be the same as the other two.
 
-=item * TODO Parse link abbreviations (#+LINK)
+=item * Parse link & link abbreviations (#+LINK)
+
+=item * Parse tables
+
+=item * Parse text markups
+
+=item * Parse {unordered,ordered,description,check) lists
 
 =back
 
