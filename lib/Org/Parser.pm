@@ -137,15 +137,18 @@ sub _parse_text {
 }
 
 sub _parse_timestamp_pair {
-    die "Sorry, not yet implemented";
+    my ($self, $raw) = @_;
+    warn "Sorry, parsing timestamp pair ($raw) not yet implemented";
 }
 
 sub _parse_timestamp {
-    die "Sorry, not yet implemented";
+    my ($self, $raw) = @_;
+    warn "Sorry, parsing timestamp ($raw) not yet implemented";
 }
 
 sub _parse_schedule_timestamp_pair {
-    die "Sorry, not yet implemented";
+    my ($self, $raw) = @_;
+    warn "Sorry, parsing schedule timestamp pair ($raw) not yet implemented";
 }
 
 sub _parse_schedule_timestamp {
