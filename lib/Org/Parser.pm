@@ -517,8 +517,6 @@ Currently we assume it to be the same as the other two.
 
 =head1 SEE ALSO
 
-L<Org::Document>
-
 =cut
 
 1;
