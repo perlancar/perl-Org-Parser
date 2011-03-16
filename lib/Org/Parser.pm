@@ -400,15 +400,33 @@ Will output something like:
 
 =head1 DESCRIPTION
 
-B<NOTE: This module is in alpha stage. See L</"BUGS/TODO/LIMITATIONS"> for the
-list of stuffs not yet implemented.>
-
 This module parses Org documents. See http://orgmode.org/ for more details on
 Org documents.
 
 This module uses L<Log::Any> logging framework.
 
 This module uses L<Moo> object system.
+
+B<NOTE: This module is in alpha stage. See L</"BUGS/TODO/LIMITATIONS"> for the
+list of stuffs not yet implemented.>
+
+Already implemented/parsed:
+
+=over 4
+
+=item * in-buffer settings
+
+=item * blocks
+
+=item * headlines & TODO items
+
+Including custom TODO keywords, custom priorities
+
+=item * schedule timestamps (subset of)
+
+=item * drawers & properties
+
+=back
 
 
 =head1 ATTRIBUTES
