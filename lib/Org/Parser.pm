@@ -86,43 +86,38 @@ sub _parse_setting {
     my $args = {element=>'setting', setting=>$setting,
                 raw_arg=>$raw_arg, raw=>$raw};
     if      ($setting eq 'ARCHIVE') {
+    } elsif ($setting eq 'AUTHOR') {
+    } elsif ($setting eq 'CAPTION') {
+    } elsif ($setting eq 'BIND') {
     } elsif ($setting eq 'CATEGORY') {
     } elsif ($setting eq 'COLUMNS') {
     } elsif ($setting eq 'CONSTANTS') {
+    } elsif ($setting eq 'DATE') {
+    } elsif ($setting eq 'DESCRIPTION') {
+    } elsif ($setting eq 'DRAWERS') {
+    } elsif ($setting eq 'EMAIL') {
+    } elsif ($setting eq 'EXPORT_EXCLUDE_TAGS') {
+    } elsif ($setting eq 'EXPORT_SELECT_TAGS') {
     } elsif ($setting eq 'FILETAGS') {
         $raw_arg =~ /^$tags_re$/ or
             die "Invalid argument syntax for FILEARGS: $raw";
         $args->{tags} = __split_tags($raw_arg);
-    } elsif ($setting eq 'DRAWERS') {
     } elsif ($setting eq 'INCLUDE') {
+    } elsif ($setting eq 'INDEX') {
+    } elsif ($setting eq 'KEYWORDS') {
+    } elsif ($setting eq 'LABEL') {
+    } elsif ($setting eq 'LANGUAGE') {
+    } elsif ($setting eq 'LATEX_HEADER') {
     } elsif ($setting eq 'LINK') {
+    } elsif ($setting eq 'LINK_HOME') {
+    } elsif ($setting eq 'LINK_UP') {
+    } elsif ($setting eq 'OPTIONS') {
     } elsif ($setting eq 'PRIORITIES') {
         my $p = [split /\s+/, $raw_arg];
         $args->{priorities} = $p;
         $self->priorities($p);
     } elsif ($setting eq 'PROPERTY') {
-    } elsif ($setting eq 'SETUPFILE') {
-    } elsif ($setting eq 'STARTUP') {
-    } elsif ($setting eq 'TAGS') {
-    } elsif ($setting eq 'TBLFM') {
-    } elsif ($setting eq 'TITLE') {
-    } elsif ($setting eq 'AUTHOR') {
-    } elsif ($setting eq 'EMAIL') {
-    } elsif ($setting eq 'LANGUAGE') {
-    } elsif ($setting eq 'TEXT') {
-    } elsif ($setting eq 'DATE') {
-    } elsif ($setting eq 'OPTIONS') {
-    } elsif ($setting eq 'BIND') {
-    } elsif ($setting eq 'XSLT') {
-    } elsif ($setting eq 'DESCRIPTION') {
-    } elsif ($setting eq 'KEYWORDS') {
-    } elsif ($setting eq 'LATEX_HEADER') {
-    } elsif ($setting eq 'STYLE') {
-    } elsif ($setting eq 'LINK_UP') {
-    } elsif ($setting eq 'LINK_HOME') {
-    } elsif ($setting eq 'EXPORT_SELECT_TAGS') {
-    } elsif ($setting eq 'EXPORT_EXCLUDE_TAGS') {
-    } elsif ($setting =~ /^(TODO|SEQ_TODO|TYP_TODO)$/) {
+    } elsif ($setting =~ /^(SEQ_TODO|TODO|TYP_TODO)$/) {
         my $done;
         my @args = split /\s+/, $raw_arg;
         $args->{states} = \@args;
@@ -133,6 +128,14 @@ sub _parse_setting {
             my $ary = $done ? $self->done_states : $self->todo_states;
             push @$ary, $arg unless $arg ~~ @$ary;
         }
+    } elsif ($setting eq 'SETUPFILE') {
+    } elsif ($setting eq 'STARTUP') {
+    } elsif ($setting eq 'STYLE') {
+    } elsif ($setting eq 'TAGS') {
+    } elsif ($setting eq 'TBLFM') {
+    } elsif ($setting eq 'TEXT') {
+    } elsif ($setting eq 'TITLE') {
+    } elsif ($setting eq 'XSLT') {
     } else {
         die "Unknown setting $setting: $raw";
     }
@@ -142,9 +145,10 @@ sub _parse_setting {
 sub _parse_block {
     my ($self, $raw) = @_;
     $log->tracef("-> _parse_block(%s)", $raw);
-    state $re = qr/\A\#\+(?:BEGIN_(EXAMPLE|SRC))(?:\s+(\S.*))\R
-                   ((?:.|\R)*)
-                   \#\+\w+\R?\z
+    state $re = qr/\A\#\+(?:BEGIN_(CENTER|COMMENT|EXAMPLE|QUOTE|SRC|VERSE))
+                   (?:\s+(\S.*))\R # arg
+                   ((?:.|\R)*)     # content
+                   \#\+\w+\R?\z    # closing
                   /x;
     $raw =~ $re or die "Invalid/unknown block: $raw";
     $self->handler->($self, "element", {
