@@ -1,0 +1,70 @@
+#!/usr/bin/perl
+
+# a simple example script to print all due todos
+
+use 5.010;
+use strict;
+use warnings;
+use Log::Any qw($log);
+
+use DateTime;
+use Org::Parser;
+use Sub::Spec::CmdLine qw(run);
+our %SPEC;
+
+$SPEC{get_due_todos} = {
+    summary => 'Return all due TODOs',
+    args    => {
+        files => ['array*' => {
+            of         => 'str*',
+            arg_pos    => 0,
+            arg_greedy => 1,
+        }],
+        days_before => [int => {
+            default => 0
+        }],
+    },
+};
+sub get_due_todos {
+    my %args = @_;
+    $args{days_before} //= 0;
+
+    my $today = DateTime->today;
+
+    my @res;
+    for my $file (@{ $args{files} }) {
+        $log->debug("Parsing $file ...");
+        my $orgp = Org::Parser->new;
+        my $curtodo;
+        $orgp->handler(
+            sub {
+                my ($orgp, $ev, $args) = @_;
+                return unless $ev eq 'element' &&
+                    (($args->{element} eq 'headline' &&
+                         $args->{is_todo} && !$args->{is_done})
+                         ||
+                             ($args->{element} eq 'schedule timestamp'));
+                if ($args->{is_todo}) {
+                    $curtodo = $args;
+                }
+
+                return unless $args->{element} eq 'schedule timestamp'
+                    && $curtodo;
+                my $days = int(($args->{timestamp}->epoch-$today->epoch)/86400);
+                if ($days <= $args{days_before}) {
+                    push @res,
+                        sprintf("%s: %s (%s)",
+                                $days == 0 ? "today" :
+                                    $days < 0 ? abs($days)." days ago" :
+                                        "in $days days",
+                                $curtodo->{title},
+                                $args->{timestamp}->ymd);
+                }
+                $curtodo = undef;
+            });
+        $orgp->parse_file($file);
+    }
+    [200, "OK", \@res];
+}
+
+run(load=>0, module => 'main', sub=>'get_due_todos');
