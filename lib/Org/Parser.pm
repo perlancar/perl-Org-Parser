@@ -360,6 +360,8 @@ Currently we assume it to be the same as the other two.
 
 =item * Parse link & link abbreviations (#+LINK)
 
+=item * Parse time/date repeats
+
 =item * Parse tables
 
 =item * Parse text markups
