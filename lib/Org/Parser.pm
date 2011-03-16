@@ -275,8 +275,8 @@ Will output something like:
 
 =head1 DESCRIPTION
 
-NOTE: This module is in alpha stage. See L</"BUGS/TODO/LIMITATIONS"> for the
-list of stuffs not yet implemented.
+B<NOTE: This module is in alpha stage. See L</"BUGS/TODO/LIMITATIONS"> for the
+list of stuffs not yet implemented.>
 
 This module parses Org documents. See http://orgmode.org/ for more details on
 Org documents.
@@ -359,7 +359,7 @@ Currently we assume it to be the same as the other two.
 
 =item * Parse text markups
 
-=item * Parse headline percentage
+=item * Parse headline percentageS
 
 =item * Parse {unordered,ordered,description,check) lists
 
