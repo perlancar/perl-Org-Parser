@@ -64,7 +64,7 @@ sub _parse {
     @other = ();
 }
 
-# parse text: drawers, links, markups (*bold*, _underline_, /italic/,
+# parse text: timestamp, drawers, links, markups (*bold*, _underline_, /italic/,
 # ~verbatim~, =code=, +strike+)
 sub _parse2 {
     my ($self, $raw) = @_;
@@ -360,7 +360,7 @@ Currently we assume it to be the same as the other two.
 
 =item * Parse link & link abbreviations (#+LINK)
 
-=item * Parse time/date repeats
+=item * Parse repeats in scheduling timestamps
 
 =item * Parse tables
 
