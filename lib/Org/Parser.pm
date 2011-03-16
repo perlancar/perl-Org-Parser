@@ -309,7 +309,7 @@ sub parse {
 
 sub parse_file {
     my ($self, $filename) = @_;
-    $self->raw(read_file($filename));
+    $self->raw(scalar read_file($filename));
     $self->_parse;
 }
 
