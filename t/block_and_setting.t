@@ -24,7 +24,7 @@ _
 );
 
 test_parse_setting(
-    name => 'syntax error (missing colon)',
+    name => 'setting: syntax error (missing colon)',
     doc  => <<'_',
 #+TODO A B | C
 _
@@ -32,7 +32,7 @@ _
 );
 
 test_parse_setting(
-    name => 'unknown single-line setting',
+    name => 'unknown setting',
     doc  => <<'_',
 #+FOO: bar
 _
@@ -40,7 +40,7 @@ _
 );
 
 test_parse_setting(
-    name => 'todo',
+    name => 'setting: todo',
     doc  => <<'_',
 #+TODO: A B | C C2
 #+TODO: D
@@ -49,8 +49,8 @@ test_parse_setting(
 _
     num  => 4,
     test_after_parse => sub {
-        my ($orgp, $settings) = @_;
-        is($settings->[0]{setting}, "TODO", "args: setting");
+        my ($orgp, $bs) = @_;
+        is($bs->[0]{setting}, "TODO", "args: setting");
         is_deeply($orgp->todo_states, [qw/TODO A B D F G/],
                   "parser's todo_states attribute");
         is_deeply($orgp->done_states, [qw/DONE C C2 E H/],
@@ -59,7 +59,7 @@ _
 );
 
 test_parse_setting(
-    name => 'filetags: argument syntax error',
+    name => 'setting: filetags: argument syntax error',
     doc  => <<'_',
 #+FILETAGS: a:
 _
@@ -67,21 +67,21 @@ _
 );
 
 test_parse_setting(
-    name => 'filetags',
+    name => 'setting: filetags',
     doc  => <<'_',
 #+FILETAGS:  :tag1:tag2:tag3:
 _
     num  => 1,
     test_after_parse => sub {
-        my ($orgp, $settings) = @_;
-        is($settings->[0]{setting}, "FILETAGS", "args: setting");
-        is($settings->[0]{raw_arg}, ":tag1:tag2:tag3:", "args: raw_arg");
-        is_deeply($settings->[0]{tags}, [qw/tag1 tag2 tag3/],  "args: tags");
+        my ($orgp, $bs) = @_;
+        is($bs->[0]{setting}, "FILETAGS", "args: setting");
+        is($bs->[0]{raw_arg}, ":tag1:tag2:tag3:", "args: raw_arg");
+        is_deeply($bs->[0]{tags}, [qw/tag1 tag2 tag3/],  "args: tags");
     },
 );
 
 test_parse_setting(
-    name => 'unknown multi-line setting',
+    name => 'unknown block',
     doc  => <<'_',
 #+BEGIN_FOO
 bar
@@ -91,7 +91,7 @@ _
 );
 
 test_parse_setting(
-    name => 'multiline: BEGIN_EXAMPLE + END_EXAMPLE: undetected (no END)',
+    name => 'block: BEGIN_EXAMPLE + END_EXAMPLE: undetected (no END)',
     doc  => <<'_',
 #+BEGIN_EXAMPLE
 1
@@ -102,7 +102,7 @@ _
 );
 
 test_parse_setting(
-    name => 'multiline: BEGIN_EXAMPLE + END_EXAMPLE',
+    name => 'block: BEGIN_EXAMPLE + END_EXAMPLE',
     doc  => <<'_',
 #+BEGIN_EXAMPLE -t -w 40
 #+INSIDE
@@ -110,23 +110,23 @@ test_parse_setting(
 _
     num  => 1,
     test_after_parse => sub {
-        my ($orgp, $settings) = @_;
-        is($settings->[0]{setting}, "EXAMPLE", "args: setting");
-        is($settings->[0]{raw_arg}, "-t -w 40", "args: raw_arg");
-        is($settings->[0]{raw_content}, "#+INSIDE\n", "args: raw_content");
+        my ($orgp, $bs) = @_;
+        is($bs->[0]{block}, "EXAMPLE", "args: setting");
+        is($bs->[0]{raw_arg}, "-t -w 40", "args: raw_arg");
+        is($bs->[0]{raw_content}, "#+INSIDE\n", "args: raw_content");
     },
 );
 
 test_parse_setting(
-    name => 'priorities',
+    name => 'setting: priorities',
     doc  => <<'_',
 #+PRIORITIES: A1 A2 B1 B2 C1 C2
 _
     num  => 1,
     test_after_parse => sub {
-        my ($orgp, $settings) = @_;
-        is($settings->[0]{setting}, "PRIORITIES", "args: setting");
-        is_deeply($settings->[0]{priorities}, [qw/A1 A2 B1 B2 C1 C2/],
+        my ($orgp, $bs) = @_;
+        is($bs->[0]{setting}, "PRIORITIES", "args: setting");
+        is_deeply($bs->[0]{priorities}, [qw/A1 A2 B1 B2 C1 C2/],
                   "args: priorities");
         is_deeply($orgp->priorities, [qw/A1 A2 B1 B2 C1 C2/],
                   "parser's priorities attribute");
@@ -139,12 +139,13 @@ sub test_parse_setting {
     my %args = @_;
 
     subtest $args{name} => sub {
-        my @settings;
+        my @bs;
         my $orgp = Org::Parser->new(
             handler => sub {
                 my ($orgp, $ev, $args) = @_;
-                return unless $ev eq 'element' && $args->{element} eq 'setting';
-                push @settings, $args;
+                return unless $ev eq 'element' &&
+                    $args->{element} =~ /^(block|setting)$/;
+                push @bs, $args;
             }
         );
 
@@ -160,11 +161,11 @@ sub test_parse_setting {
         }
 
         if (defined $args{num}) {
-            is(scalar(@settings), $args{num}, "num=$args{num}");
+            is(scalar(@bs), $args{num}, "num=$args{num}");
         }
 
         if ($args{test_after_parse}) {
-            $args{test_after_parse}->($orgp, \@settings);
+            $args{test_after_parse}->($orgp, \@bs);
         }
     };
 }

@@ -18,7 +18,7 @@ has priorities              => (is => 'rw', default => sub{[qw/A B C/]});
 
 my $tags_re = qr/:(?:[^:]+:)+/;
 
-# parse settings + headlines
+# parse blocks + settings + headlines
 sub _parse {
     my ($self) = @_;
     my $raw = $self->raw;
@@ -26,13 +26,13 @@ sub _parse {
 
     state $ls_ = qr/(?:(?<=[\015\012])|\A)/;
     state $le  = qr/(?:\R|\z)/;
-    state $re  = qr/(?<multi_line_setting>  $ls_ \#\+BEGIN_(?<sname>\w+)
-                                            (?:.|\R)*
-                                            \R\#\+END_\k<sname> $le) |
-                   (?<single_line_setting>  $ls_ \#\+.* $le) |
-                   (?<headline>             $ls_ \*+[ \t].* $le) |
-                   (?<other>                [^#*]+ | # to lump things more
-                                              .+?)
+    state $re  = qr/(?<block>    $ls_ \#\+BEGIN_(?<sname>\w+)
+                                 (?:.|\R)*
+                                 \R\#\+END_\k<sname> $le) |
+                   (?<setting>   $ls_ \#\+.* $le) |
+                   (?<headline>  $ls_ \*+[ \t].* $le) |
+                   (?<other>     [^#*]+ | # to lump things more
+                                 .+?)
                   /mx;
 
     my @other;
@@ -48,10 +48,10 @@ sub _parse {
             @other = ();
         }
 
-        if ($+{multi_line_setting}) {
-            $self->_parse_multi_line_setting($+{multi_line_setting});
-        } elsif ($+{single_line_setting}) {
-            $self->_parse_single_line_setting($+{single_line_setting});
+        if ($+{block}) {
+            $self->_parse_block($+{block});
+        } elsif ($+{setting}) {
+            $self->_parse_setting($+{setting});
         } elsif ($+{headline}) {
             $self->_parse_headline($+{headline});
         }
@@ -75,13 +75,13 @@ sub __split_tags {
     [$_[0] =~ /:([^:]+)/g];
 }
 
-sub _parse_single_line_setting {
+sub _parse_setting {
     my ($self, $raw) = @_;
-    $log->tracef("-> _parse_single_line_setting(%s)", $raw);
+    $log->tracef("-> _parse_setting(%s)", $raw);
     # XXX what's the syntax for several settings in a single line? for now we
     # assume one setting per line
     state $re = qr/\A\#\+(\w+): \s+ (.+?) \s* \R?\z/x;
-    $raw =~ $re or die "Invalid single-line setting syntax: $raw";
+    $raw =~ $re or die "Invalid setting syntax: $raw";
     my ($setting, $raw_arg) = ($1, $2);
     my $args = {element=>'setting', setting=>$setting,
                 raw_arg=>$raw_arg, raw=>$raw};
@@ -138,16 +138,16 @@ sub _parse_single_line_setting {
     $self->handler->($self, "element", $args);
 }
 
-sub _parse_multi_line_setting {
+sub _parse_block {
     my ($self, $raw) = @_;
-    $log->tracef("-> _parse_multi_line_setting(%s)", $raw);
+    $log->tracef("-> _parse_block(%s)", $raw);
     state $re = qr/\A\#\+(?:BEGIN_(EXAMPLE|SRC))(?:\s+(\S.*))\R
                    ((?:.|\R)*)
                    \#\+\w+\R?\z
                   /x;
-    $raw =~ $re or die "Invalid/unknown multi-line setting: $raw";
+    $raw =~ $re or die "Invalid/unknown block: $raw";
     $self->handler->($self, "element", {
-        element=>"setting", setting=>$1, is_multiline=>1,
+        element=>"block", block=>$1,
         raw_arg=>$2//"", raw_content=>$3,
         raw=>$raw});
 }
