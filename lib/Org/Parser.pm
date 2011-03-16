@@ -506,7 +506,7 @@ Currently we assume it to be the same as the other two.
 
 =item * Parse text markups
 
-=item * Parse headline percentageS
+=item * Parse headline percentages
 
 =item * Parse {unordered,ordered,description,check) lists
 
