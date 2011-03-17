@@ -1,14 +1,19 @@
-#!perl -T
+#!perl
 
 use 5.010;
 use strict;
 use warnings;
 
+use FindBin '$Bin';
+use lib $Bin, "$Bin/t";
+
 use Org::Parser;
 use Test::More 0.96;
+require "testlib.pl";
 
-test_parse_drawer(
+test_parse(
     name => 'non-drawer (missing end)',
+    filter_elements => 'Org::Element::Drawer',
     doc  => <<'_',
 * foo
     :CLOCK:
@@ -16,8 +21,9 @@ _
     num => 0,
 );
 
-test_parse_drawer(
+test_parse(
     name => 'non-drawer (extra text before opening line)',
+    filter_elements => 'Org::Element::Drawer',
     doc  => <<'_',
 * foo
     :CLOCK: extra
@@ -26,8 +32,9 @@ _
     num => 0,
 );
 
-test_parse_drawer(
+test_parse(
     name => 'non-drawer (extra text after opening line)',
+    filter_elements => 'Org::Element::Drawer',
     doc  => <<'_',
 * foo
     extra :CLOCK:
@@ -36,8 +43,9 @@ _
     num => 0,
 );
 
-test_parse_drawer(
+test_parse(
     name => 'unknown drawer',
+    filter_elements => 'Org::Element::Drawer',
     doc  => <<'_',
 * foo
     :FOO:
@@ -46,8 +54,9 @@ _
     dies => 1,
 );
 
-test_parse_drawer(
+test_parse(
     name => 'drawer',
+    filter_elements => 'Org::Element::Drawer',
     doc  => <<'_',
 * foo
     :CLOCK:
@@ -56,15 +65,17 @@ text
 _
     num => 1,
     test_after_parse => sub {
-        my ($orgp, $drawers) = @_;
-        my $d = $drawers->[0];
-        is($d->{drawer}, "CLOCK", "args: drawer");
-        is($d->{raw_content}, "text\n", "args: raw_content");
+        my %args = @_;
+        my $doc = $args{result};
+        my $elems = $args{elements};
+        is($elems->[0]->name, "CLOCK", "name");
+        is($elems->[0]->raw_content, "text\n", "raw_content");
     },
 );
 
-test_parse_drawer(
+test_parse(
     name => 'properties: invalid syntax',
+    filter_elements => 'Org::Element::Properties',
     doc  => <<'_',
     :PROPERTIES:
       :foo:    1
@@ -74,8 +85,9 @@ _
     dies => 1,
 );
 
-test_parse_drawer(
+test_parse(
     name => 'properties',
+    filter_elements => 'Org::Element::Properties',
     doc  => <<'_',
     :PROPERTIES:
       :foo:    1
@@ -84,46 +96,12 @@ test_parse_drawer(
 _
     num => 1,
     test_after_parse => sub {
-        my ($orgp, $drawers) = @_;
-        my $d = $drawers->[0];
-        is($d->{drawer}, "PROPERTIES", "args: drawer");
-        is_deeply($d->{properties}, {foo=>1, bar=>2}, "args: properties");
+        my %args = @_;
+        my $doc = $args{result};
+        my $elems = $args{elements};
+        is($elems->[0]->name, "PROPERTIES", "name");
+        is_deeply($elems->[0]->properties, {FOO=>1, BAR=>2}, "properties");
     },
 );
 
 done_testing();
-
-sub test_parse_drawer {
-    my %args = @_;
-
-    subtest $args{name} => sub {
-        my @drawers;
-        my $orgp = Org::Parser->new(
-            handler => sub {
-                my ($orgp, $ev, $args) = @_;
-                return unless $ev eq 'element' &&
-                    $args->{element} eq 'drawer';
-                push @drawers, $args;
-            }
-        );
-
-        eval {
-            $orgp->parse($args{doc});
-        };
-        my $eval_err = $@;
-
-        if ($args{dies}) {
-            ok($eval_err, "dies");
-        } else {
-            ok(!$eval_err, "doesnt die") or diag("died with msg $eval_err");
-        }
-
-        if (defined $args{num}) {
-            is(scalar(@drawers), $args{num}, "num=$args{num}");
-        }
-
-        if ($args{test_after_parse}) {
-            $args{test_after_parse}->($orgp, \@drawers);
-        }
-    };
-}
