@@ -19,8 +19,8 @@ has drawers                 => (is => 'rw', default => sub{[
     qw/CLOCK LOGBOOK PROPERTIES/]});
 
 my $tags_re = qr/:(?:[^:]+:)+/;
-my $ls_     = qr/(?:(?<=[\015\012])|\A)/;
-my $le      = qr/(?:\R|\z)/;
+my $ls_re   = qr/(?:(?<=[\015\012])|\A)/;
+my $le_re   = qr/(?:\R|\z)/;
 
 # parse blocks + settings + headlines
 sub _parse {
@@ -28,11 +28,11 @@ sub _parse {
     my $raw = $self->raw;
     die "BUG: raw attribute has not been set" unless defined($raw);
 
-    state $re  = qr/(?<block>    $ls_ \#\+BEGIN_(?<sname>\w+)
+    state $re  = qr/(?<block>    $ls_re \#\+BEGIN_(?<sname>\w+)
                                  (?:.|\R)*
-                                 \R\#\+END_\k<sname> $le) |
-                   (?<setting>   $ls_ \#\+.* $le) |
-                   (?<headline>  $ls_ \*+[ \t].* $le) |
+                                 \R\#\+END_\k<sname> $le_re) |
+                   (?<setting>   $ls_re \#\+.* $le_re) |
+                   (?<headline>  $ls_re \*+[ \t].* $le_re) |
                    (?<other>     [^#*]+ | # to lump things more
                                  .+?)
                   /mx;
@@ -76,9 +76,9 @@ sub _parse2 {
                    (?<schedule_timestamp_pair> <\d{4}-\d{2}-\d{2}  \s[^>]*>--
                                                <\d{4}-\d{2}-\d{2}  \s[^>]*>) |
                    (?<schedule_timestamp>      <\d{4}-\d{2}-\d{2}  \s[^>]*>) |
-                   (?<drawer>                  $ls_ [ \t]* :\w+: [ \t]*\R
+                   (?<drawer>                  $ls_re [ \t]* :\w+: [ \t]*\R
                                                .*?
-                                               $ls_ [ \t]* :END:) |
+                                               $ls_re [ \t]* :END:) |
                    (?<other>                   [^\[<:]+ | # to lump things more
                                                .+?)
                   /sx;
