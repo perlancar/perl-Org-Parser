@@ -322,7 +322,10 @@ sub _parse_setting {
 sub _parse_block {
     my ($self, $raw) = @_;
     $log->tracef("-> _parse_block(%s)", $raw);
-    state $re = qr/\A\#\+(?:BEGIN_(CENTER|COMMENT|EXAMPLE|QUOTE|SRC|VERSE))
+    state $re = qr/\A\#\+(?:BEGIN_(
+                           ASCII|CENTER|COMMENT|EXAMPLE|HTML|
+                           LATEX|QUOTE|SRC|VERSE
+                   ))
                    (?:\s+(\S.*))\R # arg
                    ((?:.|\R)*)     # content
                    \#\+\w+\R?\z    # closing
