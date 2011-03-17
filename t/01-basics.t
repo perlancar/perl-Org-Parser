@@ -1,18 +1,17 @@
-#!perl -T
+#!perl
 
 use 5.010;
 use strict;
 use warnings;
 
+use FindBin '$Bin';
+use lib $Bin, "$Bin/t";
+
 use File::Temp qw/tempfile/;
 use File::Slurp;
 use Org::Parser;
 use Test::More 0.96;
-
-# accepts str
-# accepts arrayref
-# accepts coderef
-# accepts filehandle/glob
+require "testlib.pl";
 
 my $doc = <<_;
 #+TODO: A B | C
@@ -27,73 +26,53 @@ sub org {
 }
 
 test_parse(
-    name  => "parse() accepts str",
-    parse => [$doc],
+    name       => "parse() accepts str",
+    parse_args => [$doc],
 );
 test_parse(
-    name  => "parse() accepts arrayref",
-    parse => [$ary],
+    name       => "parse() accepts arrayref",
+    parse_args => [$ary],
 );
 test_parse(
-    name  => "parse() accepts coderef",
-    parse => [\&org],
+    name       => "parse() accepts coderef",
+    parse_args => [\&org],
 );
 my ($fh, $filename) = tempfile();
 write_file($filename, $doc);
 open $fh, "<", $filename;
 test_parse(
-    name  => "parse() accepts filehandle",
-    parse => [$fh],
+    name       => "parse() accepts filehandle",
+    parse_args => [$fh],
 );
 test_parse(
-    name       => "parse_file() accepts file name",
-    parse_file => [$filename],
+    name            => "parse_file() accepts file name",
+    parse_file_args => [$filename],
 );
 
 test_parse(
-    name  => "parse() doesnt accept hashref",
-    parse => [{}],
-    dies  => 1,
+    name       => "parse() doesnt accept hashref",
+    parse_args => [{}],
+    dies       => 1,
 );
 test_parse(
-    name  => "parse() requires argument",
-    parse => [],
-    dies  => 1,
+    name       => "parse() requires argument",
+    parse_args => [],
+    dies       => 1,
 );
 test_parse(
-    name  => "parse() requires defined argument",
-    parse => [undef],
-    dies  => 1,
+    name       => "parse() requires defined argument",
+    parse_args => [undef],
+    dies       => 1,
+);
+
+test_parse(
+    name => "parse() returns Org::Document instance",
+    doc  => "* test\n",
+    test_after_parse => sub {
+        my %args = @_;
+        my $doc = $args{result};
+        isa_ok($doc, "Org::Document");
+    },
 );
 
 done_testing();
-
-sub test_parse {
-    my %args = @_;
-    my $orgp;
-
-    subtest $args{name} => sub {
-        if ($args{parser_args}) {
-            $orgp = Org::Parser->new(%{ $args{parser_args} });
-        } else {
-            $orgp = Org::Parser->new;
-        }
-
-        eval {
-            if ($args{parse}) {
-                $orgp->parse(@{ $args{parse} });
-            } elsif ($args{parse_file}) {
-                $orgp->parse_file(@{ $args{parse_file} });
-            } else {
-                die "BUG: either parse or parse_file must be specified";
-            }
-        };
-        my $eval_err = $@;
-
-        if ($args{dies}) {
-            ok($eval_err, "dies");
-        } else {
-            ok(!$eval_err, "doesnt die") or diag("died with msg $eval_err");
-        }
-    };
-}

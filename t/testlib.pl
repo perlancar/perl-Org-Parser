@@ -30,7 +30,15 @@ sub test_parse {
 
         my $res;
         eval {
-            $res = $orgp->parse($args{doc});
+            if ($args{doc}) {
+                $res = $orgp->parse($args{doc});
+            } elsif ($args{parse_args}) {
+                $res = $orgp->parse(@{ $args{parse_args} });
+            } elsif ($args{parse_file_args}) {
+                $res = $orgp->parse_file(@{ $args{parse_file_args} });
+            } else {
+                die "Either doc/parse_args/parse_file_args must be specified";
+            }
         };
         my $eval_err = $@;
 
