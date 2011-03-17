@@ -143,18 +143,31 @@ sub _parse_inline {
             @other = ();
         }
 
+        my $el;
+        my $parent = $self->_last_headline;
         if      ($+{timestamp_pair}) {
-            $self->_parse_timestamp_pair($+{timestamp_pair});
+            require Org::Element::TimestampPair;
+            $el = Org::Element::TimestampPair->new(
+                document=>$doc, raw=>$+{timestamp_pair});
         } elsif ($+{timestamp}) {
-            $self->_parse_timestamp($+{timestamp});
+            require Org::Element::Timestamp;
+            $el = Org::Element::Timestamp->new(
+                document=>$doc, raw=>$+{timestamp});
         } elsif ($+{schedule_timestamp_pair}) {
-            $self->_parse_schedule_timestamp_pair(
-                $+{schedule_timestamp_pair});
+            require Org::Element::ScheduleTimestampPair;
+            $el = Org::Element::ScheduleTimestampPair->new(
+                document=>$doc, raw=>$+{schedule_timestamp_pair});
         } elsif ($+{schedule_timestamp}) {
-            $self->_parse_schedule_timestamp($+{schedule_timestamp});
-        } elsif ($+{drawer}) {
-            $self->_parse_drawer($+{drawer});
+            require Org::Element::ScheduleTimestamp;
+            $el = Org::Element::ScheduleTimestamp->new(
+                document=>$doc, raw=>$+{schedule_timestamp});
         }
+        $el->parent($parent);
+        $parent->children([]) if !$parent->children;
+        push @{ $parent->children }, $el;
+        $self->handler->($self, "element", {element=>$el})
+            if $el && $self->handler;
+        $el = undef;
     }
 
     # remaining text
@@ -187,31 +200,6 @@ sub _parse_text {
     $hl->children([]) if !$hl->children;
     push @{$hl->children}, $el;
     $self->handler->($self, "element", {element=>$el}) if $self->handler;
-}
-
-sub _parse_timestamp_pair {
-    my ($self, $raw) = @_;
-    warn "Sorry, parsing timestamp pair ($raw) not yet implemented";
-}
-
-sub _parse_timestamp {
-    my ($self, $raw) = @_;
-    warn "Sorry, parsing timestamp ($raw) not yet implemented";
-}
-
-sub _parse_schedule_timestamp_pair {
-    my ($self, $raw) = @_;
-    warn "Sorry, parsing schedule timestamp pair ($raw) not yet implemented";
-}
-
-sub _parse_schedule_timestamp {
-    my ($self, $raw) = @_;
-    state $re = qr/^<(.+)>$/;
-    $raw =~ $re or die "Invalid syntax in timestamp: $raw";
-    my $args = {element => "schedule timestamp", raw=>$raw};
-    $args->{timestamp} = __parse_timestamp($1)
-        or die "Can't parse timestamp $1";
-    $self->handler->($self, "element", $args);
 }
 
 sub __split_tags {
