@@ -75,6 +75,8 @@ has progress => (is => 'rw');
 
 =head1 METHODS
 
+=for Pod::Coverage element_as_string BUILD
+
 =head2 new(attr => val, ...)
 
 =head2 new(raw => STR, document => OBJ)
@@ -85,6 +87,7 @@ directly by filling out priority, title, etc).
 =cut
 
 sub BUILD {
+    require Org::Parser;
     my ($self, $args) = @_;
     my $raw = $args->{raw};
     my $doc = $self->document;
@@ -123,7 +126,7 @@ sub BUILD {
     }
 }
 
-sub as_string {
+sub element_as_string {
     my ($self) = @_;
     return $self->_raw if $self->_raw;
     join("",

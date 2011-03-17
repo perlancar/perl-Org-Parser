@@ -35,19 +35,44 @@ has _raw => (is => 'rw');
 
 =head1 METHODS
 
+=head2 $el->element_as_string() => STR
+
+Return the string representation of element. The default implementation will
+just try to return _raw or empty string. Subclasses might want to override for
+more appropriate representation.
+
+=cut
+
+sub element_as_string {
+    my ($self) = @_;
+    return $self->_raw if defined $self->_raw;
+    "";
+}
+
+=head2 $el->children_as_string() => STR
+
+Return the string representation of children elements. The default
+implementation will just try to concatenate as_string() for each child.
+
+=cut
+
+sub children_as_string {
+    my ($self) = @_;
+    return "" unless $self->children;
+    join "", map { $_->as_string } @{ $self->children };
+}
+
 =head2 $el->as_string() => STR
 
-Return the string representation of element. If there is _raw value defined,
-simply return it. Otherwise, will concatenate as_string() from all of its
-children. Child classes might want to override for better representation.
+Return the string representation of element. The default implementation will
+just concatenate element_as_string() and children_as_string(). Subclasses might
+want to override for more appropriate representation.
 
 =cut
 
 sub as_string {
     my ($self) = @_;
-    return $self->_raw if defined $self->_raw;
-    return "" unless $self->children;
-    join "", map { $_->as_string } @{ $self->children };
+    ($self->element_as_string // "") . ($self->children_as_string // "");
 }
 
 1;

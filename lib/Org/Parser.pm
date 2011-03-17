@@ -34,20 +34,22 @@ sub __get_arg_val {
     }
 }
 
-# parse block'ish elements: setting, blocks, header argument
+# parse blocky elements: setting, blocks, header argument
 sub _parse {
     my ($self, $str, $doc) = @_;
+    $log->tracef('-> _parse(%s)', $str);
 
     $doc //= Org::Document->new;
-    if (!$self->_last_headlines) { $self->_last_headlines([undef]) }
+    if (!$self->_last_headline ) { $self->_last_headline ($doc)   }
+    if (!$self->_last_headlines) { $self->_last_headlines([$doc]) }
 
     state $re  = qr/(?<block>    $ls_re \#\+BEGIN_(?<sname>\w+)
-                                 (?:.|\R)*
+                                 (?:.|\R)*?
                                  \R\#\+END_\k<sname> $le_re) |
                    (?<setting>   $ls_re \#\+.* $le_re) |
                    (?<headline>  $ls_re \*+[ \t].* $le_re) |
                    (?<drawer>    $ls_re [ \t]* :(?<drawer_name> \w+): [ \t]*\R
-                                 .*?
+                                 (?:.|\R)*?
                                  $ls_re [ \t]* :END:) |
                    (?<other>     [^#*:]+ | # to lump things more
                                  .+?)
@@ -66,7 +68,7 @@ sub _parse {
             @other = ();
         }
 
-        my $parent = $self->_last_headline // $doc;
+        my $parent = $self->_last_headline;
         my $el;
         if ($+{block}) {
             require Org::Element::Block;
@@ -74,7 +76,7 @@ sub _parse {
                 document=>$doc, raw=>$+{block});
         } elsif ($+{setting}) {
             require Org::Element::Setting;
-            $el = Org::Element::Block->new(
+            $el = Org::Element::Setting->new(
                 document=>$doc, raw=>$+{setting});
         } elsif ($+{drawer}) {
             my $d = uc($+{drawer_name});
@@ -91,10 +93,8 @@ sub _parse {
             require Org::Element::Headline;
             $el = Org::Element::Headline->new(
                 document=>$doc, raw=>$+{headline});
-            if ($el->level > 1 &&
-                    ($parent = $self->_last_headlines->[$el->level - 1])) {
-            } else {
-                $parent = $doc;
+            for (my $i=$el->level-1; $i>=0; $i--) {
+                $parent = $self->_last_headlines->[$i] and last;
             }
             $self->_last_headlines->[$el->level] = $el;
             $self->_last_headline($el);
@@ -109,17 +109,18 @@ sub _parse {
 
     # remaining text
     if (@other) {
-        $self->_parse_inline(join "", @other);
+        $self->_parse_inline(join("", @other), $doc);
     }
     @other = ();
 
+    $log->tracef('<- _parse()');
     $doc;
 }
 
-# parse inline elements: timestamps, markups, ...
+# parse inline elements: timestamps, text (with markups), ...
 sub _parse_inline {
-    my ($self, $raw) = @_;
-    $log->tracef("-> _parse2(%s)", $raw);
+    my ($self, $str, $doc) = @_;
+    $log->tracef("-> _parse_inline(%s)", $str);
     state $re = qr/(?<timestamp_pair>          \[\d{4}-\d{2}-\d{2} \s[^\]]*\]--
                                                \[\d{4}-\d{2}-\d{2} \s[^\]]*\]) |
                    (?<timestamp>               \[\d{4}-\d{2}-\d{2} \s[^\]]*\]) |
@@ -130,14 +131,14 @@ sub _parse_inline {
                                                .+?)
                   /sxi;
     my @other;
-    while ($raw =~ /$re/g) {
-        $log->tracef("match: %s", \%+);
+    while ($str =~ /$re/g) {
+        $log->tracef("match inline: %s", \%+);
         if (defined $+{other}) {
             push @other, $+{other};
             next;
         } else {
             if (@other) {
-                $self->_parse_text(join "", @other);
+                $self->_parse_text(join("", @other), $doc);
             }
             @other = ();
         }
@@ -158,13 +159,12 @@ sub _parse_inline {
 
     # remaining text
     if (@other) {
-        $self->_parse_text(join "", @other);
+        $self->_parse_text(join("", @other), $doc);
     }
     @other = ();
-}
 
-# XXX parse3? parse2? links, markups (*bold*, _underline_, /italic/, ~verbatim~,
-# =code=, +strike+)
+    $log->tracef('<- _parse_inline()');
+}
 
 sub __parse_timestamp {
     require DateTime;
@@ -179,8 +179,14 @@ sub __parse_timestamp {
 }
 
 sub _parse_text {
-    my ($self, $raw) = @_;
-    $self->handler->($self, "element", {element=>"text", raw=>$raw});
+    require Org::Element::Text;
+    my ($self, $str, $doc) = @_;
+    my $hl = $self->_last_headline;
+    $log->tracef("-> _parse_text(%s)", $str);
+    my $el = Org::Element::Text->new(raw => $str, document=>$doc, parent=>$hl);
+    $hl->children([]) if !$hl->children;
+    push @{$hl->children}, $el;
+    $self->handler->($self, "element", {element=>$el}) if $self->handler;
 }
 
 sub _parse_timestamp_pair {
@@ -208,112 +214,8 @@ sub _parse_schedule_timestamp {
     $self->handler->($self, "element", $args);
 }
 
-sub _parse_drawer {
-    my ($self, $raw) = @_;
-    $log->tracef("-> _parse_drawer(%s)", $raw);
-    state $re = qr/\A\s*:(\w+):\s*\R
-                   ((?:.|\R)*?)    # content
-                   [ \t]*:END:\z   # closing
-                  /xi;
-    $raw =~ $re or die "Invalid syntax in drawer: $raw";
-    my ($d, $rc) = (uc($1), $2);
-    my $args = {element=>"drawer", drawer=>$d, raw=>$raw, raw_content=>$rc};
-    $d ~~ @{ $self->drawers } or die "Unknown drawer name $d: $raw";
-
-    if ($d eq 'PROPERTIES') {
-        $args->{properties} = {};
-        for (split /\R/, $rc) {
-            next unless /\S/;
-            die "Invalid line in PROPERTIES drawer: $_"
-                unless /^\s*:(\w+):\s+(.+?)\s*$/;
-            $args->{properties}{$1} = $2;
-        }
-    }
-
-    $self->handler->($self, "element", $args);
-}
-
 sub __split_tags {
     [$_[0] =~ /:([^:]+)/g];
-}
-
-sub _parse_setting {
-    my ($self, $raw) = @_;
-    $log->tracef("-> _parse_setting(%s)", $raw);
-    # XXX what's the syntax for several settings in a single line? for now we
-    # assume one setting per line
-    state $re = qr/\A\#\+(\w+): \s+ (.+?) \s* \R?\z/x;
-    $raw =~ $re or die "Invalid setting syntax: $raw";
-    my ($setting, $raw_arg) = (uc($1), $2);
-    my $args = {element=>'setting', setting=>$setting,
-                raw_arg=>$raw_arg, raw=>$raw};
-    if      ($setting eq 'ARCHIVE') {
-    } elsif ($setting eq 'AUTHOR') {
-    } elsif ($setting eq 'BABEL') {
-    } elsif ($setting eq 'CALL') {
-    } elsif ($setting eq 'CAPTION') {
-    } elsif ($setting eq 'BIND') {
-    } elsif ($setting eq 'CATEGORY') {
-    } elsif ($setting eq 'COLUMNS') {
-    } elsif ($setting eq 'CONSTANTS') {
-    } elsif ($setting eq 'DATE') {
-    } elsif ($setting eq 'DESCRIPTION') {
-    } elsif ($setting eq 'DRAWERS') {
-        my $d = [split /\s+/, $raw_arg];
-        $args->{drawers} = $d;
-        for (@$d) {
-            push @{ $self->drawers }, $_ unless $_ ~~ @{ $self->drawers };
-        }
-    } elsif ($setting eq 'EMAIL') {
-    } elsif ($setting eq 'EXPORT_EXCLUDE_TAGS') {
-    } elsif ($setting eq 'EXPORT_SELECT_TAGS') {
-    } elsif ($setting eq 'FILETAGS') {
-        $raw_arg =~ /^$tags_re$/ or
-            die "Invalid argument syntax for FILEARGS: $raw";
-        $args->{tags} = __split_tags($raw_arg);
-    } elsif ($setting eq 'INCLUDE') {
-    } elsif ($setting eq 'INDEX') {
-    } elsif ($setting eq 'KEYWORDS') {
-    } elsif ($setting eq 'LABEL') {
-    } elsif ($setting eq 'LANGUAGE') {
-    } elsif ($setting eq 'LATEX_HEADER') {
-    } elsif ($setting eq 'LINK') {
-    } elsif ($setting eq 'LINK_HOME') {
-    } elsif ($setting eq 'LINK_UP') {
-    } elsif ($setting eq 'OPTIONS') {
-    } elsif ($setting eq 'PRIORITIES') {
-        my $p = [split /\s+/, $raw_arg];
-        $args->{priorities} = $p;
-        $self->priorities($p);
-    } elsif ($setting eq 'PROPERTY') {
-        $raw_arg =~ /(\w+)\s+($arg_val_re)$/
-            or die "Invalid argument for PROPERTY setting, ".
-                "please use 'NAME VALUE': $raw_arg";
-        $args->{property_name} = $1;
-        $args->{property_value} = __get_arg_val($2);
-    } elsif ($setting =~ /^(SEQ_TODO|TODO|TYP_TODO)$/) {
-        my $done;
-        my @args = split /\s+/, $raw_arg;
-        $args->{states} = \@args;
-        for (my $i=0; $i<@args; $i++) {
-            my $arg = $args[$i];
-            if ($arg eq '|') { $done++; next }
-            $done++ if !$done && @args > 1 && $i == @args-1;
-            my $ary = $done ? $self->done_states : $self->todo_states;
-            push @$ary, $arg unless $arg ~~ @$ary;
-        }
-    } elsif ($setting eq 'SETUPFILE') {
-    } elsif ($setting eq 'STARTUP') {
-    } elsif ($setting eq 'STYLE') {
-    } elsif ($setting eq 'TAGS') {
-    } elsif ($setting eq 'TBLFM') {
-    } elsif ($setting eq 'TEXT') {
-    } elsif ($setting eq 'TITLE') {
-    } elsif ($setting eq 'XSLT') {
-    } else {
-        die "Unknown setting $setting: $raw";
-    }
-    $self->handler->($self, "element", $args);
 }
 
 sub parse {

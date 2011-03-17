@@ -7,7 +7,7 @@ extends 'Org::Element::Base';
 
 =head1 ATTRIBUTES
 
-=head2 name => OBJ
+=head2 name => STR
 
 Block name. For example, #+begin_src ... #+end_src is an 'SRC' block.
 
@@ -40,7 +40,11 @@ has raw_content => (is => 'rw');
 
 =head1 METHODS
 
-=head2 new(raw => STR, parser => OBJ)
+=for Pod::Coverage element_as_string
+
+=head2 new(attr => val, ...)
+
+=head2 new(raw => STR, document => OBJ)
 
 Create a new headline item from parsing raw string. (You can also create
 directly by filling out priority, title, etc).
@@ -50,8 +54,9 @@ directly by filling out priority, title, etc).
 sub BUILD {
     my ($self, $args) = @_;
     my $raw = $args->{raw};
-    my $doc = $self->document;
     if (defined $raw) {
+        my $doc = $self->document
+            or die "Please specify document when specifying raw";
         state $re = qr/\A\#\+(?:BEGIN_(
                                ASCII|CENTER|COMMENT|EXAMPLE|HTML|
                                LATEX|QUOTE|SRC|VERSE
@@ -68,7 +73,7 @@ sub BUILD {
     }
 }
 
-sub as_string {
+sub element_as_string {
     my ($self) = @_;
     return $self->_raw if $self->_raw;
     join("",
