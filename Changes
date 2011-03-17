@@ -1,5 +1,28 @@
 Revision history for Org-Parser
 
+0.02    2011-03-17
+
+        [INCOMPATIBLE CHANGES]
+
+        Refactoring: parser now returns Org::Document instance, which contains
+        Org::Element instances. handler sub parameter changed.
+
+        [ENHANCEMENTS]
+
+        Parse tables.
+
+        Headline titles can now contain inline elements (normal text as well as
+        other elements, such as timestamps, etc).
+
+        Add another example script: dump-org-structure.
+
+        Recognize blocks: HTML, LATEX, ASCII.
+
+        [FIXES]
+
+        Setting/block/drawer/property names are case-insensitive.
+
+
 0.01    2011-03-16
 
         First release.
