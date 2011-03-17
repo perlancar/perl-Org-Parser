@@ -2,15 +2,13 @@ package Org::Parser;
 # ABSTRACT: Parse Org documents
 
 use 5.010;
-use strict;
-use warnings;
+use Moo;
 use Log::Any '$log';
 
 use File::Slurp;
 use Org::Document;
 use Scalar::Util qw(blessed);
 
-use Moo;
 has handler         => (is => 'rw');
 
 has _last_headlines => (is => 'rw'); #[undef, $last_lvl1_h, $last_lvl2_h, ...]

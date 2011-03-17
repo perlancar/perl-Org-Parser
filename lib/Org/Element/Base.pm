@@ -2,9 +2,6 @@ package Org::Element::Base;
 # ABSTRACT: Base class for element of Org document
 
 use 5.010;
-use strict;
-use warnings;
-
 use Moo;
 
 =head1 ATTRIBUTES

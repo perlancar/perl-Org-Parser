@@ -2,11 +2,6 @@ package Org::Element::Block;
 # ABSTRACT: Represent Org block
 
 use 5.010;
-use strict;
-use warnings;
-
-use Org::Element::Text;
-
 use Moo;
 extends 'Org::Element::Base';
 
@@ -66,43 +61,22 @@ sub BUILD {
                        \#\+\w+\R?\z    # closing
                       /xi;
         $raw =~ $re or die "Unknown block or invalid syntax: $raw";
-        $self->handler->($self, "element", {
-            element=>"block", block=>uc($1),
-            raw_arg=>$2//"", raw_content=>$3,
-        raw=>$raw});
-}
-
-        state $re = qr/\A(\*+)\s(.*?)(?:\s+($Org::Parser::tags_re))?\s*\R?\z/x;
-        $raw =~ $re or die "Invalid headline syntax: $raw";
         $self->_raw($raw);
-        my ($bullet, $title, $tags) = ($1, $2, $3);
-        $self->level(length($bullet));
-        $self->tags(Org::Parser::__split_tags($tags)) if $tags;
-
-        # XXX cache re
-        my $todo_kw_re = "(?:".
-            join("|", map {quotemeta}
-                     @{$doc->todo_states}, @{$doc->done_states}) . ")";
-        if ($title =~ s/^($todo_kw_re)\s+//) {
-            my $state = $1;
-            $self->is_todo(1);
-            $self->todo_state($state);
-            $self->is_done(1) if $state ~~ @{ $doc->done_states };
-
-            my $prio_re = "(?:".
-                join("|", map {quotemeta} @{$doc->priorities}) . ")";
-            if ($title =~ s/\[#($prio_re)\]\s*//) {
-                $self->priority($1);
-            }
-        }
-
-        $self->title(Org::Element::Text->new(raw => $title, document=>$doc));
+        $self->name(uc($1));
+        $self->raw_arg($2);
+        $self->raw_content($3);
     }
 }
 
 sub as_string {
     my ($self) = @_;
-
+    return $self->_raw if $self->_raw;
+    join("",
+         "#+BEGIN_".uc($self->name),
+         defined($self->raw_arg) ? " ".$self->raw_arg : "",
+         "\n",
+         $self->raw_content,
+         "#+END_".uc($self->name)."\n");
 }
 
 1;

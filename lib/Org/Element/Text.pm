@@ -2,9 +2,6 @@ package Org::Element::Text;
 # ABSTRACT: Represent normal text
 
 use 5.010;
-use strict;
-use warnings;
-
 use Moo;
 extends 'Org::Element::Base';
 

@@ -2,9 +2,6 @@ package Org::Element::Headline;
 # ABSTRACT: Represent Org headline
 
 use 5.010;
-use strict;
-use warnings;
-
 use Moo;
 extends 'Org::Element::Base';
 
@@ -78,7 +75,9 @@ has progress => (is => 'rw');
 
 =head1 METHODS
 
-=head2 new(raw => STR, parser => OBJ)
+=head2 new(attr => val, ...)
+
+=head2 new(raw => STR, document => OBJ)
 
 Create a new headline item from parsing raw string. (You can also create
 directly by filling out priority, title, etc).
