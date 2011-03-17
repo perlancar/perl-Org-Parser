@@ -42,26 +42,25 @@ sub get_due_todos {
         $orgp->handler(
             sub {
                 my ($orgp, $ev, $args) = @_;
-                return unless $ev eq 'element' &&
-                    (($args->{element} eq 'headline' &&
-                         $args->{is_todo} && !$args->{is_done})
-                         ||
-                             ($args->{element} eq 'schedule timestamp'));
-                if ($args->{is_todo}) {
-                    $curtodo = $args;
+                return unless $ev eq 'element';
+                my $el      = $args->{element};
+                my $is_hl   = $el->isa('Org::Element::Headline');
+                return unless $is_hl && $el->is_todo && !$el->is_done
+                    || $el->isa('Org::Element::ScheduleTimestamp');
+                if ($is_hl && $el->is_todo) {
+                    $curtodo = $el;
                 }
 
-                return unless $args->{element} eq 'schedule timestamp'
-                    && $curtodo;
-                my $days = int(($args->{timestamp}->epoch-$today->epoch)/86400);
+                return unless !$is_hl && $curtodo;
+                my $days = int(($el->datetime->epoch-$today->epoch)/86400);
                 if ($days <= $args{days_before}) {
                     push @res,
                         sprintf("%s: %s (%s)",
                                 $days == 0 ? "today" :
                                     $days < 0 ? abs($days)." days ago" :
                                         "in $days days",
-                                $curtodo->{title},
-                                $args->{timestamp}->ymd);
+                                $curtodo->title->as_string,
+                                $el->datetime->ymd);
                 }
                 $curtodo = undef;
             });
