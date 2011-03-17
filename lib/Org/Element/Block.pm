@@ -40,7 +40,7 @@ has raw_content => (is => 'rw');
 
 =head1 METHODS
 
-=for Pod::Coverage element_as_string
+=for Pod::Coverage element_as_string BUILD
 
 =head2 new(attr => val, ...)
 

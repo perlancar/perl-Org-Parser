@@ -24,7 +24,7 @@ has _dummy => (is => 'rw'); # workaround Moo bug
 
 =head1 METHODS
 
-=for Pod::Coverage as_string
+=for Pod::Coverage as_string BUILD
 
 =head2 new(attr => val, ...)
 
