@@ -48,7 +48,7 @@ children.
 
 sub as_string {
     my ($self) = @_;
-    return $self->raw if defined $self->raw;
+    return $self->_raw if defined $self->_raw;
     return "" unless $self->children;
     join "", map { $_->as_string } @{ $self->children };
 }

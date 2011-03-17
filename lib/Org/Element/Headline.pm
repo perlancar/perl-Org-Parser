@@ -5,14 +5,12 @@ use 5.010;
 use strict;
 use warnings;
 
-use Org::Element::Text;
-
 use Moo;
 extends 'Org::Element::Base';
 
 =head1 ATTRIBUTES
 
-=head2 title => OBJ
+=head2 level => INT
 
 Level of headline (e.g. 1, 2, 3). Corresponds to the number of bullet stars.
 
@@ -69,7 +67,13 @@ TODO state.
 
 has todo_state => (is => 'rw');
 
-# XXX percentage
+=head2 progress => STR
+
+Progress.
+
+=cut
+
+has progress => (is => 'rw');
 
 
 =head1 METHODS
@@ -110,13 +114,28 @@ sub BUILD {
             }
         }
 
+        use Org::Element::Text;
         $self->title(Org::Element::Text->new(raw => $title, document=>$doc));
+    }
+
+    if (!ref($self->title)) {
+        $self->title(Org::Element::Text->new(
+            raw=>$self->title, document=>$doc));
     }
 }
 
 sub as_string {
     my ($self) = @_;
-
+    return $self->_raw if $self->_raw;
+    join("",
+         "*" x $self->level,
+         " ",
+         $self->is_todo ? $self->todo_state." " : "",
+         $self->priority ? "[#".$self->priority."] " : "",
+         $self->title->as_string,
+         $self->tags && @{$self->tags} ?
+             "  :".join(":", @{$self->tags}).":" : "",
+         "\n");
 }
 
 1;

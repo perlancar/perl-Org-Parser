@@ -319,24 +319,6 @@ sub _parse_setting {
     $self->handler->($self, "element", $args);
 }
 
-sub _parse_block {
-    my ($self, $raw) = @_;
-    $log->tracef("-> _parse_block(%s)", $raw);
-    state $re = qr/\A\#\+(?:BEGIN_(
-                           ASCII|CENTER|COMMENT|EXAMPLE|HTML|
-                           LATEX|QUOTE|SRC|VERSE
-                   ))
-                   (?:\s+(\S.*))\R # arg
-                   ((?:.|\R)*)     # content
-                   \#\+\w+\R?\z    # closing
-                  /xi;
-    $raw =~ $re or die "Invalid/unknown block: $raw";
-    $self->handler->($self, "element", {
-        element=>"block", block=>uc($1),
-        raw_arg=>$2//"", raw_content=>$3,
-        raw=>$raw});
-}
-
 sub parse {
     my ($self, $arg) = @_;
     die "Please specify a defined argument to parse()\n" unless defined($arg);

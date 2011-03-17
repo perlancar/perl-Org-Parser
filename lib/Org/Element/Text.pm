@@ -8,7 +8,18 @@ use warnings;
 use Moo;
 extends 'Org::Element::Base';
 
-has _dummy => (is => 'rw'); # workaround for Moo bug [RT#65636]
+=head1 ATTRIBUTES
+
+=head2 text_style
+
+undef/''=normal, I=italic, B=bold, U=underline, S=strikethrough, V=verbatim
+
+=cut
+
+has text_style => (is => 'rw');
+
+
+=head1 METHODS
 
 =for Pod::Coverage BUILD
 
