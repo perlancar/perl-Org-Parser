@@ -93,7 +93,6 @@ sub _parse {
             require Org::Element::Headline;
             $el = Org::Element::Headline->new(
                 document=>$doc, raw=>$+{headline});
-            my $parent;
             if ($el->level > 1 &&
                     ($parent = $self->_last_headlines->[$el->level - 1])) {
             } else {

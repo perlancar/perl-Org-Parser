@@ -22,7 +22,11 @@ sub dump_element {
 
     print "  " x $indent_level;
     my $type = ref($el);
-    print $type, ": ";
+    print $type;
+    if ($type eq 'Org::Element::Headline') {
+        print " (level=".$el->level.")";
+    }
+    print ": ";
     my $content = printable elide($el->_raw // $el->as_string, 40);
     print "$content\n";
 

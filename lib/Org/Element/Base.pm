@@ -42,7 +42,7 @@ has _raw => (is => 'rw');
 
 Return the string representation of element. If there is _raw value defined,
 simply return it. Otherwise, will concatenate as_string() from all of its
-children.
+children. Child classes might want to override for better representation.
 
 =cut
 
