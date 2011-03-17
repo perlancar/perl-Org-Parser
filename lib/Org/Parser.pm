@@ -318,6 +318,8 @@ Including custom TODO keywords, custom priorities
 
 =item * drawers & properties
 
+=item * tables
+
 =back
 
 
