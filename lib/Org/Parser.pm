@@ -22,7 +22,7 @@ my $tags_re = qr/:(?:[^:]+:)+/;
 my $ls_re   = qr/(?:(?<=[\015\012])|\A)/;
 my $le_re   = qr/(?:\R|\z)/;
 
-# parse blocks + settings + headlines
+# parse block'ish elements: setting, blocks,
 sub _parse {
     my ($self) = @_;
     my $raw = $self->raw;
@@ -35,7 +35,7 @@ sub _parse {
                    (?<headline>  $ls_re \*+[ \t].* $le_re) |
                    (?<other>     [^#*]+ | # to lump things more
                                  .+?)
-                  /mx;
+                  /mxi;
 
     my @other;
     while ($raw =~ /$re/g) {
@@ -81,7 +81,7 @@ sub _parse2 {
                                                $ls_re [ \t]* :END:) |
                    (?<other>                   [^\[<:]+ | # to lump things more
                                                .+?)
-                  /sx;
+                  /sxi;
     my @other;
     while ($raw =~ /$re/g) {
         $log->tracef("match: %s", \%+);
@@ -167,9 +167,9 @@ sub _parse_drawer {
     state $re = qr/\A\s*:(\w+):\s*\R
                    ((?:.|\R)*?)    # content
                    [ \t]*:END:\z   # closing
-                  /x;
+                  /xi;
     $raw =~ $re or die "Invalid syntax in drawer: $raw";
-    my ($d, $rc) = ($1, $2);
+    my ($d, $rc) = (uc($1), $2);
     my $args = {element=>"drawer", drawer=>$d, raw=>$raw, raw_content=>$rc};
     $d ~~ @{ $self->drawers } or die "Unknown drawer name $d: $raw";
 
@@ -197,7 +197,7 @@ sub _parse_setting {
     # assume one setting per line
     state $re = qr/\A\#\+(\w+): \s+ (.+?) \s* \R?\z/x;
     $raw =~ $re or die "Invalid setting syntax: $raw";
-    my ($setting, $raw_arg) = ($1, $2);
+    my ($setting, $raw_arg) = (uc($1), $2);
     my $args = {element=>'setting', setting=>$setting,
                 raw_arg=>$raw_arg, raw=>$raw};
     if      ($setting eq 'ARCHIVE') {
@@ -269,10 +269,10 @@ sub _parse_block {
                    (?:\s+(\S.*))\R # arg
                    ((?:.|\R)*)     # content
                    \#\+\w+\R?\z    # closing
-                  /x;
+                  /xi;
     $raw =~ $re or die "Invalid/unknown block: $raw";
     $self->handler->($self, "element", {
-        element=>"block", block=>$1,
+        element=>"block", block=>uc($1),
         raw_arg=>$2//"", raw_content=>$3,
         raw=>$raw});
 }

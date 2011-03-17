@@ -39,13 +39,14 @@ _
     dies => 1,
 );
 
+# also checks case-sensitiveness
 test_parse_setting(
     name => 'setting: todo',
     doc  => <<'_',
 #+TODO: A B | C C2
-#+TODO: D
-#+TODO: | E
-#+TODO: F G H
+#+todo: D
+#+Todo: | E
+#+tOdO: F G H
 _
     num  => 4,
     test_after_parse => sub {
@@ -101,12 +102,13 @@ _
     dies => 1,
 );
 
+# also checks case-sensitiveness
 test_parse_setting(
     name => 'block: BEGIN_EXAMPLE + END_EXAMPLE',
     doc  => <<'_',
 #+BEGIN_EXAMPLE -t -w 40
 #+INSIDE
-#+END_EXAMPLE
+#+end_EXAMPLE
 _
     num  => 1,
     test_after_parse => sub {
