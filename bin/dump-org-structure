@@ -27,7 +27,8 @@ sub dump_element {
         print " (level=".$el->level.")";
     }
     print ": ";
-    my $content = printable elide($el->_raw // $el->as_string, 40);
+    my $content = printable elide($el->_raw // $el->as_string,
+                                  80-2*$indent_level-length($type)-2);
     print "$content\n";
 
     if ($el->children) {
