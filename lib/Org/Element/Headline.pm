@@ -23,13 +23,13 @@ L<Org::Element::Text> representing the headline title
 
 has title => (is => 'rw');
 
-=head2 priority => STR
+=head2 todo_priority => STR
 
 String (optional) representing priority.
 
 =cut
 
-has priority => (is => 'rw');
+has todo_priority => (is => 'rw');
 
 =head2 tags => ARRAY
 
@@ -112,7 +112,7 @@ sub BUILD {
             my $prio_re = "(?:".
                 join("|", map {quotemeta} @{$doc->priorities}) . ")";
             if ($title =~ s/\[#($prio_re)\]\s*//) {
-                $self->priority($1);
+                $self->todo_priority($1);
             }
         }
 
@@ -133,7 +133,7 @@ sub element_as_string {
          "*" x $self->level,
          " ",
          $self->is_todo ? $self->todo_state." " : "",
-         $self->priority ? "[#".$self->priority."] " : "",
+         $self->todo_priority ? "[#".$self->todo_priority."] " : "",
          $self->title->as_string,
          $self->tags && @{$self->tags} ?
              "  :".join(":", @{$self->tags}).":" : "",

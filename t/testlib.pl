@@ -8,17 +8,25 @@ sub test_parse {
     my %args = @_;
 
     subtest $args{name} => sub {
-        my @bs;
+        my @elems;
         my $orgp = Org::Parser->new();
         if ($args{handler}) {
             $orgp->handler($args{handler});
         } elsif ($args{filter_elements}) {
-            my ($orgp, $ev, $args) = @_;
-            return unless $ev eq 'element' &&
-                $args->{element} =~ /^(block|setting)$/;
-                push @bs, $args;
-            }
-        );
+            $orgp->handler(
+                sub {
+                    my ($orgp, $ev, $args) = @_;
+                    return unless $ev eq 'element';
+                    my $el     = $args->{element};
+                    my $eltype = ref($el);
+                    if (ref($args{filter_elements}) eq 'Regexp') {
+                        return unless $eltype =~ $args{filter_elements};
+                    } else {
+                        return unless $eltype eq $args{filter_elements};
+                    }
+                    push @elems, $el;
+                });
+        }
 
         my $res;
         eval {
@@ -33,12 +41,14 @@ sub test_parse {
         }
 
         if (defined $args{num}) {
-            is(scalar(@bs), $args{num}, "num=$args{num}");
+            is(scalar(@elems), $args{num}, "num=$args{num}");
         }
 
         if ($args{test_after_parse}) {
             $args{test_after_parse}->(parser=>$orgp, result=>$res,
-                                      elements=>\@f);
+                                      elements=>\@elems);
         }
     };
 }
+
+1;
