@@ -39,7 +39,7 @@ sub _parse {
     my ($self, $str, $doc) = @_;
     $log->tracef('-> _parse(%s)', $str);
 
-    $doc //= Org::Document->new;
+    $doc //= Org::Document->new(_parser => $self);
     if (!$self->_last_headline ) { $self->_last_headline ($doc)   }
     if (!$self->_last_headlines) { $self->_last_headlines([$doc]) }
 
@@ -48,10 +48,11 @@ sub _parse {
                                  \R\#\+END_\k<sname> $le_re) |
                    (?<setting>   $ls_re \#\+.* $le_re) |
                    (?<headline>  $ls_re \*+[ \t].* $le_re) |
+                   (?<table>     (?: $ls_re [ \t]* \| [ \t]* \S.* $le_re)+) |
                    (?<drawer>    $ls_re [ \t]* :(?<drawer_name> \w+): [ \t]*\R
                                  (?:.|\R)*?
                                  $ls_re [ \t]* :END:) |
-                   (?<other>     [^#*:]+ | # to lump things more
+                   (?<other>     [^#*:|]+ | # to lump things more
                                  .+?)
                   /mxi;
 
@@ -63,7 +64,7 @@ sub _parse {
             next;
         } else {
             if (@other) {
-                $self->_parse_inline(join("", @other), $doc);
+                $self->parse_inline(join("", @other), $doc);
             }
             @other = ();
         }
@@ -78,6 +79,10 @@ sub _parse {
             require Org::Element::Setting;
             $el = Org::Element::Setting->new(
                 document=>$doc, raw=>$+{setting});
+        } elsif ($+{table}) {
+            require Org::Element::Table;
+            $el = Org::Element::Table->new(
+                document=>$doc, raw=>$+{table});
         } elsif ($+{drawer}) {
             my $d = uc($+{drawer_name});
             if ($d eq 'PROPERTIES') {
@@ -109,7 +114,7 @@ sub _parse {
 
     # remaining text
     if (@other) {
-        $self->_parse_inline(join("", @other), $doc);
+        $self->parse_inline(join("", @other), $doc);
     }
     @other = ();
 
@@ -117,16 +122,30 @@ sub _parse {
     $doc;
 }
 
-# parse inline elements: timestamps, text (with markups), ...
-sub _parse_inline {
-    my ($self, $str, $doc) = @_;
-    $log->tracef("-> _parse_inline(%s)", $str);
+=head2 $orgp->parse_inline($str, $doc[, $parent])
+
+Inline elements are elements that can be put under a heading, table cell,
+heading title, etc. these include normal text (and text with markups),
+timestamps, links, etc.
+
+Found elements will be added into $parent's children. If $parent is not
+specified, it will be set to $orgp->_last_headline (or, if undef, $doc).
+
+=cut
+
+sub parse_inline {
+    my ($self, $str, $doc, $parent) = @_;
+    $parent //= $self->_last_headline // $doc;
+
+    $log->tracef("-> parse_inline(%s)", $str);
     state $re = qr/(?<timestamp_pair>          \[\d{4}-\d{2}-\d{2} \s[^\]]*\]--
                                                \[\d{4}-\d{2}-\d{2} \s[^\]]*\]) |
                    (?<timestamp>               \[\d{4}-\d{2}-\d{2} \s[^\]]*\]) |
                    (?<schedule_timestamp_pair> <\d{4}-\d{2}-\d{2}  \s[^>]*>--
                                                <\d{4}-\d{2}-\d{2}  \s[^>]*>) |
                    (?<schedule_timestamp>      <\d{4}-\d{2}-\d{2}  \s[^>]*>) |
+                   # link
+                   # (marked up) text
                    (?<other>                   [^\[<]+ | # to lump things more
                                                .+?)
                   /sxi;
@@ -138,13 +157,12 @@ sub _parse_inline {
             next;
         } else {
             if (@other) {
-                $self->_parse_text(join("", @other), $doc);
+                $self->_parse_text(join("", @other), $doc, $parent);
             }
             @other = ();
         }
 
         my $el;
-        my $parent = $self->_last_headline;
         if      ($+{timestamp_pair}) {
             require Org::Element::TimestampPair;
             $el = Org::Element::TimestampPair->new(
@@ -172,11 +190,11 @@ sub _parse_inline {
 
     # remaining text
     if (@other) {
-        $self->_parse_text(join("", @other), $doc);
+        $self->_parse_text(join("", @other), $doc, $parent);
     }
     @other = ();
 
-    $log->tracef('<- _parse_inline()');
+    $log->tracef('<- parse_inline()');
 }
 
 sub __parse_timestamp {
@@ -193,12 +211,13 @@ sub __parse_timestamp {
 
 sub _parse_text {
     require Org::Element::Text;
-    my ($self, $str, $doc) = @_;
-    my $hl = $self->_last_headline;
+    my ($self, $str, $doc, $parent) = @_;
+    $parent //= $self->_last_headline // $doc;
     $log->tracef("-> _parse_text(%s)", $str);
-    my $el = Org::Element::Text->new(raw => $str, document=>$doc, parent=>$hl);
-    $hl->children([]) if !$hl->children;
-    push @{$hl->children}, $el;
+    my $el = Org::Element::Text->new(
+        raw => $str, document=>$doc, parent=>$parent);
+    $parent->children([]) if !$parent->children;
+    push @{$parent->children}, $el;
     $self->handler->($self, "element", {element=>$el}) if $self->handler;
 }
 
@@ -379,7 +398,21 @@ Currently we assume it to be the same as the other two.
 
 =item * Parse repeats in schedule timestamps
 
-=item * Parse tables
+=item * Set table's caption, etc from settings
+
+ #+CAPTION: A long table
+ #+LABEL: tbl:long
+ |...|...|
+ |...|...|
+
+Question: is this still valid caption?
+
+ #+CAPTION: A long table
+ some text
+ #+LABEL: tbl:long
+ some more text
+ |...|...|
+ |...|...|
 
 =item * Parse text markups
 

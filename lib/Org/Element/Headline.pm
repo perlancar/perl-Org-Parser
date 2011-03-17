@@ -89,8 +89,9 @@ directly by filling out priority, title, etc).
 sub BUILD {
     require Org::Parser;
     my ($self, $args) = @_;
-    my $raw = $args->{raw};
-    my $doc = $self->document;
+    my $raw  = $args->{raw};
+    my $doc  = $self->document;
+    my $orgp = $doc->_parser // Org::Parser->new;
     if (defined $raw) {
         state $re = qr/\A(\*+)\s(.*?)(?:\s+($Org::Parser::tags_re))?\s*\R?\z/x;
         $raw =~ $re or die "Invalid headline syntax: $raw";
@@ -117,7 +118,9 @@ sub BUILD {
         }
 
         use Org::Element::Text;
-        $self->title(Org::Element::Text->new(raw => $title, document=>$doc));
+        my $title_el = Org::Element::Text->new();
+        $orgp->parse_inline($title, $doc, $title_el);
+        $self->title($title_el);
     }
 
     if (!ref($self->title)) {

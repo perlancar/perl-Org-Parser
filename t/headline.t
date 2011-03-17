@@ -84,4 +84,22 @@ _
     },
 );
 
+test_parse(
+    name => 'inline elements in headline title',
+    filter_elements => 'Org::Element::Headline',
+    doc  => <<'_',
+* this headline contains timestamp <2011-03-17 > as well as text
+_
+    num => 1,
+    test_after_parse => sub {
+        my (%args) = @_;
+        my $elems = $args{elements};
+        my $hl    = $elems->[0];
+        my $title = $hl->title;
+        isa_ok($title->children->[0], "Org::Element::Text");
+        isa_ok($title->children->[1], "Org::Element::ScheduleTimestamp");
+        isa_ok($title->children->[2], "Org::Element::Text");
+    },
+);
+
 done_testing();

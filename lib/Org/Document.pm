@@ -43,6 +43,8 @@ List of known drawer names. Default is [qw/CLOCK LOGBOOK PROPERTIES/].
 has drawers                 => (is => 'rw', default => sub{[
     qw/CLOCK LOGBOOK PROPERTIES/]});
 
+has _parser => (is => 'rw');
+
 1;
 __END__
 
