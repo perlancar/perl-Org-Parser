@@ -20,17 +20,20 @@ sub dump_element {
     my ($el, $indent_level) = @_;
     $indent_level //= 0;
 
-    print "  " x $indent_level;
+    my $line = "  " x $indent_level;
     my $type = ref($el);
-    $type =~ s/^Org::(Element|Document)(?:::|\z)//;
-    print $type;
-    if ($type eq 'Org::Element::Headline') {
-        print " (level=".$el->level.")";
+    $type =~ s/^Org::(?:Element::)?//;
+    $line .= "$type:";
+    # per-element important info
+    if ($type eq 'Headline') {
+        $line .= " lvl=".$el->level;
+        $line .= ", todo_state=".$el->todo_state if $el->todo_state;
+    } elsif ($type =~ /^(Schedule)?Timestamp$/) {
+        $line .= " dt=".$el->datetime;
     }
-    print ": ";
-    my $content = printable elide($el->_raw // $el->as_string,
-                                  80-2*$indent_level-length($type)-2);
-    print "$content\n";
+    $line .= " \"".
+        printable elide($el->_raw // $el->as_string, 80-length($line)-2);
+    say $line;
 
     if ($el->children) {
         dump_element($_, $indent_level+1) for @{ $el->children };
