@@ -22,6 +22,7 @@ sub dump_element {
 
     print "  " x $indent_level;
     my $type = ref($el);
+    $type =~ s/^Org::(Element|Document)(?:::|\z)//;
     print $type;
     if ($type eq 'Org::Element::Headline') {
         print " (level=".$el->level.")";
