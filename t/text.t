@@ -17,8 +17,8 @@ test_parse(
     doc  => <<'_',
 * just some heading, not bold*
 0. this is normal.
-*2. this is bold.*
-/4. this is italic./
+*2. this /is/ bold.*
+/4. this *is* italic./
 _6. this is underline._
 +8. this is strike-through.+
 =10. this is code.=
@@ -42,9 +42,9 @@ _
 
         is( $elems->[ 1]->as_string, "0. this is normal.\n",
             "normal as_string");
-        is( $elems->[ 2]->as_string, "*2. this is bold.*",
+        is( $elems->[ 2]->as_string, "*2. this /is/ bold.*",
             "bold as_string");
-        is( $elems->[ 4]->as_string, "/4. this is italic./",
+        is( $elems->[ 4]->as_string, "/4. this *is* italic./",
             "italic as string");
         is( $elems->[ 6]->as_string, "_6. this is underline._",
             "underline as_string");
