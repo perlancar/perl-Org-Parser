@@ -1,5 +1,19 @@
 Revision history for Org-Parser
 
+0.03    2011-03-18
+
+        [ENHANCEMENTS]
+
+        Parse text markups (bold, italic, etc).
+
+        bin/dump-org-structure outputs nicer format.
+
+        [FIXES]
+
+        Todo keyword can also be separated from title with \W (not just \s),
+        e.g. '* TODO/quit smoking'.
+
+
 0.02    2011-03-17
 
         [INCOMPATIBLE CHANGES]
