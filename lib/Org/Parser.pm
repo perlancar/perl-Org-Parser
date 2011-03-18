@@ -16,6 +16,8 @@ has _last_headline  => (is => 'rw');
 
 our $tags_re    = qr/:(?:[^:]+:)+/;
 our $ls_re      = qr/(?:(?<=[\015\012])|\A)/;
+our $sp_bef_re  = qr/(?:(?<=\s)|\A)/s;
+our $sp_aft_re  = qr/(?:(?=\s)|\z)/s;
 our $le_re      = qr/(?:\R|\z)/;
 our $arg_val_re = qr/(?: '(?<squote> [^']*)' |
                          "(?<dquote> [^"]*)" |
@@ -138,17 +140,24 @@ sub parse_inline {
     $parent //= $self->_last_headline // $doc;
 
     $log->tracef("-> parse_inline(%s)", $str);
-    state $re = qr/(?<timestamp_pair>          \[\d{4}-\d{2}-\d{2} \s[^\]]*\]--
+    state $re = qr!(?<timestamp_pair>          \[\d{4}-\d{2}-\d{2} \s[^\]]*\]--
                                                \[\d{4}-\d{2}-\d{2} \s[^\]]*\]) |
                    (?<timestamp>               \[\d{4}-\d{2}-\d{2} \s[^\]]*\]) |
                    (?<schedule_timestamp_pair> <\d{4}-\d{2}-\d{2}  \s[^>]*>--
                                                <\d{4}-\d{2}-\d{2}  \s[^>]*>) |
                    (?<schedule_timestamp>      <\d{4}-\d{2}-\d{2}  \s[^>]*>) |
                    # link
-                   # (marked up) text
-                   (?<other>                   [^\[<]+ | # to lump things more
+                   (?<marked_up_text>          $sp_bef_re
+                                               (?<markup> [*/+=~_])
+                                               (?: \S |                # 1-char
+                                                   \S(?:[^\n])*?\S??   # 1-line
+                                                                       # 2-line
+                                                                   )
+                                               \k<markup>)
+                                               $sp_aft_re |
+                   (?<other>                   [^\[<*/+=~_]+ | # fewer lumps
                                                .+?)
-                  /sxi;
+                  !sxi;
     my @other;
     while ($str =~ /$re/g) {
         $log->tracef("match inline: %s", \%+);
@@ -179,6 +188,10 @@ sub parse_inline {
             require Org::Element::ScheduleTimestamp;
             $el = Org::Element::ScheduleTimestamp->new(
                 document=>$doc, raw=>$+{schedule_timestamp});
+        } elsif ($+{marked_up_text}) {
+            require Org::Element::Text;
+            $el = Org::Element::Text->new(
+                document=>$doc, raw=>$+{marked_up_text});
         }
         $el->parent($parent);
         $parent->children([]) if !$parent->children;
@@ -306,6 +319,8 @@ Already implemented/parsed:
 
 =over 4
 
+=item * text & markups (bold, italic, etc)
+
 =item * in-buffer settings
 
 =item * blocks
@@ -415,8 +430,6 @@ Question: is this still valid caption?
  some more text
  |...|...|
  |...|...|
-
-=item * Parse text markups
 
 =item * Parse headline percentages
 
