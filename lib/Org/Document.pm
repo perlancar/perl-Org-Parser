@@ -50,6 +50,9 @@ __END__
 
 =head1 DESCRIPTION
 
+Normally you would use L<Org::Parser> to create this object from an existing Org
+documents.
+
 Derived from Org::Element::Base.
 
 =cut
