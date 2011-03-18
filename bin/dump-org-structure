@@ -28,6 +28,8 @@ sub dump_element {
     if ($type eq 'Headline') {
         $line .= " l=".$el->level;
         $line .= ",todo=".$el->todo_state if $el->todo_state;
+    } elsif ($type eq 'Text') {
+        $line .= " ".$el->style if $el->style;
     } elsif ($type =~ /^(Schedule)?Timestamp$/) {
         $line .= " dt=".$el->datetime;
     }
