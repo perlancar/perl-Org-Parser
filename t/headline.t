@@ -39,7 +39,7 @@ _
 );
 
 test_parse(
-    name => 'headline',
+    name => 'headline basic tests',
     filter_elements => 'Org::Element::Headline',
     doc  => <<'_',
 *   h1 1
@@ -81,6 +81,47 @@ _
 
         is($elems->[5]->title->as_string, "h1 2", "5: title");
         is($elems->[5]->level, 1, "5: level");
+    },
+);
+
+test_parse(
+    name => 'todo keyword is case sensitive',
+    filter_elements => sub { $_[0]->isa('Org::Element::Headline') &&
+                                 $_[0]->is_todo },
+    doc  => <<'_',
+* TODO 1
+* Todo 2
+* todo 3
+* toDO 4
+_
+    num => 1,
+);
+
+test_parse(
+    name => 'todo keyword can be separated by other \W aside from \s',
+    filter_elements => sub { $_[0]->isa('Org::Element::Headline') &&
+                                 $_[0]->is_todo },
+    doc  => <<"_",
+* TODO   1
+* TODO\t2
+* TODO+3a
+* TODO+  3b
+* TODO/4a
+* TODO//4b
+
+* TODO5a
+* TODO_5b
+_
+    num => 6,
+    test_after_parse => sub {
+        my (%args) = @_;
+        my $elems = $args{elements};
+        is($elems->[0]->title->as_string, "1", "title 1");
+        is($elems->[1]->title->as_string, "2", "title 2");
+        is($elems->[2]->title->as_string, "+3a", "title 3");
+        is($elems->[3]->title->as_string, "+  3b", "title 4");
+        is($elems->[4]->title->as_string, "/4a", "title 5");
+        is($elems->[5]->title->as_string, "//4b", "title 6");
     },
 );
 

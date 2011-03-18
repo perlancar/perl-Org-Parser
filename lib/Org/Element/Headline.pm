@@ -104,8 +104,9 @@ sub BUILD {
         my $todo_kw_re = "(?:".
             join("|", map {quotemeta}
                      @{$doc->todo_states}, @{$doc->done_states}) . ")";
-        if ($title =~ s/^($todo_kw_re)\s+//) {
+        if ($title =~ s/^($todo_kw_re)(\s+|\W)/$2/) {
             my $state = $1;
+            $title =~ s/^\s+//;
             $self->is_todo(1);
             $self->todo_state($state);
             $self->is_done(1) if $state ~~ @{ $doc->done_states };

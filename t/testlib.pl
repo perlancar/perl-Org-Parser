@@ -7,22 +7,29 @@ use warnings;
 sub test_parse {
     my %args = @_;
 
+    my $fe = $args{filter_elements};
+
     subtest $args{name} => sub {
         my @elems;
         my $orgp = Org::Parser->new();
         if ($args{handler}) {
             $orgp->handler($args{handler});
-        } elsif ($args{filter_elements}) {
+        } elsif ($fe) {
             $orgp->handler(
                 sub {
                     my ($orgp, $ev, $args) = @_;
                     return unless $ev eq 'element';
                     my $el     = $args->{element};
                     my $eltype = ref($el);
-                    if (ref($args{filter_elements}) eq 'Regexp') {
+                    my $fetype = ref($fe);
+                    if ($fetype eq 'Regexp') {
                         return unless $eltype =~ $args{filter_elements};
-                    } else {
+                    } elsif ($fetype eq 'CODE')  {
+                        return unless $fe->($el);
+                    } elsif (!$fetype) {
                         return unless $eltype eq $args{filter_elements};
+                    } else {
+                        die "BUG: filter_elements cannot be a $fetype";
                     }
                     push @elems, $el;
                 });
