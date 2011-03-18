@@ -27,7 +27,7 @@ sub dump_element {
     # per-element important info
     if ($type eq 'Headline') {
         $line .= " lvl=".$el->level;
-        $line .= ", todo=".$el->todo_state if $el->todo_state;
+        $line .= ",todo=".$el->todo_state if $el->todo_state;
     } elsif ($type =~ /^(Schedule)?Timestamp$/) {
         $line .= " dt=".$el->datetime;
     }
