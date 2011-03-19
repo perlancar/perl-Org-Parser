@@ -4,7 +4,7 @@
 option to do breadth-first or depth-first. this should be used for other walk
 methods, e.g. find_next_heading(), find_next_subheading()
 ** table
-** format()
+*** format()
 - this should undef/replace ._raw
 - align cell left/right according to whether it's a number
 - optional argument: compress
@@ -13,7 +13,7 @@ methods, e.g. find_next_heading(), find_next_subheading()
 versus
  >|   a | b | cdef |
  >| 123 | 1 |    2 |
-** TODO caption(), label(), etc
+*** TODO caption(), label(), etc
 Get it from settings:
 
  #+CAPTION: A long table
