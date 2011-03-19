@@ -140,7 +140,9 @@ sub parse_inline {
     $parent //= $self->_last_headline // $doc;
 
     $log->tracef("-> parse_inline(%s)", $str);
-    state $re = qr!(?<timestamp_pair>          \[\d{4}-\d{2}-\d{2} \s[^\]]*\]--
+    state $re = qr!(?<link>                    \[\[[^\]\n]+\]
+                                                  (?:\[[^\]\n]+\])?\]) |
+                   (?<timestamp_pair>          \[\d{4}-\d{2}-\d{2} \s[^\]]*\]--
                                                \[\d{4}-\d{2}-\d{2} \s[^\]]*\]) |
                    (?<timestamp>               \[\d{4}-\d{2}-\d{2} \s[^\]]*\]) |
                    (?<schedule_timestamp_pair> <\d{4}-\d{2}-\d{2}  \s[^>]*>--
@@ -172,7 +174,11 @@ sub parse_inline {
         }
 
         my $el;
-        if      ($+{timestamp_pair}) {
+        if ($+{link}) {
+            require Org::Element::Link;
+            $el = Org::Element::Link->new(
+                document=>$doc, raw=>$+{link});
+        } elsif ($+{timestamp_pair}) {
             require Org::Element::TimestampPair;
             $el = Org::Element::TimestampPair->new(
                 document=>$doc, raw=>$+{timestamp_pair});
