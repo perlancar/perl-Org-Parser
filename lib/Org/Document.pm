@@ -217,7 +217,7 @@ sub _parse {
                 $title =~ s/^\s+//;
                 $el->is_todo(1);
                 $el->todo_state($state);
-                $el->is_done(1) if $el ~~ @{ $self->done_states };
+                $el->is_done($state ~~ @{ $self->done_states } ? 1:0);
 
                 # recognize priority. XXX cache re
                 my $prio_re = "(?:".
