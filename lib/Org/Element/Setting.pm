@@ -82,6 +82,7 @@ sub BUILD {
         } elsif ($name eq 'LINK_HOME') {
         } elsif ($name eq 'LINK_UP') {
         } elsif ($name eq 'OPTIONS') {
+        } elsif ($name eq 'PLOT') {
         } elsif ($name eq 'PRIORITIES') {
             my $p = [split /\s+/, $raw_arg];
             $args->{priorities} = $p;
