@@ -54,30 +54,22 @@ our $arg_val_re = qr/(?: '(?<squote> [^']*)' |
                     /x;
 my $ts_re       = qr/(?:\[\d{4}-\d{2}-\d{2} \s+ [^\]]*\])/x;
 my $sch_ts_re   = qr/(?:<\d{4}-\d{2}-\d{2} \s+ [^>]*>)/x;
-my $markupable_re = # anything that can be *marked up*
-    qr!(?:
+my $text_re =
+    qr!
        (?<link>         \[\[(?<link_link> [^\]]+)\]
                         (?:\[(?<link_desc> (?:[^\]]|\R)+)\])?\]) |
-       (?<radio_target> <<<(?<rt_target> [^>]*)>>>) |
-       (?<target>       <<(?<t_target> [^>]*)>>) |
+       (?<radio_target> <<<(?<rt_target> [^>]+)>>>) |
+       (?<target>       <<(?<t_target> [^>]+)>>) |
        (?<ts_pair>      (?<ts_pair1> $ts_re)--
                         (?<ts_pair2> $ts_re)) |
        (?<ts>           $ts_re) |
        (?<sch_ts_pair>  (?<sch_ts_pair1> $sch_ts_re)--
                         (?<sch_ts_pair1> $sch_ts_re)) |
        (?<sch_ts>       $sch_ts_re) |
-       #(?<plain_text>   (?:[^\[<*/+=~_]++|.+?)) # too slow
-       (?<plain_text>  .+?)
-       )
+       (?<markup>       [*/+=~_]) |
+       (?<plain_text>   (?:[^\[<*/+=~_]+|.+?)) # can be very slow
+       #(?<plain_text>   .+?) # too dispersy
       !sxi;
-# this re is too slow
-my $text_re =
-    qr!(?<marked>       $sp_bef_re (?<markup> [*/+=~_])
-                        (?<m_content> $markupable_re+)
-                        \k<markup> $sp_aft_re) |
-       (?<unmarked>     (?:[^\[<*/+=~_]+|.|\n)+?) # too slow
-       #(?<unmarked>     .+?) # too dispersy
-      !xs;
 my $block_elems_re = # top level elements
     qr/(?<block>     $ls_re \#\+BEGIN_(?<block_name>\w+)
                      (?:[ \t]+(?<block_raw_arg>\S.*))\R
@@ -97,7 +89,7 @@ my $block_elems_re = # top level elements
        (?<drawer>    $ls_re [ \t]* :(?<drawer_name> \w+): [ \t]*\R
                      (?<drawer_content>.|\R)*?
                      $ls_re [ \t]* :END:) |
-       (?<text>      (?:[^#|:+*-]+|.|\n)+?)
+       (?<text>      (?:[^#|:+*-]+|.|\n)+?) # can be very slow
        #(?<text>      .+?) # too dispersy
       /msxi;
 
@@ -273,58 +265,15 @@ sub _parse {
     $log->tracef('<- _parse()');
 }
 
-sub __allowable_marked_content {
-    # emacs only tolerates one newline in marked up text
-    my $s = shift;
-    my $newlines = 0;
-    $newlines++ while $s =~ /\R/g;
-    $newlines <= 1;
-}
-
 sub _add_text {
     require Org::Element::Text;
     my ($self, $str, $parent) = @_;
     $parent //= $self;
     $log->tracef("-> _add_text(%s)", $str);
 
-    my @um;
+    my @plain_text;
     while ($str =~ /$text_re/g) {
         $log->tracef("match text: %s", \%+);
-        if ($+{marked}) {
-            if (__allowable_marked_content($+{m_content})) {
-                if (@um) {
-                    $self->_add_markupable(join("", @um), $parent);
-                    @um = ();
-                }
-                my $p2 = Org::Element::Text->new(
-                    style => $Org::Element::Text::mu2style{ $+{markup} });
-                $parent->children([]) unless $parent->children;
-                push @{$parent->children}, $p2;
-                $self->_add_markupable($+{m_content}, $p2);
-            } else {
-                push @um, $+{marked};
-            }
-        } else {
-            push @um, $+{unmarked};
-        }
-    }
-
-    if (@um) {
-        $self->_add_markupable(join("", @um), $parent);
-        @um = ();
-    }
-    $log->tracef("<- _add_text()");
-}
-
-sub _add_markupable {
-    require Org::Element::Text;
-    my ($self, $str, $parent) = @_;
-    $parent //= $self;
-    $log->tracef("-> _add_markupable(%s)", $str);
-
-    my @plain_text;
-    while ($str =~ /$markupable_re/g) {
-        $log->tracef("match markupable: %s", \%+);
         my $el;
 
         if (defined $+{plain_text}) {
@@ -344,7 +293,7 @@ sub _add_markupable {
         } elsif ($+{radio_target}) {
             require Org::Element::RadioTarget;
             $el = Org::Element::RadioTarget->new(target=>$+{rt_target});
-        } elsif ($+{ts_pair}) {
+        } elsif ($+{target}) {
             require Org::Element::Target;
             $el = Org::Element::Target->new(target=>$+{t_target});
         } elsif ($+{ts_pair}) {
@@ -373,9 +322,15 @@ sub _add_markupable {
                 _str=>$+{sch_ts},
                 datetime => __parse_timestamp($+{sch_ts}),
             );
+        } elsif ($+{markup}) {
+            # tmp, we need state checking for applying markup
+            require Org::Element::Text;
+            $el = Org::Element::Text->new(
+                style=>'', text=>$+{markup},
+            );
         }
 
-        die "BUG2: no markupable element" unless $el;
+        die "BUG2: no element" unless $el;
         $el->document($self);
         $el->parent($parent);
         $parent->children([]) if !$parent->children;
@@ -392,7 +347,7 @@ sub _add_markupable {
         @plain_text = ();
     }
 
-    $log->tracef('<- _add_markupable()');
+    $log->tracef('<- _add_text()');
 }
 
 sub _add_plain_text {

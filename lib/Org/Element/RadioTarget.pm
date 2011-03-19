@@ -1,4 +1,4 @@
-package Org::Element::Target;
+package Org::Element::RadioTarget;
 # ABSTRACT: Represent Org radio target
 
 use 5.010;

@@ -23,7 +23,7 @@ has target => (is => 'rw');
 sub as_string {
     my ($self) = @_;
     join("",
-         "<<", $self->target, ">>");
+         "<<", ($self->target // ""), ">>");
 }
 
 1;

@@ -25,9 +25,10 @@ has properties => (is => 'rw');
 
 sub BUILD {
     my ($self, $args) = @_;
-    uc($self->name) eq 'PROPERTIES' or die "Drawer name must be PROPERTIES";
+    #uc($self->name) eq 'PROPERTIES'
+    #    or die "Drawer name must be PROPERTIES (not ".$self->name.")";
     $self->properties({});
-    for (split /\R/, $self->raw_content) {
+    for (split /\R/, ($self->raw_content // "")) {
         next unless /\S/;
         die "Invalid line in PROPERTIES drawer: $_"
             unless /^\s*:(\w+):\s+(.+?)\s*$/;
