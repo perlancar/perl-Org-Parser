@@ -312,30 +312,8 @@ This module uses L<Log::Any> logging framework.
 
 This module uses L<Moo> object system.
 
-B<NOTE: This module is in alpha stage. See L</"BUGS/TODO/LIMITATIONS"> for the
-list of stuffs not yet implemented.>
-
-Already implemented/parsed:
-
-=over 4
-
-=item * text & markups (bold, italic, etc)
-
-=item * in-buffer settings
-
-=item * blocks
-
-=item * headlines & TODO items
-
-Including custom TODO keywords, custom priorities
-
-=item * schedule timestamps (subset of)
-
-=item * drawers & properties
-
-=item * tables
-
-=back
+See C<todo.org> in the distribution for the list of already- and not yet
+implemented stuffs,
 
 
 =head1 ATTRIBUTES
@@ -380,69 +358,9 @@ Will die if there are syntax errors in documents.
 Just like parse(), but will load document from file instead.
 
 
-=head1 BUGS/TODO/LIMITATIONS
-
-=over 4
-
-=item * Single-pass parser
-
-Parser is currently a single-pass parser, so you need to preset stuffs before
-using them. For example, when declaring custom TODO keywords:
-
- #+TODO: TODO | DONE
- #+TODO: BUG WISHLIST | FIXED CANTREPRO
-
- * FIXED blah
-
-and not:
-
- * FIXED blah (at this point, custom TODO keywords not yet recognized)
-
- #+TODO: TODO | DONE
- #+TODO: BUG WISHLIST | FIXED CANTREPRO
-
-=item * What's the syntax for multiple in-buffer settings on a single line?
-
-Currently the parser assumes a single in-buffer settings per line
-
-=item * Difference between TYP_TODO and TODO/SEQ_TODO?
-
-Currently we assume it to be the same as the other two.
-
-=item * Parse link & link abbreviations (#+LINK)
-
-=item * Parse timestamps & timestamp pairs
-
-=item * Parse repeats in schedule timestamps
-
-=item * Set table's caption, etc from settings
-
- #+CAPTION: A long table
- #+LABEL: tbl:long
- |...|...|
- |...|...|
-
-Question: is this still valid caption?
-
- #+CAPTION: A long table
- some text
- #+LABEL: tbl:long
- some more text
- |...|...|
- |...|...|
-
-=item * Parse headline percentages
-
-=item * Parse {unordered,ordered,description,check) lists
-
-=item * Process includes (#+INCLUDE)
-
-=item * Parse buffer-wide header arguments (#+BABEL, 14.8.1)
-
-=back
-
-
 =head1 SEE ALSO
+
+L<Org::Document>
 
 =cut
 

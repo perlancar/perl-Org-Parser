@@ -1,0 +1,56 @@
+* todo
+** table
+** TODO caption(), label(), etc
+Get it from settings:
+
+ #+CAPTION: A long table
+ #+LABEL: tbl:long
+ |...|...|
+ |...|...|
+
+Question: is this still valid caption?
+
+ #+CAPTION: A long table
+ some text
+ #+LABEL: tbl:long
+ some more text
+ |...|...|
+ |...|...|
+
+** TODO link
+*** TODO parse link abbreviation (#+LINK)
+** timestamps
+*** TODO parse time repeats
+** TODO multipass parser?
+
+Parser is currently a single-pass parser, so you need to preset stuffs before
+using them. For example, when declaring custom TODO keywords:
+
+ #+TODO: TODO | DONE
+ #+TODO: BUG WISHLIST | FIXED CANTREPRO
+
+ * FIXED blah
+
+and not:
+
+ * FIXED blah (at this point, custom TODO keywords not yet recognized)
+
+ #+TODO: TODO | DONE
+ #+TODO: BUG WISHLIST | FIXED CANTREPRO
+
+** heading
+*** TODO Parse headline percentages
+** setting
+*** TODO process includes (#+INCLUDE)
+
+*** TODO parse buffer-wide header arguments (#+BABEL, 14.8.1)
+*** TODO What's the syntax for multiple in-buffer settings on a single line?
+
+Currently the parser assumes a single in-buffer settings per line
+
+*** TODO What's the difference between TYP_TODO and TODO/SEQ_TODO?
+
+Currently we assume it to be the same as the other two.
+
+** TODO plain lists
+This include {unordered,ordered,description,check} lists
