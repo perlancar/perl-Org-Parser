@@ -30,8 +30,10 @@ Question: is this still valid caption?
  |...|...|
  |...|...|
 
-** TODO link
+** link
 *** TODO parse link abbreviation (#+LINK)
+** TODO target
+** TODO radio target
 ** timestamps
 *** TODO parse time repeats
 ** TODO multipass parser?
