@@ -3,8 +3,23 @@
 *** TODO a method to walk elements
 option to do breadth-first or depth-first. this should be used for other walk
 methods, e.g. find_next_heading(), find_next_subheading()
+*** TODO headline()
+return the headline this element is in.
+*** TODO get_tags()
+return list of tags including inherited tags
+*** TODO get_property()
+return property, including inherited ones
+** TODO parse sexp entries?
+e.g.
+
+ ** Class 7:00pm-9:00pm
+    <%%(and (= 1 (calendar-day-of-week date)) (diary-block 2 16 2009 4 20 2009))>
+
+ * Monthly meeting
+  <%%(diary-float t 3 3)>
+
 ** table
-*** format()
+*** TODO format()
 - this should undef/replace ._raw
 - align cell left/right according to whether it's a number
 - optional argument: compress
@@ -30,8 +45,11 @@ Question: is this still valid caption?
  |...|...|
  |...|...|
 
+*** TODO column group (manual: 3.3)
+probably create Element::TableColGroup which is a special row that contains
+column group instruction. or we can just assume it's a normal row and only
+format() needs to worry about this (i prefer the latter).
 ** link
-*** TODO parse link abbreviation (#+LINK)
 ** TODO target
 ** TODO radio target
 ** timestamps
@@ -53,7 +71,7 @@ and not:
  #+TODO: TODO | DONE
  #+TODO: BUG WISHLIST | FIXED CANTREPRO
 
-** heading
+** headline
 *** TODO what constitutes a valid tag?
 *** TODO Parse headline percentages
 *** TODO next_todo_state() & prev_todo_state()
@@ -78,5 +96,10 @@ Currently the parser assumes a single in-buffer settings per line
 
 Currently we assume it to be the same as the other two.
 
+*** TODO parse link abbreviation (#+LINK)
+into document's .link_abbrevs()
+*** TODO TAGS/FILETAGS: parse keyboard shortcuts
+ #+TAGS: OFFICE(o) COMPUTER(c) HOME(h) PROJECT(p) READING(r) DVD(d)
+the key should be discarded when checking for known tags
 ** TODO plain lists
 This include {unordered,ordered,description,check} lists
