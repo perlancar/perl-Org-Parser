@@ -257,8 +257,7 @@ sub _parse {
         $el->parent($parent);
         $parent->children([]) if !$parent->children;
         push @{ $parent->children }, $el;
-        $self->_handler->($self, "element", {element=>$el})
-            if $el && $self->_handler;
+        $self->_trigger_handler("element", {element=>$el});
     }
 
     # remaining text
@@ -320,6 +319,7 @@ sub _add_markupable {
 
     my @plain_text;
     while ($str =~ /$markupable_re/g) {
+        $log->tracef("match markupable: %s", \%+);
         my $el;
 
         if (defined $+{plain_text}) {
@@ -327,11 +327,9 @@ sub _add_markupable {
             next;
         } else {
             if (@plain_text) {
-                $el = Org::Element::Text(
-                    style=>'', text=>join("", @plain_text));
-                goto ADD_CHILD_ELEM;
+                $self->_add_plain_text(join("", @plain_text), $parent);
+                @plain_text = ();
             }
-            @plain_text = ();
         }
 
         if ($+{link}) {
@@ -373,13 +371,11 @@ sub _add_markupable {
         }
 
         die "BUG2: no markupable element" unless $el;
-      ADD_CHILD_ELEM:
         $el->document($self);
         $el->parent($parent);
         $parent->children([]) if !$parent->children;
         push @{ $parent->children }, $el;
-        $self->_handler->($self, "element", {element=>$el})
-            if $el && $self->_handler;
+        $self->_trigger_handler("element", {element=>$el});
     }
 
     # remaining text
@@ -392,6 +388,23 @@ sub _add_markupable {
     }
 
     $log->tracef('<- _add_markupable()');
+}
+
+sub _add_plain_text {
+    require Org::Element::Text;
+    my ($self, $str, $parent) = @_;
+    my $el = Org::Element::Text->new(
+        document=>$self, parent=>$parent, style=>'', text=>$str);
+    $parent->children([]) if !$parent->children;
+    push @{ $parent->children }, $el;
+    $self->_trigger_handler("element", {element=>$el});
+}
+
+sub _trigger_handler {
+    my ($self, $ev, $args) = @_;
+    return unless $self->_handler;
+    $log->tracef("calling _handler(%s)", $ev);
+    $self->_handler->($self, $ev, $args);
 }
 
 # temporary place
