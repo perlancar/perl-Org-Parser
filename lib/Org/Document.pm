@@ -283,21 +283,31 @@ sub _add_text {
     $parent //= $self;
     $log->tracef("-> _add_text(%s)", $str);
 
+    my @um;
     while ($str =~ /$text_re/g) {
         $log->tracef("match text: %s", \%+);
         if ($+{marked}) {
             if (__allowable_marked_content($+{m_content})) {
-                my $mu = Org::Element::Text->new(
+                if (@um) {
+                    $self->_add_markupable(join("", @um), $parent);
+                    @um = ();
+                }
+                my $p2 = Org::Element::Text->new(
                     style => $Org::Element::Text::mu2style{ $+{markup} });
                 $parent->children([]) unless $parent->children;
-                push @{$parent->children}, $mu;
-                $self->_add_markupable($+{m_content}, $mu);
+                push @{$parent->children}, $p2;
+                $self->_add_markupable($+{m_content}, $p2);
             } else {
-                $self->_add_markupable($+{marked}, $parent);
+                push @um, $+{marked};
             }
         } else {
-            $self->_add_markupable($+{unmarked}, $parent);
+            push @um, $+{unmarked};
         }
+    }
+
+    if (@um) {
+        $self->_add_markupable(join("", @um), $parent);
+        @um = ();
     }
     $log->tracef("<- _add_text()");
 }
@@ -388,9 +398,11 @@ sub _add_markupable {
 sub __parse_timestamp {
     require DateTime;
     my ($ts) = @_;
-    $ts =~ /^(\d{4})-(\d{2})-(\d{2}) \s
+    $ts =~ /^(?:\[|<)?(\d{4})-(\d{2})-(\d{2}) \s
             (?:\w{2,3}
-                (?:\s (\d{2}):(\d{2}))?)?$/x
+                (?:\s (\d{2}):(\d{2}))?)?
+            (?:\]|>)?
+            $/x
         or die "Can't parse timestamp string: $ts";
     my %dt_args = (year => $1, month=>$2, day=>$3);
     if (defined($4)) { $dt_args{hour} = $4; $dt_args{minute} = $5 }
