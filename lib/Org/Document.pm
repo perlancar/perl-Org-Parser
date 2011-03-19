@@ -66,36 +66,40 @@ my $markupable_re = # anything that can be *marked up*
        (?<sch_ts_pair>  (?<sch_ts_pair1> $sch_ts_re)--
                         (?<sch_ts_pair1> $sch_ts_re)) |
        (?<sch_ts>       $sch_ts_re) |
-       (?<plain_text>   (?:[^\[<*/+=~_]+|.|\n)+?)
+       #(?<plain_text>   (?:[^\[<*/+=~_]++|.+?)) # too slow
+       (?<plain_text>  .+?)
        )
-      !xi;
+      !sxi;
+# this re is too slow
 my $text_re =
     qr!(?<marked>       $sp_bef_re (?<markup> [*/+=~_])
                         (?<m_content> $markupable_re+)
                         \k<markup> $sp_aft_re) |
-       (?<unmarked>     (?:[^\[<*/+=~_]+|.|\n)+?)
-      !x;
+       (?<unmarked>     (?:[^\[<*/+=~_]+|.|\n)+?) # too slow
+       #(?<unmarked>     .+?) # too dispersy
+      !xs;
 my $block_elems_re = # top level elements
     qr/(?<block>     $ls_re \#\+BEGIN_(?<block_name>\w+)
-                     (?:\s+(?<block_raw_arg>\S.*))\R
+                     (?:[ \t]+(?<block_raw_arg>\S.*))\R
                      (?<block_content>(?:.|\R)*?)
                      \R\#\+END_\k<block_name> $le_re) |
        (?<setting>   $ls_re \#\+
-                     (?<setting_name> \w+): \s+
+                     (?<setting_name> \w+): [ \t]+
                      (?<setting_raw_arg> .+) $le_re) |
        (?<comment>   $ls_re \#.*) |
-       (?<headline>  $ls_re (?<h_bullet>\*+) \s
+       (?<headline>  $ls_re (?<h_bullet>\*+) [ \t]
                      (?<h_title>.*?)
-                     (?:\s+(?<h_tags> $tags_re))?\s* $le_re) |
-       (?<li_header> $ls_re (?<li_indent>\s*)
-                     (?<li_bullet>[+*-]) \s+
+                     (?:[ \t]+(?<h_tags> $tags_re))?[ \t]* $le_re) |
+       (?<li_header> $ls_re (?<li_indent>[ \t]*)
+                     (?<li_bullet>[+*-]) [ \t]+
                      (?<li_checkbox> \[(?<li_cbstate> [ X-])\])?) |
-       (?<table>     (?: $ls_re \s* \| \s* \S.* $le_re)+) |
-       (?<drawer>    $ls_re \s* :(?<drawer_name> \w+): \s*\R
+       (?<table>     (?: $ls_re [ \t]* \| [ \t]* \S.* $le_re)+) |
+       (?<drawer>    $ls_re [ \t]* :(?<drawer_name> \w+): [ \t]*\R
                      (?<drawer_content>.|\R)*?
-                     $ls_re \s* :END:) |
-       (?<text>      (?:[^#*:|+\n-]+.|\n)+?)
-      /mxi;
+                     $ls_re [ \t]* :END:) |
+       (?<text>      (?:[^#|:+*-]+|.|\n)+?)
+       #(?<text>      .+?) # too dispersy
+      /msxi;
 
 
 =head1 METHODS
@@ -278,6 +282,7 @@ sub __allowable_marked_content {
 }
 
 sub _add_text {
+    require Org::Element::Text;
     my ($self, $str, $parent) = @_;
     $parent //= $self;
     $log->tracef("-> _add_text(%s)", $str);
