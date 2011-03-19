@@ -44,10 +44,9 @@ sub dump_element {
     say $line;
 
     if ($type eq 'Headline') {
-        print "  " x ($indent_level+1);
-        print "(title)\n";
+        print "  " x ($indent_level+1), "(title)\n";
         dump_element($el->title, $indent_level+1);
-        print "(children)\n";
+        print "  " x ($indent_level+1), "(children)\n" if $el->children;
     }
 
     if ($el->children) {
