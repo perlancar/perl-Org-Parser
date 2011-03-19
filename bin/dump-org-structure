@@ -28,13 +28,18 @@ sub dump_element {
     if ($type eq 'Headline') {
         $line .= " l=".$el->level;
         $line .= ",todo=".$el->todo_state if $el->todo_state;
+    } elsif ($type eq 'ListItem') {
+        $line .= " ".$el->bullet;
+        $line .= " l=".length($el->indent);
     } elsif ($type eq 'Text') {
         $line .= " ".$el->style if $el->style;
     } elsif ($type =~ /^(Schedule)?Timestamp$/) {
         $line .= " dt=".$el->datetime;
     }
-    $line .= " \"".
-        printable elide($el->_raw // $el->as_string, 80-length($line)-2);
+    unless ($el->children) {
+        $line .= " \"".
+            printable elide($el->_str // $el->as_string, 80-length($line)-2);
+    }
     say $line, "\"";
 
     if ($el->children) {
