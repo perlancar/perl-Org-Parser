@@ -52,6 +52,7 @@ and not:
  #+TODO: BUG WISHLIST | FIXED CANTREPRO
 
 ** heading
+*** TODO what constitutes a valid tag?
 *** TODO Parse headline percentages
 *** TODO next_todo_state() & prev_todo_state()
 return undef if .document is undef.
