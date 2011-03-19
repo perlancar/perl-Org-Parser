@@ -1,5 +1,18 @@
 * todo
+** Element::Base
+*** TODO a method to walk elements
+option to do breadth-first or depth-first. this should be used for other walk
+methods, e.g. find_next_heading(), find_next_subheading()
 ** table
+** format()
+- this should undef/replace ._raw
+- align cell left/right according to whether it's a number
+- optional argument: compress
+ >|a|b|cdef
+ >|123|1|2
+versus
+ >|   a | b | cdef |
+ >| 123 | 1 |    2 |
 ** TODO caption(), label(), etc
 Get it from settings:
 
@@ -40,6 +53,16 @@ and not:
 
 ** heading
 *** TODO Parse headline percentages
+*** TODO next_todo_state() & prev_todo_state()
+return undef if .document is undef.
+*** TODO cycle_todo_state($reverse // 0)
+*** TODO promoto_subtree() & demote_subtree()
+** drawer
+** properties
+*** TODO use hash which preserves order
+*** TODO is property key case-sensitive?
+*** TODO when adding/deleting/setting property, ._raw should be undef/replaced
+*** TODO format()
 ** setting
 *** TODO process includes (#+INCLUDE)
 
