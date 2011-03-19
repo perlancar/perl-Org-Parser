@@ -26,9 +26,9 @@ has description => (is => 'rw');
 
 =cut
 
-sub element_as_string {
+sub as_string {
     my ($self) = @_;
-    return $self->_str if $self->_str;
+    return $self->_str if defined $self->_str;
     join("",
          "[",
          "[", $self->link, "]",
