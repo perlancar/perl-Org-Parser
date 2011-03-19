@@ -3,246 +3,12 @@ package Org::Parser;
 
 use 5.010;
 use Moo;
-use Log::Any '$log';
 
 use File::Slurp;
 use Org::Document;
 use Scalar::Util qw(blessed);
 
-has handler         => (is => 'rw');
-
-has _last_headlines => (is => 'rw'); #[undef, $last_lvl1_h, $last_lvl2_h, ...]
-has _last_headline  => (is => 'rw');
-
-our $tags_re    = qr/:(?:[^:]+:)+/;
-our $ls_re      = qr/(?:(?<=[\015\012])|\A)/;
-our $sp_bef_re  = qr/(?:(?<=\s)|\A)/s;
-our $sp_aft_re  = qr/(?:(?=\s)|\z)/s;
-our $le_re      = qr/(?:\R|\z)/;
-our $arg_val_re = qr/(?: '(?<squote> [^']*)' |
-                         "(?<dquote> [^"]*)" |
-                         (?<bare> \S+) ) \z
-                    /x;
-
-sub __get_arg_val {
-    my $val = shift;
-    $val =~ /\A $arg_val_re \z/ or return;
-    if (defined $+{squote}) {
-        return $+{squote};
-    } elsif (defined $+{dquote}) {
-        return $+{dquote};
-    } else {
-        return $+{bare};
-    }
-}
-
-# parse blocky elements: setting, blocks, header argument
-sub _parse {
-    my ($self, $str, $doc) = @_;
-    $log->tracef('-> _parse(%s)', $str);
-
-    $doc //= Org::Document->new(_parser => $self);
-    if (!$self->_last_headline ) { $self->_last_headline ($doc)   }
-    if (!$self->_last_headlines) { $self->_last_headlines([$doc]) }
-
-    state $re  = qr/(?<block>    $ls_re \#\+BEGIN_(?<sname>\w+)
-                                 (?:.|\R)*?
-                                 \R\#\+END_\k<sname> $le_re) |
-                   (?<setting>   $ls_re \#\+.* $le_re) |
-                   (?<headline>  $ls_re \*+[ \t].* $le_re) |
-                   (?<table>     (?: $ls_re [ \t]* \| [ \t]* \S.* $le_re)+) |
-                   (?<drawer>    $ls_re [ \t]* :(?<drawer_name> \w+): [ \t]*\R
-                                 (?:.|\R)*?
-                                 $ls_re [ \t]* :END:) |
-                   (?<other>     [^#*:|]+ | # to lump things more
-                                 .+?)
-                  /mxi;
-
-    my @other;
-    while ($str =~ /$re/g) {
-        $log->tracef("match: %s", \%+);
-        if (defined $+{other}) {
-            push @other, $+{other};
-            next;
-        } else {
-            if (@other) {
-                $self->parse_inline(join("", @other), $doc);
-            }
-            @other = ();
-        }
-
-        my $parent = $self->_last_headline;
-        my $el;
-        if ($+{block}) {
-            require Org::Element::Block;
-            $el = Org::Element::Block->new(
-                document=>$doc, raw=>$+{block});
-        } elsif ($+{setting}) {
-            require Org::Element::Setting;
-            $el = Org::Element::Setting->new(
-                document=>$doc, raw=>$+{setting});
-        } elsif ($+{table}) {
-            require Org::Element::Table;
-            $el = Org::Element::Table->new(
-                document=>$doc, raw=>$+{table});
-        } elsif ($+{drawer}) {
-            my $d = uc($+{drawer_name});
-            if ($d eq 'PROPERTIES') {
-                require Org::Element::Properties;
-                $el = Org::Element::Properties->new(
-                    document=>$doc, raw=>$+{drawer});
-            } else {
-                require Org::Element::Drawer;
-                $el = Org::Element::Drawer->new(
-                    document=>$doc, raw=>$+{drawer});
-            }
-        } elsif ($+{headline}) {
-            require Org::Element::Headline;
-            $el = Org::Element::Headline->new(
-                document=>$doc, raw=>$+{headline});
-            for (my $i=$el->level-1; $i>=0; $i--) {
-                $parent = $self->_last_headlines->[$i] and last;
-            }
-            $self->_last_headlines->[$el->level] = $el;
-            $self->_last_headline($el);
-        }
-        $el->parent($parent);
-        $parent->children([]) if !$parent->children;
-        push @{ $parent->children }, $el;
-        $self->handler->($self, "element", {element=>$el})
-            if $el && $self->handler;
-        $el = undef;
-    }
-
-    # remaining text
-    if (@other) {
-        $self->parse_inline(join("", @other), $doc);
-    }
-    @other = ();
-
-    $log->tracef('<- _parse()');
-    $doc;
-}
-
-=head2 $orgp->parse_inline($str, $doc[, $parent])
-
-Inline elements are elements that can be put under a heading, table cell,
-heading title, etc. these include normal text (and text with markups),
-timestamps, links, etc.
-
-Found elements will be added into $parent's children. If $parent is not
-specified, it will be set to $orgp->_last_headline (or, if undef, $doc).
-
-=cut
-
-sub parse_inline {
-    my ($self, $str, $doc, $parent) = @_;
-    $parent //= $self->_last_headline // $doc;
-
-    $log->tracef("-> parse_inline(%s)", $str);
-    state $re = qr!(?<link>                    \[\[[^\]\n]+\]
-                                                  (?:\[[^\]\n]+\])?\]) |
-                   (?<timestamp_pair>          \[\d{4}-\d{2}-\d{2} \s[^\]]*\]--
-                                               \[\d{4}-\d{2}-\d{2} \s[^\]]*\]) |
-                   (?<timestamp>               \[\d{4}-\d{2}-\d{2} \s[^\]]*\]) |
-                   (?<schedule_timestamp_pair> <\d{4}-\d{2}-\d{2}  \s[^>]*>--
-                                               <\d{4}-\d{2}-\d{2}  \s[^>]*>) |
-                   (?<schedule_timestamp>      <\d{4}-\d{2}-\d{2}  \s[^>]*>) |
-                   # link
-                   (?<marked_up_text>          $sp_bef_re
-                                               (?<markup> [*/+=~_])
-                                               (?: \S |                # 1-char
-                                                   \S(?:[^\n])*?\S??   # 1-line
-                                                                       # 2-line
-                                                                   )
-                                               \k<markup>)
-                                               $sp_aft_re |
-                   (?<other>                   [^\[<*/+=~_]+ | # fewer lumps
-                                               .+?)
-                  !sxi;
-    my @other;
-    while ($str =~ /$re/g) {
-        $log->tracef("match inline: %s", \%+);
-        if (defined $+{other}) {
-            push @other, $+{other};
-            next;
-        } else {
-            if (@other) {
-                $self->_parse_text(join("", @other), $doc, $parent);
-            }
-            @other = ();
-        }
-
-        my $el;
-        if ($+{link}) {
-            require Org::Element::Link;
-            $el = Org::Element::Link->new(
-                document=>$doc, raw=>$+{link});
-        } elsif ($+{timestamp_pair}) {
-            require Org::Element::TimestampPair;
-            $el = Org::Element::TimestampPair->new(
-                document=>$doc, raw=>$+{timestamp_pair});
-        } elsif ($+{timestamp}) {
-            require Org::Element::Timestamp;
-            $el = Org::Element::Timestamp->new(
-                document=>$doc, raw=>$+{timestamp});
-        } elsif ($+{schedule_timestamp_pair}) {
-            require Org::Element::ScheduleTimestampPair;
-            $el = Org::Element::ScheduleTimestampPair->new(
-                document=>$doc, raw=>$+{schedule_timestamp_pair});
-        } elsif ($+{schedule_timestamp}) {
-            require Org::Element::ScheduleTimestamp;
-            $el = Org::Element::ScheduleTimestamp->new(
-                document=>$doc, raw=>$+{schedule_timestamp});
-        } elsif ($+{marked_up_text}) {
-            require Org::Element::Text;
-            $el = Org::Element::Text->new(
-                document=>$doc, raw=>$+{marked_up_text});
-        }
-        $el->parent($parent);
-        $parent->children([]) if !$parent->children;
-        push @{ $parent->children }, $el;
-        $self->handler->($self, "element", {element=>$el})
-            if $el && $self->handler;
-        $el = undef;
-    }
-
-    # remaining text
-    if (@other) {
-        $self->_parse_text(join("", @other), $doc, $parent);
-    }
-    @other = ();
-
-    $log->tracef('<- parse_inline()');
-}
-
-sub __parse_timestamp {
-    require DateTime;
-    my ($ts) = @_;
-    $ts =~ /^(\d{4})-(\d{2})-(\d{2}) \s
-            (?:\w{2,3}
-                (?:\s (\d{2}):(\d{2}))?)?$/x
-        or return;
-    my %dt_args = (year => $1, month=>$2, day=>$3);
-    if (defined($4)) { $dt_args{hour} = $4; $dt_args{minute} = $5 }
-    DateTime->new(%dt_args);
-}
-
-sub _parse_text {
-    require Org::Element::Text;
-    my ($self, $str, $doc, $parent) = @_;
-    $parent //= $self->_last_headline // $doc;
-    $log->tracef("-> _parse_text(%s)", $str);
-    my $el = Org::Element::Text->new(
-        raw => $str, document=>$doc, parent=>$parent);
-    $parent->children([]) if !$parent->children;
-    push @{$parent->children}, $el;
-    $self->handler->($self, "element", {element=>$el}) if $self->handler;
-}
-
-sub __split_tags {
-    [$_[0] =~ /:([^:]+)/g];
-}
+has handler => (is => 'rw');
 
 sub parse {
     my ($self, $arg) = @_;
@@ -266,12 +32,12 @@ sub parse {
         die "Invalid argument, please supply a ".
             "string|arrayref|coderef|filehandle\n";
     }
-    $self->_parse($str);
+    Org::Document->new(from_string=>$str, _handler=>$self->handler);
 }
 
 sub parse_file {
     my ($self, $filename) = @_;
-    $self->_parse(scalar read_file($filename));
+    $self->parse(scalar read_file($filename));
 }
 
 1;
@@ -365,8 +131,6 @@ Just like parse(), but will load document from file instead.
 
 
 =head1 SEE ALSO
-
-L<Org::Document>
 
 =cut
 

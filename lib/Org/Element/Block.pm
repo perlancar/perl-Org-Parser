@@ -37,45 +37,27 @@ Content of block. In the previous 'raw_arg' example, 'raw_content' is "...\n".
 
 has raw_content => (is => 'rw');
 
+my @known_blocks = qw(
+                         ASCII CENTER COMMENT EXAMPLE HTML
+                         LATEX QUOTE SRC VERSE
+                 );
+
 
 =head1 METHODS
 
 =for Pod::Coverage element_as_string BUILD
 
-=head2 new(attr => val, ...)
-
-=head2 new(raw => STR, document => OBJ)
-
-Create a new headline item from parsing raw string. (You can also create
-directly by filling out priority, title, etc).
-
 =cut
 
 sub BUILD {
     my ($self, $args) = @_;
-    my $raw = $args->{raw};
-    if (defined $raw) {
-        my $doc = $self->document
-            or die "Please specify document when specifying raw";
-        state $re = qr/\A\#\+(?:BEGIN_(
-                               ASCII|CENTER|COMMENT|EXAMPLE|HTML|
-                               LATEX|QUOTE|SRC|VERSE
-                       ))
-                       (?:\s+(\S.*))\R # arg
-                       ((?:.|\R)*)     # content
-                       \#\+\w+\R?\z    # closing
-                      /xi;
-        $raw =~ $re or die "Unknown block or invalid syntax: $raw";
-        $self->_raw($raw);
-        $self->name(uc($1));
-        $self->raw_arg($2);
-        $self->raw_content($3);
-    }
+    $self->name(uc $self->name);
+    $self->name =~ @known_blocks or die "Unknown block name: ".$self->name;
 }
 
 sub element_as_string {
     my ($self) = @_;
-    return $self->_raw if $self->_raw;
+    return $self->_str if defined $self->_str;
     join("",
          "#+BEGIN_".uc($self->name),
          defined($self->raw_arg) ? " ".$self->raw_arg : "",

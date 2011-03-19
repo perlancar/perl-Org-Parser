@@ -19,20 +19,12 @@ has properties => (is => 'rw');
 
 =head1 METHODS
 
-=for Pod::Coverage element_as_string BUILD
-
-=head2 new(attr => val, ...)
-
-=head2 new(raw => STR, document => OBJ)
-
-Create a new headline item from parsing raw string. (You can also create
-directly by filling out priority, title, etc).
+=for Pod::Coverage as_string BUILD
 
 =cut
 
 sub BUILD {
     my ($self, $args) = @_;
-    $self->SUPER::BUILD($args);
     uc($self->name) eq 'PROPERTIES' or die "Drawer name must be PROPERTIES";
     $self->properties({});
     for (split /\R/, $self->raw_content) {
@@ -43,9 +35,9 @@ sub BUILD {
     }
 }
 
-sub element_as_string {
+sub as_string {
     my ($self) = @_;
-    return $self->_raw if $self->_raw;
+    return $self->_str if $self->_str;
     join("",
          ":", uc($self->name), ":", "\n",
          map({(" :", uc($_), ": ", $self->properties->{$_}, "\n")}

@@ -36,26 +36,16 @@ has args => (is => 'rw');
 
 =for Pod::Coverage element_as_string BUILD
 
-=head2 new(raw => STR, document => OBJ)
-
-Create a new headline item from parsing raw string. (You can also create
-directly by filling out priority, title, etc).
-
 =cut
 
 sub BUILD {
-    require Org::Parser;
+    require Org::Document;
     my ($self, $args) = @_;
-    my $raw = $args->{raw};
-    if (defined $raw) {
-        my $doc = $self->document
-            or die "Please specify document when specifying raw";
-        state $re = qr/\A\#\+(\w+): \s+ (.+?) \s* \R?\z/x;
-        $raw =~ $re or die "Invalid setting syntax: $raw";
-        my ($name, $raw_arg) = (uc($1), $2);
-        $self->name($name);
-        $self->raw_arg($raw_arg);
 
+    my $name    = uc $self->name;
+    $self->name($name);
+    my $raw_arg = $self->raw_arg;
+    unless (defined $self->args) {
         my $args = {};
         if      ($name eq 'ARCHIVE') {
         } elsif ($name eq 'AUTHOR') {
@@ -74,14 +64,14 @@ sub BUILD {
             for (@$d) {
                 push @{ $doc->drawers }, $_
                     unless $_ ~~ @{ $doc->drawers };
-        }
+            }
         } elsif ($name eq 'EMAIL') {
         } elsif ($name eq 'EXPORT_EXCLUDE_TAGS') {
         } elsif ($name eq 'EXPORT_SELECT_TAGS') {
         } elsif ($name eq 'FILETAGS') {
-            $raw_arg =~ /^$Org::Parser::tags_re$/ or
+            $raw_arg =~ /^$Org::Document::tags_re$/ or
                 die "Invalid argument syntax for FILEARGS: $raw";
-            $args->{tags} = Org::Parser::__split_tags($raw_arg);
+            $args->{tags} = Org::Document::__split_tags($raw_arg);
         } elsif ($name eq 'INCLUDE') {
         } elsif ($name eq 'INDEX') {
         } elsif ($name eq 'KEYWORDS') {
@@ -97,11 +87,11 @@ sub BUILD {
             $args->{priorities} = $p;
             $doc->priorities($p);
         } elsif ($name eq 'PROPERTY') {
-            $raw_arg =~ /(\w+)\s+($Org::Parser::arg_val_re)$/
+            $raw_arg =~ /(\w+)\s+($Org::Document::arg_val_re)$/
                 or die "Invalid argument for PROPERTY setting, ".
                     "please use 'NAME VALUE': $raw_arg";
             $args->{name} = $1;
-            $args->{value} = Org::Parser::__get_arg_val($2);
+            $args->{value} = Org::Document::__get_arg_val($2);
         } elsif ($name =~ /^(SEQ_TODO|TODO|TYP_TODO)$/) {
             my $done;
             my @args = split /\s+/, $raw_arg;

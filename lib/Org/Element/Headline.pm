@@ -75,64 +75,13 @@ has progress => (is => 'rw');
 
 =head1 METHODS
 
-=for Pod::Coverage element_as_string BUILD
-
-=head2 new(attr => val, ...)
-
-=head2 new(raw => STR, document => OBJ)
-
-Create a new headline item from parsing raw string. (You can also create
-directly by filling out priority, title, etc).
+=for Pod::Coverage header_as_string as_string
 
 =cut
 
-sub BUILD {
-    require Org::Parser;
-    my ($self, $args) = @_;
-    my $raw  = $args->{raw};
-    my $doc  = $self->document;
-    my $orgp = $doc->_parser // Org::Parser->new;
-    if (defined $raw) {
-        state $re = qr/\A(\*+)\s(.*?)(?:\s+($Org::Parser::tags_re))?\s*\R?\z/x;
-        $raw =~ $re or die "Invalid headline syntax: $raw";
-        $self->_raw($raw);
-        my ($bullet, $title, $tags) = ($1, $2, $3);
-        $self->level(length($bullet));
-        $self->tags(Org::Parser::__split_tags($tags)) if $tags;
-
-        # XXX cache re
-        my $todo_kw_re = "(?:".
-            join("|", map {quotemeta}
-                     @{$doc->todo_states}, @{$doc->done_states}) . ")";
-        if ($title =~ s/^($todo_kw_re)(\s+|\W)/$2/) {
-            my $state = $1;
-            $title =~ s/^\s+//;
-            $self->is_todo(1);
-            $self->todo_state($state);
-            $self->is_done(1) if $state ~~ @{ $doc->done_states };
-
-            my $prio_re = "(?:".
-                join("|", map {quotemeta} @{$doc->priorities}) . ")";
-            if ($title =~ s/\[#($prio_re)\]\s*//) {
-                $self->todo_priority($1);
-            }
-        }
-
-        use Org::Element::Text;
-        my $title_el = Org::Element::Text->new();
-        $orgp->parse_inline($title, $doc, $title_el);
-        $self->title($title_el);
-    }
-
-    if (!ref($self->title)) {
-        $self->title(Org::Element::Text->new(
-            raw=>$self->title, document=>$doc));
-    }
-}
-
-sub element_as_string {
+sub header_as_string {
     my ($self) = @_;
-    return $self->_raw if $self->_raw;
+    return $self->_str if defined $self->_str;
     join("",
          "*" x $self->level,
          " ",
@@ -142,6 +91,11 @@ sub element_as_string {
          $self->tags && @{$self->tags} ?
              "  :".join(":", @{$self->tags}).":" : "",
          "\n");
+}
+
+sub as_string {
+    my ($self) = @_;
+    $self->header_as_string . $self->children_as_string;
 }
 
 1;

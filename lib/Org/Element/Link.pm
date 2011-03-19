@@ -22,26 +22,13 @@ has description => (is => 'rw');
 
 =head1 METHODS
 
-=for Pod::Coverage element_as_string BUILD
+=for Pod::Coverage as_string
 
 =cut
 
-sub BUILD {
-    require Org::Parser;
-    my ($self, $args) = @_;
-    my $raw = $args->{raw};
-    my $doc = $self->document;
-    if (defined $raw) {
-        state $re = qr/^\[\[([^\]]+)\](?:\[([^\]]+)\])?\]$/;
-        $raw =~ $re or die "Invalid syntax in link: $raw";
-        $self->link($1);
-        $self->description($2);
-    }
-}
-
 sub element_as_string {
     my ($self) = @_;
-    return $self->_raw if $self->_raw;
+    return $self->_str if $self->_str;
     join("",
          "[",
          "[", $self->link, "]",

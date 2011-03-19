@@ -22,37 +22,13 @@ has datetime2 => (is => 'rw');
 
 =head1 METHODS
 
-=for Pod::Coverage element_as_string BUILD
-
-=head2 new(attr => val, ...)
-
-=head2 new(raw => STR, document => OBJ)
-
-Create a new headline item from parsing raw string. (You can also create
-directly by filling out priority, title, etc).
+=for Pod::Coverage as_string
 
 =cut
 
-sub BUILD {
-    require Org::Parser;
-    my ($self, $args) = @_;
-    my $raw = $args->{raw};
-    my $doc = $self->document;
-    if (defined $raw) {
-        state $re = qr/^\[(.+)\]--\[(.+)\]$/;
-        $raw =~ $re or die "Invalid syntax in timestamp pair: $raw";
-        my $ts1 = Org::Parser::__parse_timestamp($1)
-            or die "Can't parse timestamp1 $1";
-        my $ts2 = Org::Parser::__parse_timestamp($2)
-            or die "Can't parse timestamp2 $1";
-        $self->datetime1($ts1);
-        $self->datetime2($ts2);
-    }
-}
-
-sub element_as_string {
+sub as_string {
     my ($self) = @_;
-    return $self->_raw if $self->_raw;
+    return $self->_str if $self->_str;
     join("",
          "[", $self->datetime1->ymd, " ",
          # XXX Thu 11:59

@@ -68,5 +68,7 @@ _
 #  no longer
 #  code=
 
+# TODO: markup can contain links, even *[[link][description with * in it]]*
+
 done_testing();
 

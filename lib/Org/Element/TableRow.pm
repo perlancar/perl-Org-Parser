@@ -15,16 +15,18 @@ Must have L<Org::Element::TableCell> instances as its children.
 
 =head1 METHODS
 
-=for Pod::Coverage children_as_string
+=for Pod::Coverage as_string
 
 =cut
 
-sub children_as_string {
+sub as_string {
     my ($self) = @_;
-    my @res;
-    push @res, map { ("|", $_->as_string) } @{ $self->children };
-    push @res, "\n";
-    join "", @res;
+    return $self->_str if defined $self->_str;
+
+    join("",
+         "|",
+         join("|", map {$_->as_string} @{$self->children}),
+         "\n");
 }
 
 =cut

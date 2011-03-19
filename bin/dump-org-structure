@@ -39,8 +39,16 @@ sub dump_element {
     unless ($el->children) {
         $line .= " \"".
             printable elide($el->_str // $el->as_string, 80-length($line)-2);
+        $line .= "\"";
     }
-    say $line, "\"";
+    say $line;
+
+    if ($type eq 'Headline') {
+        print "  " x ($indent_level+1);
+        print "(title)\n";
+        dump_element($el->title, $indent_level+1);
+        print "(children)\n";
+    }
 
     if ($el->children) {
         dump_element($_, $indent_level+1) for @{ $el->children };

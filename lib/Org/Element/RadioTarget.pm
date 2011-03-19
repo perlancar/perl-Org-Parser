@@ -1,11 +1,17 @@
-package Org::Element::TableVLine;
-# ABSTRACT: Represent Org table vertical line
+package Org::Element::Target;
+# ABSTRACT: Represent Org radio target
 
 use 5.010;
 use Moo;
 extends 'Org::Element::Base';
 
 =head1 ATTRIBUTES
+
+=head2 target
+
+=cut
+
+has target => (is => 'rw');
 
 
 =head1 METHODS
@@ -16,8 +22,8 @@ extends 'Org::Element::Base';
 
 sub as_string {
     my ($self) = @_;
-    return $self->_str if $self->_str;
-    "|---\n";
+    join("",
+         "<<<", $self->target, ">>>");
 }
 
 1;
