@@ -1,0 +1,18 @@
+#+TODO: TODO AA BB | FIXED CC
+
+* These are todo items (red)
+** TODO a (default and defined)
+** AA a
+** BB a
+** ab a (defined below)
+
+* These are done todo items (green)
+** FIXED a (after bar = done)
+** CC a (after bar = done)
+** ac a (last keyword = done)
+
+* These are not todo items
+** DONE a (default but not defined)
+** Bb a (case sensitive)
+
+#+TODO: ab ac
