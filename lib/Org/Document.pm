@@ -42,7 +42,7 @@ has drawers                 => (is => 'rw');
 
 =head2 radio_targets => ARRAY
 
-List of radio targets,
+List of radio target text.
 
 =cut
 
