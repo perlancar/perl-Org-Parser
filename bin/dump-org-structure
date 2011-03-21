@@ -28,9 +28,12 @@ sub dump_element {
     if ($type eq 'Headline') {
         $line .= " l=".$el->level;
         $line .= ",todo=".$el->todo_state if $el->todo_state;
+    } elsif ($type eq 'List') {
+        $line .= " ".$el->type;
+        $line .= " ".$el->bullet_style;
+        $line .= " indent=".length($el->indent);
     } elsif ($type eq 'ListItem') {
         $line .= " ".$el->bullet;
-        $line .= " l=".length($el->indent);
     } elsif ($type eq 'Text') {
         $line .= " ".$el->style if $el->style;
     } elsif ($type eq 'Timestamp') {

@@ -96,7 +96,7 @@ my $block_elems_re = # top level elements
        (?<drawer>    $ls_re [ \t]* :(?<drawer_name> \w+): [ \t]*\R
                      (?<drawer_content>.|\R)*?
                      $ls_re [ \t]* :END:) |
-       (?<text>      (?:[^#|:+*-]+|.|\n)+?) # can be very slow
+       (?<text>      (?:[^#|:+*0-9\n-]+|\n|.)+?) # can be very slow
        #(?<text>      .+?) # too dispersy
       /msxi;
 
@@ -171,14 +171,14 @@ sub _parse {
     $log->tracef('-> _parse(%s, pass=%d)', $str, $pass);
 
     my $last_headline;
-    my $last_headlines = [$self]; # [doc, last_level1, last_level2, ...]
-    my $last_li;
-    my $last_lis = []; # [last_level0, last_level1, ...]
+    my $last_headlines = [$self]; # [$doc, $last_hl_level1, $last_hl_lvl2, ...]
+    my $last_listitem;
+    my $last_lists = []; # [last_List_obj_for_indent_level0, ...]
     my $parent;
 
     my @text;
     while ($str =~ /$block_elems_re/g) {
-        $parent = $last_li // $last_headline // $self;
+        $parent = $last_listitem // $last_headline // $self;
         #$log->tracef("TMP: parent=%s (%s)", ref($parent), $parent->_str);
         next unless keys %+; # perlre bug?
         $log->tracef("match block element: %s", \%+);
@@ -240,20 +240,47 @@ sub _parse {
 
         } elsif ($+{li_header}) {
 
+            require Org::Element::List;
             require Org::Element::ListItem;
-            my $level = length($+{li_indent});
-            $el = Org::Element::ListItem->new(
-                document=>$self, parent=>$parent,
-                indent=>$+{li_indent}, bullet=>$+{li_bullet});
-            $el->check_state($+{li_cbstate}) if $+{li_cbstate};
 
-            # parent is lesser-indented list item (or last headline)
+            my $level   = length($+{li_indent});
+            my $bullet  = $+{li_bullet};
+            my $indent  = $+{li_indent};
+            my $type    = $bullet =~ /^\d+\./ ? 'O' : 'U';
+            my $bstyle  = $type eq 'O' ? '<N>.' : $bullet;
+
+            # parent for list is lesser-indented list (or last headline)
             $parent = $last_headline // $self;
             for (my $i=$level-1; $i>=0; $i--) {
-                if ($last_lis->[$i]) { $parent = $last_lis->[$i]; last }
+                if ($last_lists->[$i]) {
+                    $parent = $last_lists->[$i];
+                    last;
+                }
             }
-            $last_lis->[$level] = $el;
-            $last_li = $el;
+
+            my $list = $last_lists->[$level];
+            if (!$list || $list->type ne $type ||
+                    $list->bullet_style ne $bstyle) {
+                $list = Org::Element::List->new(
+                    document => $self, parent => $parent,
+                    indent=>$indent, type=>$type, bullet_style=>$bstyle,
+                );
+                $last_lists->[$level] = $list;
+                $parent->children([]) if !$parent->children;
+                push @{ $parent->children }, $list;
+            }
+            $last_lists->[$level] = $list;
+
+            # parent for list item is list
+            $parent = $list;
+
+            $el = Org::Element::ListItem->new(
+                document=>$self, parent=>$list,
+                indent=>$indent, bullet=>$bullet);
+            $el->check_state($+{li_cbstate}) if $+{li_cbstate};
+
+            splice @$last_lists, $level+1;
+            $last_listitem = $el;
 
         } elsif ($+{headline}) {
 
@@ -301,9 +328,10 @@ sub _parse {
             }
             $parent //= $self;
             $last_headlines->[$el->level] = $el;
+            splice @$last_headlines, $el->level+1;
             $last_headline  = $el;
-            $last_li  = undef;
-            $last_lis = [];
+            $last_listitem  = undef;
+            $last_lists = [];
         }
 
         # we haven't caught other matches to become element
@@ -344,8 +372,6 @@ sub _add_text {
             }
         }
 
-        $el->document($self);
-        $el->parent($parent);
         if ($+{link}) {
             require Org::Element::Link;
             $el = Org::Element::Link->new(

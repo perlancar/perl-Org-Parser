@@ -7,12 +7,6 @@ extends 'Org::Element::Base';
 
 =head1 ATTRIBUTES
 
-=head2 indent
-
-=cut
-
-has indent => (is => 'rw');
-
 =head2 bullet
 
 =cut
@@ -30,14 +24,14 @@ has check_state => (is => 'rw');
 
 =head1 METHODS
 
-=for Pod::Coverage header_as_string
+=for Pod::Coverage header_as_string as_string
 
 =cut
 
 sub header_as_string {
     my ($self) = @_;
     join("",
-         $self->indent,
+         $self->parent->indent,
          $self->bullet, " ",
          defined($self->check_state) ? "[".$self->check_state."]" : "",
      );
@@ -51,6 +45,8 @@ sub as_string {
 __END__
 
 =head1 DESCRIPTION
+
+Must have L<Org::Element::List> as parent.
 
 Derived from Org::Element::Base.
 
