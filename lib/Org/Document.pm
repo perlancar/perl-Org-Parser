@@ -73,7 +73,8 @@ my $text_re       =
        (?<act_trange>   (?<act_trange_ts1> $act_tstamp_re)--
                         (?<act_trange_ts2> $act_tstamp_re)) |
        (?<act_tstamp>   $act_tstamp_re) |
-       (?<markup>       [*/+=~_]) |
+       (?<markup_start> $sp_bef_re [*/+=~_]) |
+       (?<markup_end>   [*/+=~_] $sp_aft_re) |
        (?<plain_text>   (?:[^\[<*/+=~_]+|.+?)) # can be very slow
        #(?<plain_text>   .+?) # too dispersy
       !sxi;
@@ -427,14 +428,22 @@ sub _add_text {
                 is_active => 1,
                 datetime  => __parse_timestamp($+{act_tstamp}),
             );
-        } elsif ($+{markup}) {
+        } elsif ($+{markup_start}) {
             require Org::Element::Text;
             $el = Org::Element::Text->new(
                 document => $self, parent => $parent,
-                style=>'', text=>$+{markup},
+                style=>'', text=>$+{markup_start},
             );
             # temporary mark, we need to apply markup later
-            $el->{_mu}++;
+            $el->{_mu_start}++;
+        } elsif ($+{markup_end}) {
+            require Org::Element::Text;
+            $el = Org::Element::Text->new(
+                document => $self, parent => $parent,
+                style=>'', text=>$+{markup_end},
+            );
+            # temporary mark, we need to apply markup later
+            $el->{_mu_end}++;
         }
         die "BUG2: no element" unless $el;
         $parent->children([]) if !$parent->children;
