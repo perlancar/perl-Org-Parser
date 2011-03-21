@@ -285,12 +285,21 @@ sub _parse {
         } elsif ($+{headline}) {
 
             require Org::Element::Headline;
+            my $level = length $+{h_bullet};
+
+            # parent is upper-level headline
+            $parent = undef;
+            for (my $i=$level-1; $i>=0; $i--) {
+                $parent = $last_headlines->[$i] and last;
+            }
+            $parent //= $self;
+
             $el = Org::Element::Headline->new(
                 _str=>$+{headline},
                 document=>$self, parent=>$parent,
+                level=>$level,
             );
             $el->tags(__split_tags($+{h_tags})) if ($+{h_tags});
-            $el->level(length $+{h_bullet});
             my $title = $+{h_title};
 
             # recognize todo keyword. XXX cache re
@@ -322,11 +331,6 @@ sub _parse {
                 $title_el->children && @{$title_el->children} == 1;
             $el->title($title_el);
 
-            # parent is upper-level headline
-            for (my $i=$el->level-1; $i>=0; $i--) {
-                $parent = $last_headlines->[$i] and last;
-            }
-            $parent //= $self;
             $last_headlines->[$el->level] = $el;
             splice @$last_headlines, $el->level+1;
             $last_headline  = $el;
