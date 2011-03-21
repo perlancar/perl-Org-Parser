@@ -335,20 +335,31 @@ sub _add_text {
             }
         }
 
+        $el->document($self);
+        $el->parent($parent);
         if ($+{link}) {
             require Org::Element::Link;
             $el = Org::Element::Link->new(
-                link=>$+{link_link}, description=>$+{link_desc});
+                document => $self, parent => $parent,
+                link=>$+{link_link}, description=>$+{link_desc},
+            );
         } elsif ($+{radio_target}) {
             require Org::Element::RadioTarget;
-            $el = Org::Element::RadioTarget->new(target=>$+{rt_target});
+            $el = Org::Element::RadioTarget->new(
+                document => $self, parent => $parent,
+                target=>$+{rt_target},
+            );
         } elsif ($+{target}) {
             require Org::Element::Target;
-            $el = Org::Element::Target->new(target=>$+{t_target});
+            $el = Org::Element::Target->new(
+                document => $self, parent => $parent,
+                target=>$+{t_target},
+            );
         } elsif ($+{trange}) {
             require Org::Element::TimeRange;
             $el = Org::Element::TimeRange->new(
                 _str => $+{trange},
+                document => $self, parent => $parent,
                 datetime1 => __parse_timestamp($+{trange_ts1}),
                 datetime2 => __parse_timestamp($+{trange_ts2}),
             );
@@ -356,12 +367,14 @@ sub _add_text {
             require Org::Element::Timestamp;
             $el = Org::Element::Timestamp->new(
                 _str=>$+{tstamp},
+                document => $self, parent => $parent,
                 datetime => __parse_timestamp($+{tstamp}),
             );
         } elsif ($+{act_trange}) {
             require Org::Element::TimeRange;
             $el = Org::Element::TimeRange->new(
                 _str=>$+{act_trange},
+                document => $self, parent => $parent,
                 is_active => 1,
                 datetime1 => __parse_timestamp($+{act_tstamp_ts1}),
                 datetime2 => __parse_timestamp($+{act_tstamp_ts2}),
@@ -370,21 +383,20 @@ sub _add_text {
             require Org::Element::Timestamp;
             $el = Org::Element::Timestamp->new(
                 _str=>$+{act_tstamp},
+                document => $self, parent => $parent,
                 is_active => 1,
                 datetime  => __parse_timestamp($+{act_tstamp}),
             );
         } elsif ($+{markup}) {
             require Org::Element::Text;
             $el = Org::Element::Text->new(
+                document => $self, parent => $parent,
                 style=>'', text=>$+{markup},
             );
             # temporary mark, we need to apply markup later
             $el->{_mu}++;
         }
-
         die "BUG2: no element" unless $el;
-        $el->document($self);
-        $el->parent($parent);
         $parent->children([]) if !$parent->children;
         push @{ $parent->children }, $el;
         $self->_trigger_handler("element", {element=>$el}) if $pass==2;
