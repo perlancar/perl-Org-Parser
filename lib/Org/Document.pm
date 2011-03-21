@@ -120,7 +120,7 @@ sub _init_pass2 {
     my ($self) = @_;
     if (!@{ $self->todo_states } && !@{ $self->done_states }) {
         $self->todo_states(['TODO']);
-        $self->todo_states(['DONE']);
+        $self->done_states(['DONE']);
     }
     if (!@{ $self->priorities }) {
         $self->priorities([qw/A B C/]);
