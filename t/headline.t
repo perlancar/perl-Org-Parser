@@ -85,6 +85,30 @@ _
 );
 
 test_parse(
+    name => 'headline levels',
+    filter_elements => 'Org::Element::Headline',
+    doc  => <<'_',
+* h1
+** h2
+*** h3
+**** h4
+***** h5
+* h1b
+*** h3b
+_
+    num => 7,
+    test_after_parse => sub {
+        my (%args) = @_;
+        my $elems = $args{elements};
+        is($elems->[1]->parent->title->as_string, "h1", "parent of h2=h1");
+        is($elems->[2]->parent->title->as_string, "h2", "parent of h3=h2");
+        is($elems->[3]->parent->title->as_string, "h3", "parent of h4=h3");
+        is($elems->[4]->parent->title->as_string, "h4", "parent of h5=h4");
+        is($elems->[6]->parent->title->as_string, "h1b", "parent of h3b=h1b");
+    },
+);
+
+test_parse(
     name => 'todo keyword is case sensitive',
     filter_elements => sub { $_[0]->isa('Org::Element::Headline') &&
                                  $_[0]->is_todo },
