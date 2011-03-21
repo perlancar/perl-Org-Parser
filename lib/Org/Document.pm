@@ -78,7 +78,7 @@ my $block_elems_re = # top level elements
                      \R\#\+END_\k<block_name> $le_re) |
        (?<setting>   $ls_re \#\+
                      (?<setting_name> \w+): [ \t]+
-                     (?<setting_raw_arg> .+) $le_re) |
+                     (?<setting_raw_arg> [^\n]+) $le_re) |
        (?<comment>   $ls_re \#.*) |
        (?<headline>  $ls_re (?<h_bullet>\*+) [ \t]
                      (?<h_title>.*?)
