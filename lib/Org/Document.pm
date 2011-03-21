@@ -128,6 +128,7 @@ sub BUILD {
         # we scan again
 
         $self->_parse($args->{from_string}, 1);
+        $self->children([]);
         $self->_parse($args->{from_string}, 2);
     }
 }
@@ -165,30 +166,43 @@ sub _parse {
 
             require Org::Element::Block;
             $el = Org::Element::Block->new(
-                _str=>$+{block}, name=>$+{block_name}, raw_arg=>$+{block_arg},
+                _str=>$+{block},
+                document=>$self, parent=>$parent,
+                name=>$+{block_name}, raw_arg=>$+{block_arg},
                 raw_content=>$+{block_content});
 
         } elsif ($+{setting}) {
 
             require Org::Element::Setting;
             $el = Org::Element::Setting->new(
-                _str=>$+{setting}, name=>$+{setting_name},
+                _str=>$+{setting},
+                document=>$self, parent=>$parent,
+                name=>$+{setting_name},
                 raw_arg=>$+{setting_raw_arg});
 
         } elsif ($+{table}) {
 
             require Org::Element::Table;
-            $el = Org::Element::Table->new(_str=>$+{table});
+            $el = Org::Element::Table->new(
+                _str=>$+{table},
+                document=>$self, parent=>$parent,
+            );
 
         } elsif ($+{drawer}) {
 
             my $d = uc($+{drawer_name});
             if ($d eq 'PROPERTIES') {
                 require Org::Element::Properties;
-                $el = Org::Element::Properties->new(_str=>$+{drawer});
+                $el = Org::Element::Properties->new(
+                    _str=>$+{drawer},
+                    document=>$self, parent=>$parent,
+                );
             } else {
                 require Org::Element::Drawer;
-                $el = Org::Element::Drawer->new(_str=>$+{drawer});
+                $el = Org::Element::Drawer->new(
+                    _str=>$+{drawer},
+                    document=>$self, parent=>$parent,
+                );
             }
 
         } elsif ($+{li_header}) {
@@ -196,6 +210,7 @@ sub _parse {
             require Org::Element::ListItem;
             my $level = length($+{li_indent});
             $el = Org::Element::ListItem->new(
+                document=>$self, parent=>$parent,
                 indent=>$+{li_indent}, bullet=>$+{li_bullet});
             $el->check_state($+{li_cbstate}) if $+{li_cbstate};
 
@@ -210,7 +225,10 @@ sub _parse {
         } elsif ($+{headline}) {
 
             require Org::Element::Headline;
-            $el = Org::Element::Headline->new(_str=>$+{headline});
+            $el = Org::Element::Headline->new(
+                _str=>$+{headline},
+                document=>$self, parent=>$parent,
+            );
             $el->tags(__split_tags($+{h_tags})) if ($+{h_tags});
             $el->level(length $+{h_bullet});
             my $title = $+{h_title};
@@ -236,7 +254,9 @@ sub _parse {
 
             require Org::Element::Text;
             my $title_el = Org::Element::Text->new(
-                document=>$self, parent=>$el, text=>'', style=>'');
+                document=>$self, parent=>$el,
+                text=>'', style=>'',
+            );
             $self->_add_text($title, $title_el, $pass);
             $title_el = $title_el->children->[0] if
                 $title_el->children && @{$title_el->children} == 1;
@@ -256,8 +276,6 @@ sub _parse {
         # we haven't caught other matches to become element
         die "BUG1: no element" unless $el;
 
-        $el->document($self);
-        $el->parent($parent);
         $parent->children([]) if !$parent->children;
         push @{ $parent->children }, $el;
         $self->_trigger_handler("element", {element=>$el});
