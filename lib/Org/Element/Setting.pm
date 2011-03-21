@@ -42,6 +42,7 @@ sub BUILD {
     require Org::Document;
     my ($self, $args) = @_;
     my $doc = $self->document;
+    my $pass = $args->{pass} // 1;
 
     my $name    = uc $self->name;
     $self->name($name);
@@ -62,9 +63,11 @@ sub BUILD {
         } elsif ($name eq 'DRAWERS') {
             my $d = [split /\s+/, $raw_arg];
             $args->{drawers} = $d;
-            for (@$d) {
-                push @{ $doc->drawers }, $_
-                    unless $_ ~~ @{ $doc->drawers };
+            if ($pass == 1) {
+                for (@$d) {
+                    push @{ $doc->drawers }, $_
+                        unless $_ ~~ @{ $doc->drawers };
+                }
             }
         } elsif ($name eq 'EMAIL') {
         } elsif ($name eq 'EXPORT_EXCLUDE_TAGS') {
@@ -87,7 +90,11 @@ sub BUILD {
         } elsif ($name eq 'PRIORITIES') {
             my $p = [split /\s+/, $raw_arg];
             $args->{priorities} = $p;
-            $doc->priorities($p);
+            if ($pass == 1) {
+                for (@$p) {
+                    push @{ $doc->priorities }, $_;
+                }
+            }
         } elsif ($name eq 'PROPERTY') {
             $raw_arg =~ /(\w+)\s+($Org::Document::arg_val_re)$/
                 or die "Invalid argument for PROPERTY setting, ".
@@ -98,12 +105,14 @@ sub BUILD {
             my $done;
             my @args = split /\s+/, $raw_arg;
             $args->{states} = \@args;
-            for (my $i=0; $i<@args; $i++) {
-                my $arg = $args[$i];
-                if ($arg eq '|') { $done++; next }
-                $done++ if !$done && @args > 1 && $i == @args-1;
-                my $ary = $done ? $doc->done_states : $doc->todo_states;
-                push @$ary, $arg unless $arg ~~ @$ary;
+            if ($pass == 1) {
+                for (my $i=0; $i<@args; $i++) {
+                    my $arg = $args[$i];
+                    if ($arg eq '|') { $done++; next }
+                    $done++ if !$done && @args > 1 && $i == @args-1;
+                    my $ary = $done ? $doc->done_states : $doc->todo_states;
+                    push @$ary, $arg unless $arg ~~ @$ary;
+                }
             }
         } elsif ($name eq 'SETUPFILE') {
         } elsif ($name eq 'STARTUP') {

@@ -47,29 +47,6 @@ _
     dies => 1,
 );
 
-# also checks case-sensitiveness
-test_parse(
-    name => 'setting: todo',
-    filter_elements => 'Org::Element::Setting',
-    doc  => <<'_',
-#+TODO: A B | C C2
-#+todo: D
-#+Todo: | E
-#+tOdO: F G H
-_
-    num  => 4,
-    test_after_parse => sub {
-        my %args = @_;
-        my $doc = $args{result};
-        my $elems = $args{elements};
-        is($elems->[0]->name, "TODO", "name");
-        is_deeply($doc->todo_states, [qw/TODO A B D F G/],
-                  "document's todo_states attribute");
-        is_deeply($doc->done_states, [qw/DONE C C2 E H/],
-                  "document's done_states attribute");
-    },
-);
-
 test_parse(
     name => 'setting: filetags: argument syntax error',
     filter_elements => 'Org::Element::Setting',

@@ -14,7 +14,7 @@ List of known (action-requiring) todo states. Default is ['TODO'].
 
 =cut
 
-has todo_states             => (is => 'rw', default => sub{[qw/TODO/]});
+has todo_states             => (is => 'rw');
 
 =head2 done_states => ARRAY
 
@@ -22,7 +22,7 @@ List of known done (non-action-requiring) states. Default is ['DONE'].
 
 =cut
 
-has done_states             => (is => 'rw', default => sub{[qw/DONE/]});
+has done_states             => (is => 'rw');
 
 =head2 priorities => ARRAY
 
@@ -30,7 +30,7 @@ List of known priorities. Default is ['A', 'B', 'C'].
 
 =cut
 
-has priorities              => (is => 'rw', default => sub{[qw/A B C/]});
+has priorities              => (is => 'rw');
 
 =head2 drawers => ARRAY
 
@@ -38,9 +38,7 @@ List of known drawer names. Default is [qw/CLOCK LOGBOOK PROPERTIES/].
 
 =cut
 
-has drawers                 => (is => 'rw', default => sub{[
-    qw/CLOCK LOGBOOK PROPERTIES/]});
-# FEEDSTATUS
+has drawers                 => (is => 'rw');
 
 has _handler                => (is => 'rw');
 
@@ -50,8 +48,8 @@ my  $sp_bef_re    = qr/(?:(?<=\s)|\A)/s;
 my  $sp_aft_re    = qr/(?:(?=\s)|\z)/s;
 my  $le_re        = qr/(?:\R|\z)/;
 our $arg_val_re   = qr/(?: '(?<squote> [^']*)' |
-                         "(?<dquote> [^"]*)" |
-                          (?<bare> \S+) ) \z
+                           "(?<dquote> [^"]*)" |
+                            (?<bare> \S+) ) \z
                     /x;
 my $tstamp_re     = qr/(?:\[\d{4}-\d{2}-\d{2} \s+ [^\]]*\])/x;
 my $act_tstamp_re = qr/(?:<\d{4}-\d{2}-\d{2} \s+ [^>]*>)/x;
@@ -101,6 +99,30 @@ my $block_elems_re = # top level elements
 
 =cut
 
+sub _init_pass1 {
+    my ($self) = @_;
+    $self->todo_states([]);
+    $self->done_states([]);
+    $self->priorities([]);
+    $self->drawers([]);
+}
+
+sub _init_pass2 {
+    my ($self) = @_;
+    if (!@{ $self->todo_states } && !@{ $self->done_states }) {
+        $self->todo_states(['TODO']);
+        $self->todo_states(['DONE']);
+    }
+    if (!@{ $self->priorities }) {
+        $self->priorities([qw/A B C/]);
+    }
+    if (!@{ $self->drawers }) {
+        $self->drawers([qw/CLOCK LOGBOOK PROPERTIES/]);
+        # FEEDSTATUS
+    }
+    $self->children([]);
+}
+
 sub __get_arg_val {
     my $val = shift;
     $val =~ /\A $arg_val_re \z/ or return;
@@ -127,8 +149,9 @@ sub BUILD {
         # todo keywords set by #+TODO), scan for radio targets, etc. after that
         # we scan again
 
+        $self->_init_pass1();
         $self->_parse($args->{from_string}, 1);
-        $self->children([]);
+        $self->_init_pass2();
         $self->_parse($args->{from_string}, 2);
     }
 }
@@ -175,6 +198,7 @@ sub _parse {
 
             require Org::Element::Setting;
             $el = Org::Element::Setting->new(
+                pass => $pass,
                 _str=>$+{setting},
                 document=>$self, parent=>$parent,
                 name=>$+{setting_name},
@@ -278,7 +302,7 @@ sub _parse {
 
         $parent->children([]) if !$parent->children;
         push @{ $parent->children }, $el;
-        $self->_trigger_handler("element", {element=>$el});
+        $self->_trigger_handler("element", {element=>$el}) if $pass==2;
     }
 
     # remaining text
@@ -363,7 +387,7 @@ sub _add_text {
         $el->parent($parent);
         $parent->children([]) if !$parent->children;
         push @{ $parent->children }, $el;
-        $self->_trigger_handler("element", {element=>$el});
+        $self->_trigger_handler("element", {element=>$el}) if $pass==2;
     }
 
     # remaining text
@@ -385,7 +409,7 @@ sub _add_plain_text {
         document=>$self, parent=>$parent, style=>'', text=>$str);
     $parent->children([]) if !$parent->children;
     push @{ $parent->children }, $el;
-    $self->_trigger_handler("element", {element=>$el});
+    $self->_trigger_handler("element", {element=>$el}) if $pass==2;
 }
 
 sub _trigger_handler {
