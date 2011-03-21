@@ -40,6 +40,14 @@ List of known drawer names. Default is [qw/CLOCK LOGBOOK PROPERTIES/].
 
 has drawers                 => (is => 'rw');
 
+=head2 radio_targets => ARRAY
+
+List of radio targets,
+
+=cut
+
+has radio_targets           => (is => 'rw');
+
 has _handler                => (is => 'rw');
 
 our $tags_re      = qr/:(?:[^:]+:)+/;
@@ -105,6 +113,7 @@ sub _init_pass1 {
     $self->done_states([]);
     $self->priorities([]);
     $self->drawers([]);
+    $self->radio_targets([]);
 }
 
 sub _init_pass2 {
@@ -346,6 +355,7 @@ sub _add_text {
         } elsif ($+{radio_target}) {
             require Org::Element::RadioTarget;
             $el = Org::Element::RadioTarget->new(
+                pass => $pass,
                 document => $self, parent => $parent,
                 target=>$+{rt_target},
             );

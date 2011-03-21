@@ -16,9 +16,19 @@ has target => (is => 'rw');
 
 =head1 METHODS
 
-=for Pod::Coverage as_string
+=for Pod::Coverage as_string BUILD
 
 =cut
+
+sub BUILD {
+    my ($self, $args) = @_;
+    my $pass = $args->{pass} // 1;
+    my $doc  = $self->document;
+    if ($pass == 1) {
+        push @{ $document->radio_targets },
+            $self->target;
+    }
+}
 
 sub as_string {
     my ($self) = @_;

@@ -54,8 +54,9 @@ probably create Element::TableColGroup which is a special row that contains
 column group instruction. or we can just assume it's a normal row and only
 format() needs to worry about this (i prefer the latter).
 ** link
-** TODO target
-** TODO radio target
+** target
+** radio target
+*** TODO parse radio target in text and make them links
 ** timestamp & time range
 *** TODO parse time repeats
 ** headline
