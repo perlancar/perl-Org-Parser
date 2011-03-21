@@ -122,14 +122,20 @@ Create object from string.
 sub BUILD {
     my ($self, $args) = @_;
     if (defined $args->{from_string}) {
-        $self->_parse($args->{from_string});
+
+        # NOTE: parsing is done twice. first pass will set settings (e.g. custom
+        # todo keywords set by #+TODO), scan for radio targets, etc. after that
+        # we scan again
+
+        $self->_parse($args->{from_string}, 1);
+        $self->_parse($args->{from_string}, 2);
     }
 }
 
 # parse blocky elements: setting, blocks, headline, drawer
 sub _parse {
-    my ($self, $str) = @_;
-    $log->tracef('-> _parse(%s)', $str);
+    my ($self, $str, $pass) = @_;
+    $log->tracef('-> _parse(%s, pass=%d)', $str, $pass);
 
     my $last_headline;
     my $last_headlines = [$self]; # [doc, last_level1, last_level2, ...]
@@ -149,7 +155,7 @@ sub _parse {
             next;
         } else {
             if (@text) {
-                $self->_add_text(join("", @text), $parent);
+                $self->_add_text(join("", @text), $parent, $pass);
             }
             @text = ();
         }
@@ -231,7 +237,7 @@ sub _parse {
             require Org::Element::Text;
             my $title_el = Org::Element::Text->new(
                 document=>$self, parent=>$el, text=>'', style=>'');
-            $self->_add_text($title, $title_el);
+            $self->_add_text($title, $title_el, $pass);
             $title_el = $title_el->children->[0] if
                 $title_el->children && @{$title_el->children} == 1;
             $el->title($title_el);
@@ -259,7 +265,7 @@ sub _parse {
 
     # remaining text
     if (@text) {
-        $self->_add_text(join("", @text), $parent);
+        $self->_add_text(join("", @text), $parent, $pass);
     }
     @text = ();
 
@@ -268,9 +274,9 @@ sub _parse {
 
 sub _add_text {
     require Org::Element::Text;
-    my ($self, $str, $parent) = @_;
+    my ($self, $str, $parent, $pass) = @_;
     $parent //= $self;
-    $log->tracef("-> _add_text(%s)", $str);
+    $log->tracef("-> _add_text(%s, pass=%d)", $str, $pass);
 
     my @plain_text;
     while ($str =~ /$text_re/g) {
@@ -282,7 +288,7 @@ sub _add_text {
             next;
         } else {
             if (@plain_text) {
-                $self->_add_plain_text(join("", @plain_text), $parent);
+                $self->_add_plain_text(join("", @plain_text), $parent, $pass);
                 @plain_text = ();
             }
         }
@@ -356,7 +362,7 @@ sub _add_text {
 
 sub _add_plain_text {
     require Org::Element::Text;
-    my ($self, $str, $parent) = @_;
+    my ($self, $str, $parent, $pass) = @_;
     my $el = Org::Element::Text->new(
         document=>$self, parent=>$parent, style=>'', text=>$str);
     $parent->children([]) if !$parent->children;

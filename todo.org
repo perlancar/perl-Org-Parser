@@ -58,23 +58,6 @@ format() needs to worry about this (i prefer the latter).
 ** TODO radio target
 ** timestamp & time range
 *** TODO parse time repeats
-** TODO multipass parser?
-
-Parser is currently a single-pass parser, so you need to preset stuffs before
-using them. For example, when declaring custom TODO keywords:
-
- #+TODO: TODO | DONE
- #+TODO: BUG WISHLIST | FIXED CANTREPRO
-
- * FIXED blah
-
-and not:
-
- * FIXED blah (at this point, custom TODO keywords not yet recognized)
-
- #+TODO: TODO | DONE
- #+TODO: BUG WISHLIST | FIXED CANTREPRO
-
 ** headline
 *** TODO what constitutes a valid tag?
 *** TODO Parse headline percentages
