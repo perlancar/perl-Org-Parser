@@ -1,0 +1,17 @@
+  - (a) PARENT=; SEQ=1; NOTE=indented right away is okay
+    some text under list item
+* heading
+    - (b) PARENT=; SEQ=1; NOTE=headline resets last listitem
+* heading
+- (c) PARENT=; SEQ=1
+  - (d) PARENT=c; SEQ=1
+  + (e) PARENT=c; SEQ=1; NOTE=different bullet style belongs to different list
+  + (e2) PARENT=c; SEQ=2
+  - (f) PARENT=c; SEQ=1; NOTE=different bullet style belongs to different list
+    * (g) PARENT=f; SEQ=1
+      1. (h) PARENT=g; SEQ=1
+      3. (h2) PARENT=g; SEQ=2
+      4. (h3) PARENT=g; SEQ=3
+        + (i) PARENT=h3
+- (c2) PARENT=; SEQ=2
+    * (g2) PARENT=c2; SEQ=1
