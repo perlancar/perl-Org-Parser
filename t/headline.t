@@ -138,7 +138,7 @@ _
         my $hl    = $elems->[0];
         my $title = $hl->title;
         isa_ok($title->children->[0], "Org::Element::Text");
-        isa_ok($title->children->[1], "Org::Element::ScheduleTimestamp");
+        isa_ok($title->children->[1], "Org::Element::Timestamp");
         isa_ok($title->children->[2], "Org::Element::Text");
     },
 );

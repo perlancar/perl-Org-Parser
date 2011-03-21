@@ -46,7 +46,7 @@ sub get_due_todos {
                 my $el      = $args->{element};
                 my $is_hl   = $el->isa('Org::Element::Headline');
                 return unless $is_hl && $el->is_todo && !$el->is_done
-                    || $el->isa('Org::Element::ScheduleTimestamp');
+                    || $el->isa('Org::Element::Timestamp') && $el->is_active;
                 if ($is_hl && $el->is_todo) {
                     $curtodo = $el;
                 }

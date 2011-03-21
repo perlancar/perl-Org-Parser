@@ -54,7 +54,7 @@ _
         # test inline elements inside cell
         my $c5a = $r5->children->[0];
         isa_ok($c5a->children->[0], "Org::Element::Text");
-        isa_ok($c5a->children->[1], "Org::Element::ScheduleTimestamp");
+        isa_ok($c5a->children->[1], "Org::Element::Timestamp");
         isa_ok($c5a->children->[2], "Org::Element::Text");
     },
 );

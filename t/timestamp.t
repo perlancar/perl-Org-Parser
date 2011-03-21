@@ -13,8 +13,9 @@ use Test::More 0.96;
 require "testlib.pl";
 
 test_parse(
-    name => 'schedule timestamp',
-    filter_elements => 'Org::Element::ScheduleTimestamp',
+    name => 'active timestamp',
+    filter_elements => sub {
+        $_[0]->isa('Org::Element::Timestamp') && $_[0]->is_active },
     doc  => <<'_',
 * TODO foo
   SCHEDULED: <2011-03-16 Tue>

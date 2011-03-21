@@ -33,8 +33,13 @@ sub dump_element {
         $line .= " l=".length($el->indent);
     } elsif ($type eq 'Text') {
         $line .= " ".$el->style if $el->style;
-    } elsif ($type =~ /^(Schedule)?Timestamp$/) {
+    } elsif ($type eq 'Timestamp') {
+        $line .= " A" if $el->is_active;
         $line .= " dt=".$el->datetime;
+    } elsif ($type eq 'TimeRange') {
+        $line .= " A" if $el->is_active;
+        $line .= " dt1=".$el->datetime1;
+        $line .= " dt2=".$el->datetime2;
     }
     unless ($el->children) {
         $line .= " \"".

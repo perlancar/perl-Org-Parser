@@ -44,29 +44,29 @@ has drawers                 => (is => 'rw', default => sub{[
 
 has _handler                => (is => 'rw');
 
-our $tags_re    = qr/:(?:[^:]+:)+/;
-my  $ls_re      = qr/(?:(?<=[\015\012])|\A)/;
-my  $sp_bef_re  = qr/(?:(?<=\s)|\A)/s;
-my  $sp_aft_re  = qr/(?:(?=\s)|\z)/s;
-my  $le_re      = qr/(?:\R|\z)/;
-our $arg_val_re = qr/(?: '(?<squote> [^']*)' |
+our $tags_re      = qr/:(?:[^:]+:)+/;
+my  $ls_re        = qr/(?:(?<=[\015\012])|\A)/;
+my  $sp_bef_re    = qr/(?:(?<=\s)|\A)/s;
+my  $sp_aft_re    = qr/(?:(?=\s)|\z)/s;
+my  $le_re        = qr/(?:\R|\z)/;
+our $arg_val_re   = qr/(?: '(?<squote> [^']*)' |
                          "(?<dquote> [^"]*)" |
                           (?<bare> \S+) ) \z
                     /x;
-my $ts_re       = qr/(?:\[\d{4}-\d{2}-\d{2} \s+ [^\]]*\])/x;
-my $sch_ts_re   = qr/(?:<\d{4}-\d{2}-\d{2} \s+ [^>]*>)/x;
-my $text_re =
+my $tstamp_re     = qr/(?:\[\d{4}-\d{2}-\d{2} \s+ [^\]]*\])/x;
+my $act_tstamp_re = qr/(?:<\d{4}-\d{2}-\d{2} \s+ [^>]*>)/x;
+my $text_re       =
     qr!
        (?<link>         \[\[(?<link_link> [^\]]+)\]
                         (?:\[(?<link_desc> (?:[^\]]|\R)+)\])?\]) |
        (?<radio_target> <<<(?<rt_target> [^>]+)>>>) |
        (?<target>       <<(?<t_target> [^>]+)>>) |
-       (?<ts_pair>      (?<ts_pair1> $ts_re)--
-                        (?<ts_pair2> $ts_re)) |
-       (?<ts>           $ts_re) |
-       (?<sch_ts_pair>  (?<sch_ts_pair1> $sch_ts_re)--
-                        (?<sch_ts_pair1> $sch_ts_re)) |
-       (?<sch_ts>       $sch_ts_re) |
+       (?<trange>       (?<trange_ts1> $tstamp_re)--
+                        (?<trange_ts2> $tstamp_re)) |
+       (?<tstamp>       $tstamp_re) |
+       (?<act_trange>   (?<act_trange_ts1> $act_tstamp_re)--
+                        (?<act_trange_ts2> $act_tstamp_re)) |
+       (?<act_tstamp>   $act_tstamp_re) |
        (?<markup>       [*/+=~_]) |
        (?<plain_text>   (?:[^\[<*/+=~_]+|.+?)) # can be very slow
        #(?<plain_text>   .+?) # too dispersy
@@ -297,38 +297,41 @@ sub _add_text {
         } elsif ($+{target}) {
             require Org::Element::Target;
             $el = Org::Element::Target->new(target=>$+{t_target});
-        } elsif ($+{ts_pair}) {
-            require Org::Element::TimestampPair;
-            $el = Org::Element::TimestampPair->new(
-                _str => $+{ts_pair},
-                datetime1 => __parse_timestamp($+{ts_pair1}),
-                datetime2 => __parse_timestamp($+{ts_pair2}),
+        } elsif ($+{trange}) {
+            require Org::Element::TimeRange;
+            $el = Org::Element::TimeRange->new(
+                _str => $+{trange},
+                datetime1 => __parse_timestamp($+{trange_ts1}),
+                datetime2 => __parse_timestamp($+{trange_ts2}),
             );
-        } elsif ($+{ts}) {
+        } elsif ($+{tstamp}) {
             require Org::Element::Timestamp;
             $el = Org::Element::Timestamp->new(
-                _str=>$+{ts},
-                datetime => __parse_timestamp($+{ts}),
+                _str=>$+{tstamp},
+                datetime => __parse_timestamp($+{tstamp}),
             );
-        } elsif ($+{sch_ts_pair}) {
-            require Org::Element::ScheduleTimestampPair;
-            $el = Org::Element::ScheduleTimestampPair->new(
-                _str=>$+{sch_ts_pair},
-                datetime1 => __parse_timestamp($+{sch_ts_pair1}),
-                datetime2 => __parse_timestamp($+{sch_ts_pair2}),
+        } elsif ($+{act_trange}) {
+            require Org::Element::TimeRange;
+            $el = Org::Element::TimeRange->new(
+                _str=>$+{act_trange},
+                is_active => 1,
+                datetime1 => __parse_timestamp($+{act_tstamp_ts1}),
+                datetime2 => __parse_timestamp($+{act_tstamp_ts2}),
             );
-        } elsif ($+{sch_ts}) {
-            require Org::Element::ScheduleTimestamp;
-            $el = Org::Element::ScheduleTimestamp->new(
-                _str=>$+{sch_ts},
-                datetime => __parse_timestamp($+{sch_ts}),
+        } elsif ($+{act_tstamp}) {
+            require Org::Element::Timestamp;
+            $el = Org::Element::Timestamp->new(
+                _str=>$+{act_tstamp},
+                is_active => 1,
+                datetime  => __parse_timestamp($+{act_tstamp}),
             );
         } elsif ($+{markup}) {
-            # tmp, we need state checking for applying markup
             require Org::Element::Text;
             $el = Org::Element::Text->new(
                 style=>'', text=>$+{markup},
             );
+            # temporary mark, we need to apply markup later
+            $el->{_mu}++;
         }
 
         die "BUG2: no element" unless $el;
