@@ -41,6 +41,7 @@ has args => (is => 'rw');
 sub BUILD {
     require Org::Document;
     my ($self, $args) = @_;
+    my $doc = $self->document;
 
     my $name    = uc $self->name;
     $self->name($name);
@@ -70,7 +71,7 @@ sub BUILD {
         } elsif ($name eq 'EXPORT_SELECT_TAGS') {
         } elsif ($name eq 'FILETAGS') {
             $raw_arg =~ /^$Org::Document::tags_re$/ or
-                die "Invalid argument syntax for FILEARGS: $raw";
+                die "Invalid argument syntax for FILEARGS: $raw_arg";
             $args->{tags} = Org::Document::__split_tags($raw_arg);
         } elsif ($name eq 'INCLUDE') {
         } elsif ($name eq 'INDEX') {
@@ -113,7 +114,7 @@ sub BUILD {
         } elsif ($name eq 'TITLE') {
         } elsif ($name eq 'XSLT') {
         } else {
-            die "Unknown setting $name: $raw";
+            die "Unknown setting $name";
         }
         $self->args($args);
     }
