@@ -82,7 +82,7 @@ my $block_elems_re = # top level elements
                      (?<h_title>.*?)
                      (?:[ \t]+(?<h_tags> $tags_re))?[ \t]* $le_re) |
        (?<li_header> $ls_re (?<li_indent>[ \t]*)
-                     (?<li_bullet>[+*-]) [ \t]+
+                     (?<li_bullet>[+*-]|\d+\.) [ \t]+
                      (?<li_checkbox> \[(?<li_cbstate> [ X-])\])?) |
        (?<table>     (?: $ls_re [ \t]* \| [ \t]* \S.* $le_re)+) |
        (?<drawer>    $ls_re [ \t]* :(?<drawer_name> \w+): [ \t]*\R
