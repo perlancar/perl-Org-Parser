@@ -57,7 +57,7 @@ my $text_re       =
     qr!
        (?<link>         \[\[(?<link_link> [^\]]+)\]
                         (?:\[(?<link_desc> (?:[^\]]|\R)+)\])?\]) |
-       (?<radio_target> <<<(?<rt_target> [^>]+)>>>) |
+       (?<radio_target> <<<(?<rt_target> [^>\n]+)>>>) |
        (?<target>       <<(?<t_target> [^>]+)>>) |
        (?<trange>       (?<trange_ts1> $tstamp_re)--
                         (?<trange_ts2> $tstamp_re)) |
