@@ -35,8 +35,8 @@ sub dump_element {
     } elsif ($type eq 'ListItem') {
         $line .= " ".$el->bullet;
     } elsif ($type eq 'Text') {
-        $line .= " mu_start" if $el->{_mu_start}; #TMP
-        $line .= " mu_end" if $el->{_mu_end}; #TMP
+        #$line .= " mu_start" if $el->{_mu_start}; #TMP
+        #$line .= " mu_end" if $el->{_mu_end}; #TMP
         $line .= " ".$el->style if $el->style;
     } elsif ($type eq 'Timestamp') {
         $line .= " A" if $el->is_active;
