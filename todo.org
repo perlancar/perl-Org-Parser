@@ -7,7 +7,7 @@ methods, e.g. find_next_heading(), find_next_subheading()
 return the headline this element is in.
 *** TODO get_tags()
 return list of tags including inherited tags
-*** TODO get_property()
+*** DONE get_property()
 return property, including inherited ones
 ** TODO parse sexp entries?
 e.g.
@@ -31,7 +31,6 @@ versus
 *** export to html
 - should perhaps be put in another dist, e.g. Org::Export::HTML
 - column groups
-*** TODO footnote
 *** TODO caption(), label(), etc
 Get it from settings:
 
@@ -53,12 +52,13 @@ Question: is this still valid caption?
 probably create Element::TableColGroup which is a special row that contains
 column group instruction. or we can just assume it's a normal row and only
 format() needs to worry about this (i prefer the latter).
+** footnote
 ** link
 ** target
 ** radio target
-*** TODO parse radio target in text and make them links
 ** timestamp & time range
 *** TODO parse time repeats
+** plain lists (ordered, unordered, description)
 ** headline
 *** TODO what constitutes a valid tag?
 *** TODO Parse headline percentages
@@ -66,12 +66,9 @@ format() needs to worry about this (i prefer the latter).
 return undef if .document is undef.
 *** TODO cycle_todo_state($reverse // 0)
 *** TODO promoto_subtree() & demote_subtree()
-** drawer
+** drawer & properties
 ** properties
-*** TODO use hash which preserves order
-*** TODO is property key case-sensitive?
-*** TODO when adding/deleting/setting property, ._raw should be undef/replaced
-*** TODO format()
+*** TODO check valid values of property (foo_ALL)
 ** setting
 *** TODO process includes (#+INCLUDE)
 
@@ -89,6 +86,3 @@ into document's .link_abbrevs()
 *** TODO TAGS/FILETAGS: parse keyboard shortcuts
  #+TAGS: OFFICE(o) COMPUTER(c) HOME(h) PROJECT(p) READING(r) DVD(d)
 the key should be discarded when checking for known tags
-** TODO plain lists
-This include {unordered,ordered,description,check} lists
-*** TODO add Org::Element::List to group ListItem's together
