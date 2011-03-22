@@ -283,6 +283,7 @@ sub _parse {
 
             require Org::Element::Table;
             $el = Org::Element::Table->new(
+                pass=>$pass,
                 _str=>$+{table},
                 document=>$self, parent=>$parent,
             );

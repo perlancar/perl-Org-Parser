@@ -30,6 +30,7 @@ sub BUILD {
     require Org::Element::TableVLine;
     require Org::Element::TableCell;
     my ($self, $args) = @_;
+    my $pass = $args->{pass} // 1;
 
     # parse _str into rows & cells
     my $_str = $args->{_str};
@@ -40,7 +41,7 @@ sub BUILD {
         }
 
         my $doc = $self->document;
-        my @rows0 = split /\R/, $raw;
+        my @rows0 = split /\R/, $_str;
         $self->children([]);
         for my $row0 (@rows0) {
             $log->tracef("table line: %s", $row0);
@@ -55,7 +56,7 @@ sub BUILD {
                 for my $cell0 (split /\s*\|\s*/, $s) {
                     my $cell = Org::Element::TableCell->new(
                         parent => $row, children=>[]);
-                    $orgp->parse_inline($cell0, $doc, $cell);
+                    $doc->_add_text($cell0, $cell, $pass);
                     push @{ $row->children }, $cell;
                 }
             } else {
