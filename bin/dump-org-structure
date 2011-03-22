@@ -36,6 +36,7 @@ sub dump_element {
         $line .= " indent=".length($el->indent);
     } elsif ($type eq 'ListItem') {
         $line .= " ".$el->bullet;
+        $line .= " [".$el->check_state."]" if $el->check_state;
     } elsif ($type eq 'Text') {
         #$line .= " mu_start" if $el->{_mu_start}; #TMP
         #$line .= " mu_end" if $el->{_mu_end}; #TMP
