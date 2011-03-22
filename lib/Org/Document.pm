@@ -332,7 +332,8 @@ sub _parse {
             );
             $self->_add_text($title, $title_el, $pass);
             $title_el = $title_el->children->[0] if
-                $title_el->children && @{$title_el->children} == 1;
+                $title_el->children && @{$title_el->children} == 1 &&
+                    $title_el->children->[0]->isa('Org::Element::Text');
             $el->title($title_el);
 
             $last_headlines->[$el->level] = $el;
