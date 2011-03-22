@@ -474,13 +474,14 @@ sub _add_text {
             require Org::Element::Footnote;
             $el = Org::Element::Footnote->new(
                 document => $self, parent => $parent,
-                name=>$+{fn_num_num},
+                name=>$+{fn_num_num}, is_ref=>1,
             );
         } elsif ($+{fn_namedef}) {
             require Org::Element::Footnote;
             $el = Org::Element::Footnote->new(
                 document => $self, parent => $parent,
-                name=>$+{fn_namedef_name}
+                name=>$+{fn_namedef_name},
+                is_ref=>$+{fn_namedef_def} ? 0:1,
             );
             $el->def($self->_add_text_container($+{fn_namedef_def},
                                                 $parent, $pass));
@@ -489,6 +490,8 @@ sub _add_text {
             $el = Org::Element::Footnote->new(
                 document => $self, parent => $parent,
                 name=>$+{fn_nameidef_name},
+                is_ref=>($+{fn_nameidef_def} ? 0:1) ||
+                    !length($+{fn_nameidef_name}),
             );
             $el->def(length($+{fn_nameidef_def}) ?
                          $self->_add_text_container($+{fn_nameidef_def},
