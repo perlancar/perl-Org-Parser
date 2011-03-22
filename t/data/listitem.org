@@ -1,17 +1,18 @@
-  - (a) PARENT=; SEQ=1; NOTE=indented right away is okay
+  - (0) PARENT=; SEQ=1; NOTE=indented right away is okay
     some text under list item
 * heading
-    - (b) PARENT=; SEQ=1; NOTE=headline resets last listitem
+  - (1) PARENT=; SEQ=1; NOTE=headline resets last listitem
 * heading
-- (c) PARENT=; SEQ=1
-  - (d) PARENT=c; SEQ=1
-  + (e) PARENT=c; SEQ=1; NOTE=different bullet style belongs to different list
-  + (e2) PARENT=c; SEQ=2
-  - (f) PARENT=c; SEQ=1; NOTE=different bullet style belongs to different list
-    * (g) PARENT=f; SEQ=1
-      1. (h) PARENT=g; SEQ=1
-      3. (h2) PARENT=g; SEQ=2
-      4. (h3) PARENT=g; SEQ=3
-        + (i) PARENT=h3
-- (c2) PARENT=; SEQ=2
-    * (g2) PARENT=c2; SEQ=1
+  - (2) PARENT=; SEQ=1
+    - (3) PARENT=2; SEQ=1
+    + (4) PARENT=2; SEQ=1; NOTE=different bullet style belongs to different list
+    + (5) PARENT=2; SEQ=2
+    + (6) dt :: PARENT=2; SEQ=1; NOTE=description list differs from (un)ordered list
+    - [X](7) PARENT=2; SEQ=1; NOTE=different bullet style belongs to different list
+      * (8) PARENT=7; SEQ=1
+        1. (9) PARENT=8; SEQ=1
+        3. (10) PARENT=8; SEQ=2
+        4. (11) PARENT=8; SEQ=3
+          + (12) PARENT=11
+  - (13) PARENT=; SEQ=2
+      * (14) PARENT=13; SEQ=1
