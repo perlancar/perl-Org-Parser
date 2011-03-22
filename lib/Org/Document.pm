@@ -514,7 +514,7 @@ sub _add_text {
         if (@{$self->radio_targets}) {
             my $re = join "|", map {quotemeta} @{$self->radio_targets};
             $re = qr/(?:$re)/i;
-            $self->_linkify_recursive($re, $parent);
+            $self->_linkify_rt_recursive($re, $parent);
         }
         my $c = $parent->children // [];
         $self->_trigger_element_handler_recursive(@$c);
@@ -630,7 +630,7 @@ sub _merge_text_elements {
     #$log->trace("<- _merge_text_elements()");
 }
 
-sub _linkify_recursive {
+sub _linkify_rt_recursive {
     require Org::Element::Text;
     require Org::Element::Link;
     my ($self, $re, $parent) = @_;
@@ -647,6 +647,7 @@ sub _linkify_recursive {
                     push @split, Org::Element::Link->new(
                         document=>$self, parent=>$parent,
                         link=>$s, description=>undef,
+                        from_radio_target=>1,
                     );
                 } elsif (length $s) {
                     push @split, Org::Element::Text->new(
@@ -657,7 +658,7 @@ sub _linkify_recursive {
             }
             splice @$c, $i, 1, @split;
         }
-        $self->_linkify_recursive($re, $el);
+        $self->_linkify_rt_recursive($re, $el);
     }
 }
 
