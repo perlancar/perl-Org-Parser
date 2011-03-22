@@ -487,7 +487,7 @@ sub _apply_markup {
     #$log->trace("-> _apply_markup()");
     my ($self, $parent) = @_;
     my $last_index = 0;
-    my $c = $self->children;
+    my $c = $parent->children;
 
     while (1) {
         #$log->tracef("text cluster = %s", [map {$_->as_string} @$c]);
