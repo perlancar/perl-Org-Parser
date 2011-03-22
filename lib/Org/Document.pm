@@ -52,8 +52,6 @@ has _handler                => (is => 'rw');
 
 our $tags_re      = qr/:(?:[^:]+:)+/;
 my  $ls_re        = qr/(?:(?<=[\015\012])|\A)/;
-my  $sp_bef_re    = qr/(?:(?<=\s)|\A)/s;
-my  $sp_aft_re    = qr/(?:(?=\s)|\z)/s;
 my  $le_re        = qr/(?:\R|\z)/;
 our $arg_val_re   = qr/(?: '(?<squote> [^']*)' |
                            "(?<dquote> [^"]*)" |
@@ -62,7 +60,7 @@ our $arg_val_re   = qr/(?: '(?<squote> [^']*)' |
 my $tstamp_re     = qr/(?:\[\d{4}-\d{2}-\d{2} \s+ [^\]]*\])/x;
 my $act_tstamp_re = qr/(?:<\d{4}-\d{2}-\d{2} \s+ [^>]*>)/x;
 my $text_re       =
-    qr!
+    qr(
        (?<link>         \[\[(?<link_link> [^\]]+)\]
                         (?:\[(?<link_desc> (?:[^\]]|\R)+)\])?\]) |
        (?<radio_target> <<<(?<rt_target> [^>\n]+)>>>) |
@@ -73,11 +71,16 @@ my $text_re       =
        (?<act_trange>   (?<act_trange_ts1> $act_tstamp_re)--
                         (?<act_trange_ts2> $act_tstamp_re)) |
        (?<act_tstamp>   $act_tstamp_re) |
-       (?<markup_start> $sp_bef_re [*/+=~_]) |
-       (?<markup_end>   [*/+=~_] $sp_aft_re) |
+       (?<markup_start> (?:(?<=\s)|\A)
+                        [*/+=~_]
+                        (?=\S)) |
+       (?<markup_end>   (?<=\S)
+                        [*/+=~_]
+                        # actually emacs doesn't allow ! after markup
+                        (?:(?=[ \t\n:;"',.!?\)*-])|\z)) |
        (?<plain_text>   (?:[^\[<*/+=~_]+|.+?)) # can be very slow
        #(?<plain_text>   .+?) # too dispersy
-      !sxi;
+      )sxi;
 my $block_elems_re = # top level elements
     qr/(?<block>     $ls_re \#\+BEGIN_(?<block_name>\w+)
                      (?:[ \t]+(?<block_raw_arg>\S.*))\R
@@ -460,7 +463,130 @@ sub _add_text {
         @plain_text = ();
     }
 
+    $self->_apply_markup($parent) if $pass == 2;
+    $self->_linkify_radio_targets($parent) if $pass == 2;
+
+    # now after consolidation, we can trigger handler
+    if ($self->children && $pass == 2) {
+        for (@{ $self->children }) {
+            next unless $_->isa('Org::Element::Text') ||
+                $_->isa('Org::Element::Link') && $_->from_radio_target;
+            $self->_trigger_handler("element", {element=>$_});
+        }
+    }
+
     $log->tracef('<- _add_text()');
+}
+
+# to keep parser's regexes simple and fast, we detect markup in regex rather
+# simplistically (as text element) and then apply some more filtering & applying
+# logic here
+
+sub _apply_markup {
+    #$log->trace("-> _apply_markup()");
+    my ($self, $parent) = @_;
+    my $last_index = 0;
+    my $c = $self->children;
+
+    while (1) {
+        #$log->tracef("text cluster = %s", [map {$_->as_string} @$c]);
+        # find a new mu_start
+        my $mu_start_index = -1;
+        my $mu;
+        for (my $i = $last_index; $i < @$c; $i++) {
+            next unless $c->[$i]->{_mu_start};
+            $mu_start_index = $i; $mu = $c->[$i]->text;
+            #$log->tracef("found mu_start at %d (%s)", $i, $mu);
+            last;
+        }
+        unless ($mu_start_index >= 0) {
+            #$log->trace("no more mu_start found");
+            last;
+        }
+
+        # check whether this is a valid markup (has text, has markup end, not
+        # interspersed with non-text, no more > 1 newlines)
+        my $mu_end_index = 0;
+        my $newlines = 0;
+        my $has_text;
+        my $has_unmarkable;
+        for (my $i=$mu_start_index+1; $i < @$c; $i++) {
+            if ($c->[$i]->isa('Org::Element::Text')) {
+                $has_text++;
+            } elsif (1) {
+            } else {
+                $has_unmarkable++; last;
+            }
+            if ($c->[$i]->{_mu_end} && $c->[$i]->text eq $mu) {
+                #$log->tracef("found mu_end at %d", $i);
+                $mu_end_index = $i; last;
+            }
+            my $text = $c->[$i]->as_string;
+            $newlines++ while $text =~ /\R/g;
+            last if $newlines > 1;
+        }
+        my $valid = $has_text && !$has_unmarkable
+            && $mu_end_index && $newlines <= 1;
+        #$log->tracef("mu candidate: start=%d, end=%s, ".
+        #             "has_text=%s, has_unmarkable=%s, newlines=%d, valid=%s",
+        #             $mu_start_index, $mu_end_index,
+        #             $has_text, $has_unmarkable, $newlines, $valid
+        #         );
+        if ($valid) {
+            my $mu_el = Org::Element::Text->new(
+                document => $self, parent => $parent,
+                style=>$Org::Element::Text::mu2style{$mu}, text=>'',
+            );
+            my @c2 = splice @$c, $mu_start_index,
+                $mu_end_index-$mu_start_index+1, $mu_el;
+            #$log->tracef("grouping %s", [map {$_->text} @c2]);
+            $mu_el->children(\@c2);
+            shift @c2;
+            pop @c2;
+            for (@c2) {
+                $_->{parent} = $mu_el;
+            }
+            $self->_merge_text_elements(\@c2);
+            # squish if only one child
+            if (@c2 == 1) {
+                $mu_el->text($c2[0]->text);
+                $mu_el->children(undef);
+            }
+        } else {
+            undef $c->[$mu_start_index]->{_mu_start};
+            $last_index++;
+        }
+    }
+    $self->_merge_text_elements($c);
+    #$log->trace("<- _apply_markup()");
+}
+
+sub _merge_text_elements {
+    my ($self, $els) = @_;
+    #$log->tracef("-> _merge_text_elements(%s)", [map {$_->as_string} @$els]);
+    return unless @$els >= 2;
+    my $i=-1;
+    while (1) {
+        $i++;
+        last if $i >= @$els;
+        next if $els->[$i]->children || !$els->[$i]->isa('Org::Element::Text');
+        my $istyle = $els->[$i]->style // "";
+        while (1) {
+            last if $i+1 >= @$els || $els->[$i+1]->children ||
+                !$els->[$i+1]->isa('Org::Element::Text');
+            last if ($els->[$i+1]->style // "") ne $istyle;
+            #$log->tracef("merging text[%d] '%s' with '%s'",
+            #             $i, $els->[$i]->text, $els->[$i+1]->text);
+            $els->[$i]->{text} .= $els->[$i+1]->{text} // "";
+            splice @$els, $i+1, 1;
+        }
+    }
+    #$log->tracef("merge result = %s", [map {$_->as_string} @$els]);
+    #$log->trace("<- _merge_text_elements()");
+}
+
+sub _linkify_radio_targets {
+    my ($self, $parent) = @_;
 }
 
 sub _add_plain_text {
@@ -470,7 +596,6 @@ sub _add_plain_text {
         document=>$self, parent=>$parent, style=>'', text=>$str);
     $parent->children([]) if !$parent->children;
     push @{ $parent->children }, $el;
-    $self->_trigger_handler("element", {element=>$el}) if $pass==2;
 }
 
 sub _trigger_handler {
