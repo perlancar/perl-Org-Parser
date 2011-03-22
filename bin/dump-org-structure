@@ -66,9 +66,9 @@ sub dump_element {
         }
         print "  " x ($indent_level+1), "(children)\n" if $el->children;
     } elsif ($type eq 'ListItem') {
-        if ($el->def_term) {
-            print "  " x ($indent_level+1), "(definition)\n";
-            dump_element($el->def_term, $indent_level+1);
+        if ($el->desc_term) {
+            print "  " x ($indent_level+1), "(description term)\n";
+            dump_element($el->desc_term, $indent_level+1);
         }
         print "  " x ($indent_level+1), "(children)\n" if $el->children;
     }
