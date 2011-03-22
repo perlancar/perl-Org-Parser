@@ -48,7 +48,7 @@ sub test_parse {
                 }
                 push @elems, $el;
             }
-        );
+        ) if $fe;
 
         if (defined $args{num}) {
             is(scalar(@elems), $args{num}, "num=$args{num}");
