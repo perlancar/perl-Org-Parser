@@ -4,6 +4,8 @@ use 5.010;
 use strict;
 use warnings;
 
+use Org::Dump;
+
 sub test_parse {
     my %args = @_;
 
@@ -26,7 +28,7 @@ sub test_parse {
         my $eval_err = $@;
 
         if ($args{dies}) {
-            ok($eval_err, "dies");
+            ok($eval_err, "dies") or diag(Org::Dump::dump_element($res));
             return;
         } else {
             ok(!$eval_err, "doesnt die") or diag("died with msg $eval_err");
