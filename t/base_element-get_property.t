@@ -36,6 +36,7 @@ _
         ok(!$text->get_property('z'),
            "text->get_property(z)");
 
+        # TODO: search_parent=1
     },
 );
 
