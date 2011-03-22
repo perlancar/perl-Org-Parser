@@ -29,8 +29,6 @@ sub as_string {
          "\n");
 }
 
-=cut
-
 1;
 __END__
 
