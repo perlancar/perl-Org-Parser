@@ -78,7 +78,7 @@ my $text_re       =
                         [*/+=~_]
                         # actually emacs doesn't allow ! after markup
                         (?:(?=[ \t\n:;"',.!?\)*-])|\z)) |
-       (?<plain_text>   (?:[^\[<*/+=~_]+|.+?)) # can be very slow
+       (?<plain_text>   (?:[^\[<*/+=~_]+|.+?))
        #(?<plain_text>   .+?) # too dispersy
       )sxi;
 my $block_elems_re = # top level elements
@@ -100,7 +100,7 @@ my $block_elems_re = # top level elements
        (?<drawer>    $ls_re [ \t]* :(?<drawer_name> \w+): [ \t]*\R
                      (?<drawer_content>.|\R)*?
                      $ls_re [ \t]* :END:) |
-       (?<text>      (?:[^#|:+*0-9\n-]+|\n|.)+?) # can be very slow
+       (?<text>      (?:[^#|:+*0-9\n-]+|\n|.)+?)
        #(?<text>      .+?) # too dispersy
       /msxi;
 
