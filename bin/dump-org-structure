@@ -56,7 +56,7 @@ sub dump_element {
     unless ($el->children) {
         $line .= " \"". printable($el->_str // $el->as_string)."\"";
     }
-    $line = elide($line, 80-length($line));
+    $line = elide($line, 80);
     say $line;
 
     if ($type eq 'Headline') {
