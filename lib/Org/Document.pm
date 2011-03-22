@@ -59,18 +59,29 @@ our $arg_val_re   = qr/(?: '(?<squote> [^']*)' |
                     /x;
 my $tstamp_re     = qr/(?:\[\d{4}-\d{2}-\d{2} \s+ [^\]]*\])/x;
 my $act_tstamp_re = qr/(?:<\d{4}-\d{2}-\d{2} \s+ [^>]*>)/x;
+my $fn_name_re    = qr/(?:[^ \t\n:\]]+)/x;
 my $text_re       =
     qr(
        (?<link>         \[\[(?<link_link> [^\]]+)\]
                         (?:\[(?<link_desc> (?:[^\]]|\R)+)\])?\]) |
        (?<radio_target> <<<(?<rt_target> [^>\n]+)>>>) |
        (?<target>       <<(?<t_target> [^>]+)>>) |
+
+       # timestamp & time range
        (?<trange>       (?<trange_ts1> $tstamp_re)--
                         (?<trange_ts2> $tstamp_re)) |
        (?<tstamp>       $tstamp_re) |
        (?<act_trange>   (?<act_trange_ts1> $act_tstamp_re)--
                         (?<act_trange_ts2> $act_tstamp_re)) |
        (?<act_tstamp>   $act_tstamp_re) |
+
+       # footnote (num, name + def, name + inline definition)
+       (?<fn_num>       \[(?<fn_num_num>\d+)\]) |
+       (?<fn_namedef>   $ls_re \[fn:(?<fn_namedef_name> $fn_name_re)\]
+                        [ \t]* (?<fn_namedef_def> [^ \t\n]+)) |
+       (?<fn_nameidef>  \[fn:(?<fn_nameidef_name> $fn_name_re?):
+                        (?<fn_nameidef_def> ([^\n\]]+)?)\]) |
+
        (?<markup_start> (?:(?<=\s)|\A)
                         [*/+=~_]
                         (?=\S)) |
@@ -78,6 +89,7 @@ my $text_re       =
                         [*/+=~_]
                         # actually emacs doesn't allow ! after markup
                         (?:(?=[ \t\n:;"',.!?\)*-])|\z)) |
+
        (?<plain_text>   (?:[^\[<*/+=~_]+|.+?))
        #(?<plain_text>   .+?) # too dispersy
       )sxi;
@@ -325,16 +337,7 @@ sub _parse {
                 }
             }
 
-            require Org::Element::Text;
-            my $title_el = Org::Element::Text->new(
-                document=>$self, parent=>$el,
-                text=>'', style=>'',
-            );
-            $self->_add_text($title, $title_el, $pass);
-            $title_el = $title_el->children->[0] if
-                $title_el->children && @{$title_el->children} == 1 &&
-                    $title_el->children->[0]->isa('Org::Element::Text');
-            $el->title($title_el);
+            $el->title($self->_add_text_container($title, $parent, $pass));
 
             $last_headlines->[$el->level] = $el;
             splice @$last_headlines, $el->level+1;
@@ -358,6 +361,20 @@ sub _parse {
     @text = ();
 
     $log->tracef('<- _parse()');
+}
+
+sub _add_text_container {
+    require Org::Element::Text;
+    my ($self, $str, $parent, $pass) = @_;
+    my $container = Org::Element::Text->new(
+        document=>$self, parent=>$parent,
+        text=>'', style=>'',
+    );
+    $self->_add_text($str, $container, $pass);
+    $container = $container->children->[0] if
+        $container->children && @{$container->children} == 1 &&
+            $container->children->[0]->isa('Org::Element::Text');
+    $container;
 }
 
 sub _add_text {
@@ -400,6 +417,29 @@ sub _add_text {
                 document => $self, parent => $parent,
                 target=>$+{t_target},
             );
+        } elsif ($+{fn_num}) {
+            require Org::Element::Footnote;
+            $el = Org::Element::Footnote->new(
+                document => $self, parent => $parent,
+                name=>$+{fn_num_num},
+            );
+        } elsif ($+{fn_namedef}) {
+            require Org::Element::Footnote;
+            $el = Org::Element::Footnote->new(
+                document => $self, parent => $parent,
+                name=>$+{fn_namedef_name}
+            );
+            $el->def($self->_add_text_container($+{fn_namedef_def},
+                                                $parent, $pass));
+        } elsif ($+{fn_nameidef}) {
+            require Org::Element::Footnote;
+            $el = Org::Element::Footnote->new(
+                document => $self, parent => $parent,
+                name=>$+{fn_nameidef_name},
+            );
+            $el->def(length($+{fn_nameidef_def}) ?
+                         $self->_add_text_container($+{fn_nameidef_def},
+                                                    $parent, $pass) : undef);
         } elsif ($+{trange}) {
             require Org::Element::TimeRange;
             $el = Org::Element::TimeRange->new(

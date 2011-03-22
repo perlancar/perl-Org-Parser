@@ -28,6 +28,8 @@ sub dump_element {
     if ($type eq 'Headline') {
         $line .= " l=".$el->level;
         $line .= ",todo=".$el->todo_state if $el->todo_state;
+    } elsif ($type eq 'Footnote') {
+        $line .= " name=".($el->name // "");
     } elsif ($type eq 'List') {
         $line .= " ".$el->type;
         $line .= " ".$el->bullet_style;
@@ -56,6 +58,12 @@ sub dump_element {
     if ($type eq 'Headline') {
         print "  " x ($indent_level+1), "(title)\n";
         dump_element($el->title, $indent_level+1);
+        print "  " x ($indent_level+1), "(children)\n" if $el->children;
+    } elsif ($type eq 'Footnote') {
+        if ($el->def) {
+            print "  " x ($indent_level+1), "(definition)\n";
+            dump_element($el->def, $indent_level+1);
+        }
         print "  " x ($indent_level+1), "(children)\n" if $el->children;
     }
 
