@@ -44,7 +44,7 @@ _
 );
 
 test_parse(
-    name => 'unknown drawer',
+    name => 'unknown drawer name',
     filter_elements => 'Org::Element::Drawer',
     doc  => <<'_',
 * foo
@@ -55,42 +55,11 @@ _
 );
 
 test_parse(
-    name => 'drawer',
+    name => 'properties basic tests',
     filter_elements => 'Org::Element::Drawer',
     doc  => <<'_',
-* foo
-    :CLOCK:
-text
-    :END: extra
-_
-    num => 1,
-    test_after_parse => sub {
-        my %args = @_;
-        my $doc = $args{result};
-        my $elems = $args{elements};
-        is($elems->[0]->name, "CLOCK", "name");
-        is($elems->[0]->raw_content, "text\n", "raw_content");
-    },
-);
-
-test_parse(
-    name => 'properties: invalid syntax',
-    filter_elements => 'Org::Element::Properties',
-    doc  => <<'_',
     :PROPERTIES:
-      :foo:    1
-      baz
-    :END:
-_
-    dies => 1,
-);
-
-test_parse(
-    name => 'properties',
-    filter_elements => 'Org::Element::Properties',
-    doc  => <<'_',
-    :PROPERTIES:
-      :foo:    1
+      :foo: 1 "2 3"
       :bar: 2
     :END:
 _
@@ -99,8 +68,9 @@ _
         my %args = @_;
         my $doc = $args{result};
         my $elems = $args{elements};
-        is($elems->[0]->name, "PROPERTIES", "name");
-        is_deeply($elems->[0]->properties, {FOO=>1, BAR=>2}, "properties");
+        my $d = $elems->[0];
+        is($d->name, "PROPERTIES", "name");
+        is_deeply($d->properties, {foo=>[1, "2 3"], bar=>2}, "properties");
     },
 );
 

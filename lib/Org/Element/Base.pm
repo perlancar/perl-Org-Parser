@@ -129,12 +129,14 @@ property is not found in nearest properties drawer.
 
 sub get_property {
     my ($self, $name, $search_parent) = @_;
+    #$log->tracef("-> get_property(%s, search_par=%s)", $name, $search_parent);
     my $p = $self->parent;
     my $s = $p->children if $p;
 
     if ($s) {
         for my $d (@$s) {
-            return unless $d->isa('Org::Element::Drawer')
+        #$log->tracef("searching in sibling: %s (%s)", $d->as_string, ref($d));
+            next unless $d->isa('Org::Element::Drawer')
                 && $d->name eq 'PROPERTIES' && $d->properties;
             return $d->properties->{$name} if defined $d->properties->{$name};
         }

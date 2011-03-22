@@ -27,6 +27,7 @@ sub test_parse {
 
         if ($args{dies}) {
             ok($eval_err, "dies");
+            return;
         } else {
             ok(!$eval_err, "doesnt die") or diag("died with msg $eval_err");
         }
