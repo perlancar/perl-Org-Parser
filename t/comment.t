@@ -29,7 +29,7 @@ _
         my %args  = @_;
         my $doc   = $args{result};
         my $elems = $args{elements};
-        diag(explain [map {$_->as_string} @$elems]);
+        #diag(explain [map {$_->as_string} @$elems]);
         is( $elems->[0]->as_string, "# single line comment\n",
            "comment[0] content");
         is( $elems->[1]->as_string, "# *multi*\n#line\n# comment\n#\n",
