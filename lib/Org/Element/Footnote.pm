@@ -36,7 +36,7 @@ has def => (is => 'rw');
 
 =head1 METHODS
 
-=for Pod::Coverage as_string
+=for Pod::Coverage as_string BUILD
 
 =cut
 
