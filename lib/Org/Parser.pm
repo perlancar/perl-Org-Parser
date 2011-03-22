@@ -8,8 +8,6 @@ use File::Slurp;
 use Org::Document;
 use Scalar::Util qw(blessed);
 
-has handler => (is => 'rw');
-
 sub parse {
     my ($self, $arg) = @_;
     die "Please specify a defined argument to parse()\n" unless defined($arg);
@@ -32,7 +30,7 @@ sub parse {
         die "Invalid argument, please supply a ".
             "string|arrayref|coderef|filehandle\n";
     }
-    Org::Document->new(from_string=>$str, _handler=>$self->handler);
+    Org::Document->new(from_string=>$str);
 }
 
 sub parse_file {
@@ -49,18 +47,10 @@ __END__
  use Org::Parser;
  my $orgp = Org::Parser->new();
 
- # parse into a document object
- my $doc  = $orgp->parse_file("$ENV{HOME}/todo.org");
+ # parse a file
+ my $doc = $orgp->parse_file("$ENV{HOME}/todo.org");
 
- # print out elements while parsing
- $orgp->handler(sub {
-     my ($orgp, $event, @args) = @_;
-     next unless $event eq 'element';
-     my $el = shift @args;
-     next unless $el->isa('Org::Element::Headline') &&
-         $el->is_todo && !$el->is_done;
-     say "found todo item: ", $el->title->as_string;
- });
+ # parse a string
  $orgp->parse(<<EOF);
  * heading1a
  ** TODO heading2a
@@ -69,10 +59,20 @@ __END__
  * heading1c
  EOF
 
+ # walk the document tree
+ $orgp->walk(sub {
+     my ($el) = @_;
+     next unless $el->isa('Org::Element::Headline');
+     say "heading level ", $el->level, ": ", $el->title->as_string;
+ });
+
 will print something like:
 
- found todo item: heading2a
- found todo item: heading1b
+ heading level 1: heading1a
+ heading level 2: heading2a
+ heading level 2: heading2b
+ heading level 1: heading1b
+ heading level 1: heading1c
 
 
 =head1 DESCRIPTION
@@ -89,22 +89,6 @@ implemented stuffs,
 
 
 =head1 ATTRIBUTES
-
-=head2 handler => CODEREF (default undef)
-
-If set, the handler which will be called repeatedly by the parser during
-parsing. This can be used to quickly filter/extract wanted elements (e.g.
-headlines, timestamps, etc) from an Org document.
-
-Handler will be passed these arguments:
-
- $orgp, $event, $args
-
-$orgp is the parser instance, $event is the type of event (currently only
-'element', triggered after the parser parses an element) and $args is a hashref
-containing extra information depending on $event and type of elements. For
-$event == 'element', $args->{element} will be set to the element object.
-
 
 =head1 METHODS
 

@@ -26,7 +26,7 @@ has args => (is => 'rw');
 
 =head1 METHODS
 
-=for Pod::Coverage element_as_string BUILD
+=for Pod::Coverage as_string BUILD
 
 =cut
 

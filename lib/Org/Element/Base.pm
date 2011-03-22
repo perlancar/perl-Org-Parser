@@ -149,4 +149,18 @@ sub get_property {
     $self->document->properties->{$name};
 }
 
+=head2 walk(CODEREF)
+
+Call CODEREF for node and all descendent nodes, depth-first.
+
+=cut
+
+sub walk {
+    my ($self, $code) = @_;
+    $code->($self);
+    if ($self->children) {
+        $_->walk($code) for @{$self->children};
+    }
+}
+
 1;

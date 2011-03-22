@@ -64,8 +64,6 @@ List of radio target text.
 
 has radio_targets           => (is => 'rw');
 
-has _handler                => (is => 'rw');
-
 our $tags_re      = qr/:(?:[^:]+:)+/;
 my  $ls_re        = qr/(?:(?<=[\015\012])|\A)/;
 my  $le_re        = qr/(?:\R|\z)/;
@@ -118,7 +116,7 @@ my $block_elems_re = # top level elements
        (?<setting>   $ls_re \#\+
                      (?<setting_name> \w+): [ \t]+
                      (?<setting_raw_arg> [^\n]+) $le_re) |
-       (?<comment>   $ls_re \#.*) |
+       (?<comment>   $ls_re \#[^\n]*(?:\R\#[^\n]*)* (?:\R|\z)) |
        (?<headline>  $ls_re (?<h_bullet>\*+) [ \t]
                      (?<h_title>.*?)
                      (?:[ \t]+(?<h_tags> $tags_re))?[ \t]* $le_re) |
@@ -273,6 +271,14 @@ sub _parse {
                 args=>__parse_args($+{setting_raw_arg}),
             );
 
+        } elsif ($+{comment}) {
+
+            require Org::Element::Comment;
+            $el = Org::Element::Comment->new(
+                _str=>$+{comment},
+                document=>$self, parent=>$parent,
+            );
+
         } elsif ($+{table}) {
 
             require Org::Element::Table;
@@ -398,7 +404,6 @@ sub _parse {
 
         $parent->children([]) if !$parent->children;
         push @{ $parent->children }, $el;
-        $self->_trigger_handler("element", {element=>$el}) if $pass==2;
     }
 
     # remaining text
@@ -558,7 +563,6 @@ sub _add_text {
             $self->_linkify_rt_recursive($re, $parent);
         }
         my $c = $parent->children // [];
-        $self->_trigger_element_handler_recursive(@$c);
     }
 
     $log->tracef('<- _add_text()');
@@ -703,15 +707,6 @@ sub _linkify_rt_recursive {
     }
 }
 
-sub _trigger_element_handler_recursive {
-    my ($self, @elems) = @_;
-    for (@elems) {
-        $self->_trigger_handler("element", {element=>$_});
-        $self->_trigger_element_handler_recursive(@{ $_->children })
-            if $_->children;
-    }
-}
-
 sub _add_plain_text {
     require Org::Element::Text;
     my ($self, $str, $parent, $pass) = @_;
@@ -719,13 +714,6 @@ sub _add_plain_text {
         document=>$self, parent=>$parent, style=>'', text=>$str);
     $parent->children([]) if !$parent->children;
     push @{ $parent->children }, $el;
-}
-
-sub _trigger_handler {
-    my ($self, $ev, $args) = @_;
-    return unless $self->_handler;
-    $log->tracef("calling _handler(%s)", $ev);
-    $self->_handler->($self, $ev, $args);
 }
 
 # temporary place
