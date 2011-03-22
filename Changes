@@ -1,5 +1,30 @@
 Revision history for Org-Parser
 
+0.04    2011-03-22
+
+        This release is a major refactoring from the previous one.
+
+        [INCOMPATIBLE CHANGES]
+
+        - Org::Parser: handler() removed, use Org::Document's walk() instead.
+
+        - Refactoring: some classes removed/merged, some added.
+
+        [ENHANCEMENTS]
+
+        - Dual-pass parsing for more correct behaviour.
+
+        - Parse link, plain list (including ordered/unordered/description list),
+          target, radio target, comment, footnote.
+
+        - Add a couple of utility methods in Element::Base: seniority(),
+          prev_sibling(), next_sibling(), walk(), get_property().
+
+        [ETC]
+
+        - Project todo list now in distribution's todo.org
+
+
 0.03    2011-03-18
 
         [ENHANCEMENTS]
