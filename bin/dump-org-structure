@@ -32,7 +32,7 @@ sub dump_element {
         $line .= " name=".($el->name // "");
     } elsif ($type eq 'List') {
         $line .= " ".$el->type;
-        $line .= " ".$el->bullet_style;
+        $line .= "(".$el->bullet_style.")";
         $line .= " indent=".length($el->indent);
     } elsif ($type eq 'ListItem') {
         $line .= " ".$el->bullet;
@@ -63,6 +63,12 @@ sub dump_element {
         if ($el->def) {
             print "  " x ($indent_level+1), "(definition)\n";
             dump_element($el->def, $indent_level+1);
+        }
+        print "  " x ($indent_level+1), "(children)\n" if $el->children;
+    } elsif ($type eq 'ListItem') {
+        if ($el->def_term) {
+            print "  " x ($indent_level+1), "(definition)\n";
+            dump_element($el->def_term, $indent_level+1);
         }
         print "  " x ($indent_level+1), "(children)\n" if $el->children;
     }

@@ -21,6 +21,14 @@ undef, " ", "X" or "-".
 
 has check_state => (is => 'rw');
 
+=head2 def_term
+
+Definition term (for definition list).
+
+=cut
+
+has def_term => (is => 'rw');
+
 
 =head1 METHODS
 

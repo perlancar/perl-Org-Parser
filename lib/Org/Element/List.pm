@@ -17,9 +17,8 @@ has indent => (is => 'rw');
 
 =head2 type
 
-'U' for unordered (-, +, * for bullets), 'O' for ordered (1., 2., 3., and so
-on). Alternatively you can look at the item's bullet to know which type the list
-is.
+'U' for unordered list (-, +, * for bullets), 'D' for definition list, 'O' for
+ordered list (1., 2., 3., and so on).
 
 =cut
 

@@ -107,7 +107,8 @@ my $block_elems_re = # top level elements
                      (?:[ \t]+(?<h_tags> $tags_re))?[ \t]* $le_re) |
        (?<li_header> $ls_re (?<li_indent>[ \t]*)
                      (?<li_bullet>[+*-]|\d+\.) [ \t]+
-                     (?<li_checkbox> \[(?<li_cbstate> [ X-])\])?) |
+                     (?<li_checkbox> \[(?<li_cbstate> [ X-])\])?
+                     (?: (?<li_defterm> [^\n]+?) [ \t]+ ::)?) |
        (?<table>     (?: $ls_re [ \t]* \| [ \t]* \S.* $le_re)+) |
        (?<drawer>    $ls_re [ \t]* :(?<drawer_name> \w+): [ \t]*\R
                      (?<drawer_content>.|\R)*?
@@ -262,7 +263,10 @@ sub _parse {
             my $level   = length($+{li_indent});
             my $bullet  = $+{li_bullet};
             my $indent  = $+{li_indent};
-            my $type    = $bullet =~ /^\d+\./ ? 'O' : 'U';
+            my $defterm = $+{li_defterm};
+            my $cbstate = $+{li_cbstate};
+            my $type    = defined($defterm) ? 'D' :
+                $bullet =~ /^\d+\./ ? 'O' : 'U';
             my $bstyle  = $type eq 'O' ? '<N>.' : $bullet;
 
             # parent for list is lesser-indented list (or last headline)
@@ -293,7 +297,9 @@ sub _parse {
             $el = Org::Element::ListItem->new(
                 document=>$self, parent=>$list,
                 indent=>$indent, bullet=>$bullet);
-            $el->check_state($+{li_cbstate}) if $+{li_cbstate};
+            $el->check_state($cbstate) if $cbstate;
+            $el->def_term($self->_add_text_container($defterm, $list, $pass))
+                if defined($defterm);
 
             splice @$last_lists, $level+1;
             $last_listitem = $el;
