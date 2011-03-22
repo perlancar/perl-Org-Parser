@@ -79,7 +79,7 @@ my $text_re       =
        (?<fn_num>       \[(?<fn_num_num>\d+)\]) |
        (?<fn_namedef>   $ls_re \[fn:(?<fn_namedef_name> $fn_name_re)\]
                         [ \t]* (?<fn_namedef_def> [^ \t\n]+)) |
-       (?<fn_nameidef>  \[fn:(?<fn_nameidef_name> $fn_name_re?):
+       (?<fn_nameidef>  \[fn:(?<fn_nameidef_name> $fn_name_re?):?
                         (?<fn_nameidef_def> ([^\n\]]+)?)\]) |
 
        (?<markup_start> (?:(?<=\s)|\A)
