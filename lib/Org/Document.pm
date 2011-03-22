@@ -492,7 +492,6 @@ sub _add_text {
         die "BUG2: no element" unless $el;
         $parent->children([]) if !$parent->children;
         push @{ $parent->children }, $el;
-        $self->_trigger_handler("element", {element=>$el}) if $pass==2;
     }
 
     # remaining text
@@ -504,16 +503,15 @@ sub _add_text {
         @plain_text = ();
     }
 
-    $self->_apply_markup($parent) if $pass == 2;
-    $self->_linkify_radio_targets($parent) if $pass == 2;
-
-    # now after consolidation, we can trigger handler
-    if ($self->children && $pass == 2) {
-        for (@{ $self->children }) {
-            next unless $_->isa('Org::Element::Text') ||
-                $_->isa('Org::Element::Link') && $_->from_radio_target;
-            $self->_trigger_handler("element", {element=>$_});
+    if ($pass == 2) {
+        $self->_apply_markup($parent);
+        if (@{$self->radio_targets}) {
+            my $re = join "|", map {quotemeta} @{$self->radio_targets};
+            $re = qr/(?:$re)/i;
+            $self->_linkify_recursive($re, $parent);
         }
+        my $c = $parent->children // [];
+        $self->_trigger_element_handler_recursive(@$c);
     }
 
     $log->tracef('<- _add_text()');
@@ -626,8 +624,44 @@ sub _merge_text_elements {
     #$log->trace("<- _merge_text_elements()");
 }
 
-sub _linkify_radio_targets {
-    my ($self, $parent) = @_;
+sub _linkify_recursive {
+    require Org::Element::Text;
+    require Org::Element::Link;
+    my ($self, $re, $parent) = @_;
+    my $c = $parent->children;
+    return unless $c;
+    for (my $i=0; $i<@$c; $i++) {
+        my $el = $c->[$i];
+        if ($el->isa('Org::Element::Text')) {
+            my @split0 = split /\b($re)\b/, $el->text;
+            next unless @split0 > 1;
+            my @split;
+            for my $s (@split0) {
+                if ($s =~ /^$re$/) {
+                    push @split, Org::Element::Link->new(
+                        document=>$self, parent=>$parent,
+                        link=>$s, description=>undef,
+                    );
+                } elsif (length $s) {
+                    push @split, Org::Element::Text->new(
+                        document=>$self, parent=>$parent,
+                        text=>$s, style=>$el->style,
+                    );
+                }
+            }
+            splice @$c, $i, 1, @split;
+        }
+        $self->_linkify_recursive($re, $el);
+    }
+}
+
+sub _trigger_element_handler_recursive {
+    my ($self, @elems) = @_;
+    for (@elems) {
+        $self->_trigger_handler("element", {element=>$_});
+        $self->_trigger_element_handler_recursive(@{ $_->children })
+            if $_->children;
+    }
 }
 
 sub _add_plain_text {
@@ -687,8 +721,3 @@ __END__
 Derived from Org::Element::Base.
 
 
-=head1 SEE ALSO
-
-L<Org::Parser>
-
-=cut

@@ -25,7 +25,7 @@ sub BUILD {
     my $pass = $args->{pass} // 1;
     my $doc  = $self->document;
     if ($pass == 1) {
-        push @{ $document->radio_targets },
+        push @{ $doc->radio_targets },
             $self->target;
     }
 }
