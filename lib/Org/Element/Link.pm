@@ -7,17 +7,23 @@ extends 'Org::Element::Base';
 
 =head1 ATTRIBUTES
 
-=head2 link
+=head2 link => STR
 
 =cut
 
 has link => (is => 'rw');
 
-=head2 description
+=head2 description => STR
 
 =cut
 
 has description => (is => 'rw');
+
+=head2 from_radio_target => BOOL
+
+=cut
+
+has from_radio_target => (is => 'rw');
 
 
 =head1 METHODS
