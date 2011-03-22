@@ -8,6 +8,14 @@ extends 'Org::Element::Base';
 
 =head1 ATTRIBUTES
 
+=head2 tags => ARRAY
+
+List of tags for this file, usually set via #+FILETAGS.
+
+=cut
+
+has tags                    => (is => 'rw');
+
 =head2 todo_states => ARRAY
 
 List of known (action-requiring) todo states. Default is ['TODO'].
@@ -32,13 +40,21 @@ List of known priorities. Default is ['A', 'B', 'C'].
 
 has priorities              => (is => 'rw');
 
-=head2 drawers => ARRAY
+=head2 drawer_names => ARRAY
 
 List of known drawer names. Default is [qw/CLOCK LOGBOOK PROPERTIES/].
 
 =cut
 
-has drawers                 => (is => 'rw');
+has drawer_names            => (is => 'rw');
+
+=head2 properties => ARRAY
+
+File-wide properties.
+
+=cut
+
+has properties              => (is => 'rw');
 
 =head2 radio_targets => ARRAY
 
@@ -53,10 +69,11 @@ has _handler                => (is => 'rw');
 our $tags_re      = qr/:(?:[^:]+:)+/;
 my  $ls_re        = qr/(?:(?<=[\015\012])|\A)/;
 my  $le_re        = qr/(?:\R|\z)/;
-our $arg_val_re   = qr/(?: '(?<squote> [^']*)' |
+our $arg_re       = qr/(?: '(?<squote> [^']*)' |
                            "(?<dquote> [^"]*)" |
-                            (?<bare> \S+) ) \z
-                    /x;
+                            (?<bare> \S+) )
+                      /x;
+our $args_re      = qr/(?: $arg_re (?:[ \t]+ $arg_re)*)/x;
 my $tstamp_re     = qr/(?:\[\d{4}-\d{2}-\d{2} \s+ [^\]]*\])/x;
 my $act_tstamp_re = qr/(?:<\d{4}-\d{2}-\d{2} \s+ [^>]*>)/x;
 my $fn_name_re    = qr/(?:[^ \t\n:\]]+)/x;
@@ -111,7 +128,7 @@ my $block_elems_re = # top level elements
                      (?: (?<li_dt> [^\n]+?) [ \t]+ ::)?) |
        (?<table>     (?: $ls_re [ \t]* \| [ \t]* \S.* $le_re)+) |
        (?<drawer>    $ls_re [ \t]* :(?<drawer_name> \w+): [ \t]*\R
-                     (?<drawer_content>.|\R)*?
+                     (?<drawer_content>(?:.|\R)*?)
                      $ls_re [ \t]* :END:) |
        (?<text>      (?:[^#|:+*0-9\n-]+|\n|.)+?)
        #(?<text>      .+?) # too dispersy
@@ -126,10 +143,12 @@ my $block_elems_re = # top level elements
 
 sub _init_pass1 {
     my ($self) = @_;
+    $self->tags([]);
     $self->todo_states([]);
     $self->done_states([]);
     $self->priorities([]);
-    $self->drawers([]);
+    $self->properties({});
+    $self->drawer_names([]);
     $self->radio_targets([]);
 }
 
@@ -142,23 +161,43 @@ sub _init_pass2 {
     if (!@{ $self->priorities }) {
         $self->priorities([qw/A B C/]);
     }
-    if (!@{ $self->drawers }) {
-        $self->drawers([qw/CLOCK LOGBOOK PROPERTIES/]);
+    if (!@{ $self->drawer_names }) {
+        $self->drawer_names([qw/CLOCK LOGBOOK PROPERTIES/]);
         # FEEDSTATUS
     }
     $self->children([]);
 }
 
-sub __get_arg_val {
-    my $val = shift;
-    $val =~ /\A $arg_val_re \z/ or return;
-    if (defined $+{squote}) {
-        return $+{squote};
-    } elsif (defined $+{dquote}) {
-        return $+{dquote};
-    } else {
-        return $+{bare};
+sub __parse_args {
+    my $args = shift;
+    #$log->tracef("args = %s", $args);
+    my @args;
+    while ($args =~ /$arg_re (?:\s+|\z)/xg) {
+        if (defined $+{squote}) {
+            push @args, $+{squote};
+        } elsif (defined $+{dquote}) {
+            push @args, $+{dquote};
+        } else {
+            push @args, $+{bare};
+        }
     }
+    #$log->tracef("\\\@args = %s", \@args);
+    \@args;
+}
+
+sub __format_args {
+    my ($args) = @_;
+    my @s;
+    for (@$args) {
+        if (/\A[A-Za-z0-9_:-]+\z/) {
+            push @s, $_;
+        } elsif (/"/) {
+            push @s, qq('$_');
+        } else {
+            push @s, qq("$_");
+        }
+    }
+    join " ", @s;
 }
 
 =head2 new(from_string => ...)
@@ -169,6 +208,8 @@ Create object from string.
 
 sub BUILD {
     my ($self, $args) = @_;
+    $self->document($self) unless $self->document;
+
     if (defined $args->{from_string}) {
 
         # NOTE: parsing is done twice. first pass will set settings (e.g. custom
@@ -217,8 +258,9 @@ sub _parse {
             $el = Org::Element::Block->new(
                 _str=>$+{block},
                 document=>$self, parent=>$parent,
-                name=>$+{block_name}, raw_arg=>$+{block_arg},
-                raw_content=>$+{block_content});
+                name=>$+{block_name}, args=>__parse_args($+{block_raw_arg}),
+                raw_content=>$+{block_content},
+            );
 
         } elsif ($+{setting}) {
 
@@ -228,7 +270,8 @@ sub _parse {
                 _str=>$+{setting},
                 document=>$self, parent=>$parent,
                 name=>$+{setting_name},
-                raw_arg=>$+{setting_raw_arg});
+                args=>__parse_args($+{setting_raw_arg}),
+            );
 
         } elsif ($+{table}) {
 
@@ -240,20 +283,18 @@ sub _parse {
 
         } elsif ($+{drawer}) {
 
-            my $d = uc($+{drawer_name});
-            if ($d eq 'PROPERTIES') {
-                require Org::Element::Properties;
-                $el = Org::Element::Properties->new(
-                    _str=>$+{drawer},
-                    document=>$self, parent=>$parent,
-                );
-            } else {
-                require Org::Element::Drawer;
-                $el = Org::Element::Drawer->new(
-                    _str=>$+{drawer},
-                    document=>$self, parent=>$parent,
-                );
-            }
+            require Org::Element::Drawer;
+            my $raw_content = $+{drawer_content};
+            $el = Org::Element::Drawer->new(
+                document=>$self, parent=>$parent,
+                name => uc($+{drawer_name}), pass => $pass,
+            );
+            $self->_add_text($raw_content, $el, $pass);
+
+            # for properties, we also parse property lines from raw drawer
+            # content. this is currently separate from normal Org text parsing,
+            # i'm not clear yet on how to do this canonically.
+            $el->_parse_properties($raw_content);
 
         } elsif ($+{li_header}) {
 

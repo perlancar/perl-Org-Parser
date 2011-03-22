@@ -2,6 +2,7 @@ package Org::Element::Base;
 # ABSTRACT: Base class for element of Org document
 
 use 5.010;
+use Log::Any '$log';
 use Moo;
 use Scalar::Util qw(refaddr);
 
@@ -112,6 +113,40 @@ sub next_sibling {
     my $c = $self->parent->children;
     return undef unless $sen < @$c-1;
     $c->[$sen+1];
+}
+
+=head2 $el->get_property($name, $search_parent) => VALUE
+
+Search for property named $name in the nearest properties drawer. If
+$search_parent is set to true (default is false), will also search in
+upper-level properties (useful for searching for inherited property, like
+foo_ALL). Return undef if property cannot be found in all drawers.
+
+Regardless of $search_parent setting, file-wide properties will be consulted if
+property is not found in nearest properties drawer.
+
+=cut
+
+sub get_property {
+    my ($self, $name, $search_parent) = @_;
+    my $p = $self->parent;
+    my $s = $p->children if $p;
+
+    if ($s) {
+        for my $d (@$s) {
+            return unless $d->isa('Org::Element::Drawer')
+                && $d->name eq 'PROPERTIES' && $d->properties;
+            return $d->properties->{$name} if defined $d->properties->{$name};
+        }
+    }
+
+    if ($p && $search_parent) {
+        my $res = $p->get_property($name, 1);
+        return $res if defined $res;
+    }
+
+    $log->tracef("Getting property from document's .properties");
+    $self->document->properties->{$name};
 }
 
 1;

@@ -48,12 +48,15 @@ sub dump_element {
         $line .= " A" if $el->is_active;
         $line .= " dt1=".$el->datetime1;
         $line .= " dt2=".$el->datetime2;
+    } elsif ($type eq 'Drawer') {
+        $line .= " ".$el->name;
+        $line .= " "._format_properties($el->properties)
+            if $el->name eq 'PROPERTIES' && $el->properties;
     }
     unless ($el->children) {
-        $line .= " \"".
-            printable elide($el->_str // $el->as_string, 80-length($line)-2);
-        $line .= "\"";
+        $line .= " \"". printable($el->_str // $el->as_string)."\"";
     }
+    $line = elide($line, 80-length($line));
     say $line;
 
     if ($type eq 'Headline') {
@@ -77,4 +80,20 @@ sub dump_element {
     if ($el->children) {
         dump_element($_, $indent_level+1) for @{ $el->children };
     }
+}
+
+sub _format_properties {
+    my ($props) = @_;
+    #use Data::Dump::OneLine qw(dump1); return dump1($props);
+    my @s;
+    for my $k (sort keys %$props) {
+        my $v = $props->{$k};
+        if (ref($v) eq 'ARRAY') {
+            $v = "[" . join(",", map {printable($_)} @$v). "]";
+        } else {
+            $v = printable($v);
+        }
+        push @s, "$k=$v";
+    }
+    "{" . join(", ", @s) . "}";
 }

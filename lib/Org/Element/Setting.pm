@@ -15,17 +15,9 @@ Setting name.
 
 has name => (is => 'rw');
 
-=head2 raw_arg => STR
+=head2 args => ARRAY
 
-Raw argument of setting.
-
-=cut
-
-has raw_arg => (is => 'rw');
-
-=head2 args => HASH
-
-Parsed argument.
+Setting's arguments.
 
 =cut
 
@@ -40,101 +32,99 @@ has args => (is => 'rw');
 
 sub BUILD {
     require Org::Document;
-    my ($self, $args) = @_;
+    my ($self, $build_args) = @_;
     my $doc = $self->document;
-    my $pass = $args->{pass} // 1;
+    my $pass = $build_args->{pass} // 1;
 
     my $name    = uc $self->name;
     $self->name($name);
-    my $raw_arg = $self->raw_arg;
-    unless (defined $self->args) {
-        my $args = {};
-        if      ($name eq 'ARCHIVE') {
-        } elsif ($name eq 'AUTHOR') {
-        } elsif ($name eq 'BABEL') {
-        } elsif ($name eq 'CALL') {
-        } elsif ($name eq 'CAPTION') {
-        } elsif ($name eq 'BIND') {
-        } elsif ($name eq 'CATEGORY') {
-        } elsif ($name eq 'COLUMNS') {
-        } elsif ($name eq 'CONSTANTS') {
-        } elsif ($name eq 'DATE') {
-        } elsif ($name eq 'DESCRIPTION') {
-        } elsif ($name eq 'DRAWERS') {
-            my $d = [split /\s+/, $raw_arg];
-            $args->{drawers} = $d;
-            if ($pass == 1) {
-                for (@$d) {
-                    push @{ $doc->drawers }, $_
-                        unless $_ ~~ @{ $doc->drawers };
-                }
+
+    my $args = $self->args;
+    if      ($name eq 'ARCHIVE') {
+    } elsif ($name eq 'AUTHOR') {
+    } elsif ($name eq 'BABEL') {
+    } elsif ($name eq 'CALL') {
+    } elsif ($name eq 'CAPTION') {
+    } elsif ($name eq 'BIND') {
+    } elsif ($name eq 'CATEGORY') {
+    } elsif ($name eq 'COLUMNS') {
+    } elsif ($name eq 'CONSTANTS') {
+    } elsif ($name eq 'DATE') {
+    } elsif ($name eq 'DESCRIPTION') {
+    } elsif ($name eq 'DRAWERS') {
+        if ($pass == 1) {
+            for (@$args) {
+                push @{ $doc->drawers }, $_
+                    unless $_ ~~ @{ $doc->drawers };
             }
-        } elsif ($name eq 'EMAIL') {
-        } elsif ($name eq 'EXPORT_EXCLUDE_TAGS') {
-        } elsif ($name eq 'EXPORT_SELECT_TAGS') {
-        } elsif ($name eq 'FILETAGS') {
-            $raw_arg =~ /^$Org::Document::tags_re$/ or
-                die "Invalid argument syntax for FILEARGS: $raw_arg";
-            $args->{tags} = Org::Document::__split_tags($raw_arg);
-        } elsif ($name eq 'INCLUDE') {
-        } elsif ($name eq 'INDEX') {
-        } elsif ($name eq 'KEYWORDS') {
-        } elsif ($name eq 'LABEL') {
-        } elsif ($name eq 'LANGUAGE') {
-        } elsif ($name eq 'LATEX_HEADER') {
-        } elsif ($name eq 'LINK') {
-        } elsif ($name eq 'LINK_HOME') {
-        } elsif ($name eq 'LINK_UP') {
-        } elsif ($name eq 'OPTIONS') {
-        } elsif ($name eq 'PLOT') {
-        } elsif ($name eq 'PRIORITIES') {
-            my $p = [split /\s+/, $raw_arg];
-            $args->{priorities} = $p;
-            if ($pass == 1) {
-                for (@$p) {
-                    push @{ $doc->priorities }, $_;
-                }
-            }
-        } elsif ($name eq 'PROPERTY') {
-            $raw_arg =~ /(\w+)\s+($Org::Document::arg_val_re)$/
-                or die "Invalid argument for PROPERTY setting, ".
-                    "please use 'NAME VALUE': $raw_arg";
-            $args->{name} = $1;
-            $args->{value} = Org::Document::__get_arg_val($2);
-        } elsif ($name =~ /^(SEQ_TODO|TODO|TYP_TODO)$/) {
-            my $done;
-            my @args = split /\s+/, $raw_arg;
-            $args->{states} = \@args;
-            if ($pass == 1) {
-                for (my $i=0; $i<@args; $i++) {
-                    my $arg = $args[$i];
-                    if ($arg eq '|') { $done++; next }
-                    $done++ if !$done && @args > 1 && $i == @args-1;
-                    my $ary = $done ? $doc->done_states : $doc->todo_states;
-                    push @$ary, $arg unless $arg ~~ @$ary;
-                }
-            }
-        } elsif ($name eq 'SETUPFILE') {
-        } elsif ($name eq 'STARTUP') {
-        } elsif ($name eq 'STYLE') {
-        } elsif ($name eq 'TAGS') {
-        } elsif ($name eq 'TBLFM') {
-        } elsif ($name eq 'TEXT') {
-        } elsif ($name eq 'TITLE') {
-        } elsif ($name eq 'XSLT') {
-        } else {
-            die "Unknown setting $name";
         }
-        $self->args($args);
+    } elsif ($name eq 'EMAIL') {
+    } elsif ($name eq 'EXPORT_EXCLUDE_TAGS') {
+    } elsif ($name eq 'EXPORT_SELECT_TAGS') {
+    } elsif ($name eq 'FILETAGS') {
+        if ($pass == 1) {
+            $args->[0] =~ /^$Org::Document::tags_re$/ or
+                die "Invalid argument for FILETAGS: $args->[0]";
+            for (@{ $args->[0] }) {
+                push @{ $doc->tags }, $_
+                    unless $_ ~~ @{ $doc->tags };
+            }
+        }
+    } elsif ($name eq 'INCLUDE') {
+    } elsif ($name eq 'INDEX') {
+    } elsif ($name eq 'KEYWORDS') {
+    } elsif ($name eq 'LABEL') {
+    } elsif ($name eq 'LANGUAGE') {
+    } elsif ($name eq 'LATEX_HEADER') {
+    } elsif ($name eq 'LINK') {
+    } elsif ($name eq 'LINK_HOME') {
+    } elsif ($name eq 'LINK_UP') {
+    } elsif ($name eq 'OPTIONS') {
+    } elsif ($name eq 'PLOT') {
+    } elsif ($name eq 'PRIORITIES') {
+        if ($pass == 1) {
+            for (@$args) {
+                push @{ $doc->priorities }, $_;
+            }
+        }
+    } elsif ($name eq 'PROPERTY') {
+        if ($pass == 1) {
+            @$args >= 2 or die "Not enough argument for PROPERTY, minimum 2";
+            my $name = shift @$args;
+            $doc->properties->{$name} = @$args > 1 ? [@$args] : $args->[0];
+        }
+    } elsif ($name =~ /^(SEQ_TODO|TODO|TYP_TODO)$/) {
+        if ($pass == 1) {
+            my $done;
+            for (my $i=0; $i<@$args; $i++) {
+                my $arg = $args->[$i];
+                if ($arg eq '|') { $done++; next }
+                $done++ if !$done && @$args > 1 && $i == @$args-1;
+                my $ary = $done ? $doc->done_states : $doc->todo_states;
+                push @$ary, $arg unless $arg ~~ @$ary;
+            }
+        }
+    } elsif ($name eq 'SETUPFILE') {
+    } elsif ($name eq 'STARTUP') {
+    } elsif ($name eq 'STYLE') {
+    } elsif ($name eq 'TAGS') {
+    } elsif ($name eq 'TBLFM') {
+    } elsif ($name eq 'TEXT') {
+    } elsif ($name eq 'TITLE') {
+    } elsif ($name eq 'XSLT') {
+    } else {
+        die "Unknown setting $name";
     }
 }
 
-sub element_as_string {
+sub as_string {
     my ($self) = @_;
     join("",
          "#+".uc($self->name),
-         defined($self->raw_arg) ? " ".$self->raw_arg : "",
-         "\n");
+         $self->args && @{$self->args} ?
+             " ".Org::Document::__format_args($self->args) : "",
+         "\n"
+     );
 }
 
 1;
