@@ -110,7 +110,7 @@ my $text_re       =
       )sxi;
 my $block_elems_re = # top level elements
     qr/(?<block>     $ls_re \#\+BEGIN_(?<block_name>\w+)
-                     (?:[ \t]+(?<block_raw_arg>\S.*))\R
+                     (?:[ \t]+(?<block_raw_arg>[^\n]*))?\R
                      (?<block_content>(?:.|\R)*?)
                      \R\#\+END_\k<block_name> $le_re) |
        (?<setting>   $ls_re \#\+
@@ -146,7 +146,8 @@ sub _init_pass1 {
     $self->done_states([]);
     $self->priorities([]);
     $self->properties({});
-    $self->drawer_names([]);
+    $self->drawer_names([qw/CLOCK LOGBOOK PROPERTIES/]);
+        # FEEDSTATUS
     $self->radio_targets([]);
 }
 
@@ -159,15 +160,12 @@ sub _init_pass2 {
     if (!@{ $self->priorities }) {
         $self->priorities([qw/A B C/]);
     }
-    if (!@{ $self->drawer_names }) {
-        $self->drawer_names([qw/CLOCK LOGBOOK PROPERTIES/]);
-        # FEEDSTATUS
-    }
     $self->children([]);
 }
 
 sub __parse_args {
     my $args = shift;
+    return [] unless defined($args) && length($args);
     #$log->tracef("args = %s", $args);
     my @args;
     while ($args =~ /$arg_re (?:\s+|\z)/xg) {

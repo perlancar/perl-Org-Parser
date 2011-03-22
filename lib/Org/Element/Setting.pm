@@ -54,8 +54,8 @@ sub BUILD {
     } elsif ($name eq 'DRAWERS') {
         if ($pass == 1) {
             for (@$args) {
-                push @{ $doc->drawers }, $_
-                    unless $_ ~~ @{ $doc->drawers };
+                push @{ $doc->drawer_names }, $_
+                    unless $_ ~~ @{ $doc->drawer_names };
             }
         }
     } elsif ($name eq 'EMAIL') {
@@ -65,7 +65,8 @@ sub BUILD {
         if ($pass == 1) {
             $args->[0] =~ /^$Org::Document::tags_re$/ or
                 die "Invalid argument for FILETAGS: $args->[0]";
-            for (@{ $args->[0] }) {
+            for (split /:/, $args->[0]) {
+                next unless length;
                 push @{ $doc->tags }, $_
                     unless $_ ~~ @{ $doc->tags };
             }

@@ -30,12 +30,13 @@ _
 );
 
 test_parse(
-    name => 'setting: syntax error (missing colon)',
+    name => 'setting: syntax error (missing colon, becomes comment)',
     filter_elements => 'Org::Element::Setting',
     doc  => <<'_',
 #+TODO A B | C
 _
-    dies => 1,
+    dies => 0,
+    num => 0,
 );
 
 test_parse(
@@ -68,8 +69,7 @@ _
         my $doc = $args{result};
         my $elems = $args{elements};
         is($elems->[0]->name, "FILETAGS", "name");
-        is($elems->[0]->raw_arg, ":tag1:tag2:tag3:", "raw_arg");
-        is_deeply($elems->[0]->args->{tags}, [qw/tag1 tag2 tag3/],  "tags");
+        is($elems->[0]->args->[0], ":tag1:tag2:tag3:", "args[0]");
     },
 );
 
@@ -85,8 +85,8 @@ _
         my $doc = $args{result};
         my $elems = $args{elements};
         is($elems->[0]->name, "PRIORITIES", "name");
-        is_deeply($elems->[0]->args->{priorities}, [qw/A1 A2 B1 B2 C1 C2/],
-                  "args: priorities");
+        is_deeply($elems->[0]->args, [qw/A1 A2 B1 B2 C1 C2/],
+                  "args");
         is_deeply($doc->priorities, [qw/A1 A2 B1 B2 C1 C2/],
                   "document's priorities attribute");
     },
@@ -104,10 +104,9 @@ _
         my $doc = $args{result};
         my $elems = $args{elements};
         is($elems->[0]->name, "DRAWERS", "name");
-        is_deeply($elems->[0]->args->{drawers}, [qw/D1 D2/], "args: drawers");
-        ok("D1"    ~~ @{$doc->drawers}, "D1 added to list of known drawers");
-        ok("D2"    ~~ @{$doc->drawers}, "D2 added to list of known drawers");
-        ok("CLOCK" ~~ @{$doc->drawers}, "default drawers still known");
+        ok("D1"    ~~ @{$doc->drawer_names}, "D1 added to list of known drawers");
+        ok("D2"    ~~ @{$doc->drawer_names}, "D2 added to list of known drawers");
+        ok("CLOCK" ~~ @{$doc->drawer_names}, "default drawers still known");
     },
 );
 
@@ -127,7 +126,7 @@ _
 );
 
 test_parse(
-    name => 'block: BEGIN_EXAMPLE + END_EXAMPLE: undetected (no END)',
+    name => 'block: EXAMPLE: undetected (no END, becomes comment)',
     filter_elements => 'Org::Element::Block',
     doc  => <<'_',
 #+BEGIN_EXAMPLE
@@ -135,16 +134,18 @@ test_parse(
 2
 #+xEND_EXAMPLE
 _
-    dies => 1,
+    dies => 0,
+    num => 0,
 );
 
 # also checks case-sensitiveness
 test_parse(
-    name => 'block: BEGIN_EXAMPLE + END_EXAMPLE',
+    name => 'block: EXAMPLE basic tests',
     filter_elements => 'Org::Element::Block',
     doc  => <<'_',
 #+BEGIN_EXAMPLE -t -w 40
 #+INSIDE
+line 2
 #+end_EXAMPLE
 _
     num  => 1,
@@ -152,9 +153,10 @@ _
         my %args = @_;
         my $doc = $args{result};
         my $elems = $args{elements};
-        is($elems->[0]->name, "EXAMPLE", "name");
-        is($elems->[0]->raw_arg, "-t -w 40", "raw_arg");
-        is($elems->[0]->raw_content, "#+INSIDE\n", "raw_content");
+        my $bl = $elems->[0];
+        is($bl->name, "EXAMPLE", "name");
+        is_deeply($bl->args, ["-t", "-w", 40], "args");
+        is($bl->raw_content, "#+INSIDE\nline 2", "raw_content");
     },
 );
 

@@ -15,23 +15,13 @@ Block name. For example, #+begin_src ... #+end_src is an 'SRC' block.
 
 has name => (is => 'rw');
 
-=head2 raw_arg => STR
-
-Argument of block. For example:
-
- #+BEGIN_EXAMPLE -t -w40
- ...
- #+END_EXAMPLE
-
-will have '-t -w40' as the raw_arg value.
+=head2 args => ARRAY
 
 =cut
 
-has raw_arg => (is => 'rw');
+has args => (is => 'rw');
 
 =head2 raw_content => STR
-
-Content of block. In the previous 'raw_arg' example, 'raw_content' is "...\n".
 
 =cut
 
@@ -52,7 +42,7 @@ my @known_blocks = qw(
 sub BUILD {
     my ($self, $args) = @_;
     $self->name(uc $self->name);
-    $self->name =~ @known_blocks or die "Unknown block name: ".$self->name;
+    $self->name ~~ @known_blocks or die "Unknown block name: ".$self->name;
 }
 
 sub element_as_string {
@@ -60,7 +50,8 @@ sub element_as_string {
     return $self->_str if defined $self->_str;
     join("",
          "#+BEGIN_".uc($self->name),
-         defined($self->raw_arg) ? " ".$self->raw_arg : "",
+         $self->args && @{$self->args} ?
+             " ".Org::Document::__format_args($self->args) : "",
          "\n",
          $self->raw_content,
          "#+END_".uc($self->name)."\n");
