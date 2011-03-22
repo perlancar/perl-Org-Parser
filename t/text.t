@@ -16,59 +16,95 @@ test_parse(
     filter_elements => 'Org::Element::Text',
     doc  => <<'_',
 * just some heading, not bold*
-0. this is normal.
-*2. this /is/ bold.*
-/4. this *is* italic./
-_6. this is underline._
-+8. this is strike-through.+
-=10. this is code.=
-~12. this is verbatim.~
+0) this is normal.
+*1) this /is/ bold.*
+/3) this *is* italic./
+_5) this is underline._
++7) this is strike-through.+
+=9) this is code.=
+~11) this is verbatim.~
 
 unparsed: *ends with spaces *, / start with space/, =no ending. no starting.~
 _
-    num => 14,
+    num => 13,
     test_after_parse => sub {
         my %args = @_;
         my $doc = $args{result};
         my $elems = $args{elements};
-        ok(!$elems->[ 1]->style,      "elem 0 normal");
-        is( $elems->[ 2]->style, "B", "elem 2 bold");
-        is( $elems->[ 4]->style, "I", "elem 2 italic");
-        is( $elems->[ 6]->style, "U", "elem 2 underline");
-        is( $elems->[ 8]->style, "S", "elem 2 strike-through");
-        is( $elems->[10]->style, "C", "elem 2 code");
-        is( $elems->[12]->style, "V", "elem 2 verbatim");
-        ok(!$elems->[13]->style,      "elem 13 normal");
+        #diag(explain [map {$_->as_string} @$elems]);
+        ok(!$elems->[ 0]->style,      "elem 0 normal");
+        is( $elems->[ 1]->style, "B", "elem 2 bold");
+        is( $elems->[ 3]->style, "I", "elem 2 italic");
+        is( $elems->[ 5]->style, "U", "elem 2 underline");
+        is( $elems->[ 7]->style, "S", "elem 2 strike-through");
+        is( $elems->[ 9]->style, "C", "elem 2 code");
+        is( $elems->[11]->style, "V", "elem 2 verbatim");
+        ok(!$elems->[12]->style,      "elem 13 normal");
 
-        is( $elems->[ 1]->as_string, "0. this is normal.\n",
+        is( $elems->[ 0]->as_string, "0) this is normal.\n",
             "normal as_string");
-        is( $elems->[ 2]->as_string, "*2. this /is/ bold.*",
+        is( $elems->[ 1]->as_string, "*1) this /is/ bold.*",
             "bold as_string");
-        is( $elems->[ 4]->as_string, "/4. this *is* italic./",
+        is( $elems->[ 3]->as_string, "/3) this *is* italic./",
             "italic as string");
-        is( $elems->[ 6]->as_string, "_6. this is underline._",
+        is( $elems->[ 5]->as_string, "_5) this is underline._",
             "underline as_string");
-        is( $elems->[ 8]->as_string, "+8. this is strike-through.+",
+        is( $elems->[ 7]->as_string, "+7) this is strike-through.+",
             "strike-through as_string");
-        is( $elems->[10]->as_string, "=10. this is code.=",
+        is( $elems->[ 9]->as_string, "=9) this is code.=",
             "code as_string");
-        is( $elems->[12]->as_string, "~12. this is verbatim.~",
+        is( $elems->[11]->as_string, "~11) this is verbatim.~",
             "verbatim as_string");
     },
 );
 
-# TODO: emacs only supports at most 2 line of markup, e.g.
-#
-#  =this is
-#  still code=
-#
-# but:
-#
-#  =this is
-#  no longer
-#  code=
+# emacs only allows a single newline in markup
+test_parse(
+    name => 'max newlines',
+    filter_elements => 'Org::Element::Text',
+    doc  => <<'_',
+=this is
+still code=
 
-# TODO: markup can contain links, even *[[link][description with * in it]]*
+=this is
+no longer
+code=
+_
+    num => 2,
+    test_after_parse => sub {
+        my %args = @_;
+        my $doc = $args{result};
+        my $elems = $args{elements};
+        #diag(explain [map {$_->as_string} @$elems]);
+        is( $elems->[0]->style, "C", "elem 0 code");
+        ok(!$elems->[1]->style,      "elem 1 normal");
+
+        is( $elems->[0]->as_string, "=this is\nstill code=",
+            "elem 0 as_string");
+        is( $elems->[1]->as_string, "\n\n=this is\nno longer\ncode=\n",
+            "elem 1 as_string");
+    },
+);
+
+# markup can contain links, even *[[link][description with * in it]]*. also
+# timestamp, etc.
+test_parse(
+    name => 'link inside markup',
+    filter_elements => 'Org::Element::Text',
+    doc  => <<'_',
+*bolded [[link]]*
+_
+    test_after_parse => sub {
+        my %args = @_;
+        my $doc = $args{result};
+        my $elems = $args{elements};
+        is($elems->[0]->style, "B", "elem 0 bold");
+        is($elems->[0]->children->[0]->as_string, "bolded ",
+           "bolded text");
+        is(ref($elems->[0]->children->[1]), "Org::Element::Link",
+           "link inside bolded");
+    },
+);
 
 done_testing();
 
