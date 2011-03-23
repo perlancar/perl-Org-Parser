@@ -453,8 +453,13 @@ sub _add_text {
             require Org::Element::Link;
             $el = Org::Element::Link->new(
                 document => $self, parent => $parent,
-                link=>$+{link_link}, description=>$+{link_desc},
+                link=>$+{link_link},
             );
+            if (defined($+{link_desc}) && length($+{link_desc})) {
+                $el->description(
+                    $self->_add_text_container($+{link_desc},
+                                               $el, $pass));
+            }
         } elsif ($+{radio_target}) {
             require Org::Element::RadioTarget;
             $el = Org::Element::RadioTarget->new(

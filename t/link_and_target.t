@@ -18,8 +18,8 @@ test_parse(
 # links
 [[link1]]
 [[link2][description2]]
-[[link3][descri
-ption3]]
+[[link3][description
+*can* contain markups]]
 
 # non-links
 [[]]      # empty link
@@ -36,9 +36,11 @@ _
         is( $elems->[0]->link       , "link1",          "0: link");
         ok(!$elems->[0]->description,                   "0: description");
         is( $elems->[1]->link       , "link2",          "1: link");
-        is( $elems->[1]->description, "description2",   "1: description");
+        is( $elems->[1]->description->as_string,
+            "description2",                             "1: description");
         is( $elems->[2]->link       , "link3",          "2: link");
-        is( $elems->[2]->description, "descri\nption3", "2: description");
+        is( $elems->[2]->description->as_string,
+            "description\n*can* contain markups",       "2: description");
     },
 );
 
