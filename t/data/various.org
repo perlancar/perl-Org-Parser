@@ -1,0 +1,31 @@
+# this document will contain various elements
+
+* heading
+** heading1a's text contains timestamps                           :tag1:tag2:
+timestamp <2011-03-23 Wed>
+
+inactive timestamp [2011-03-23 Wed 11:55]
+
+some text
+with newlines
+and something :resembling:tag:
+:and: property
+
+*** heading2a
+*** heading2b
+** heading1b contains inactive timestamp [2011-03-23 Wed]
+** heading1c contains active timestamp <2011-03-23 Wed>
+** TODO heading1d
+<2011-03-23 Wed 23:23>
+** DONE heading1e
+
+* properties
+  :PROPERTIES:
+  :a:        1
+  :b:        2
+  :END:
+** subdrawer
+   :PROPERTIES:
+   :a:        1b
+   :b:        2b
+   :END:
