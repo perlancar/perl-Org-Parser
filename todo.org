@@ -1,25 +1,11 @@
 * todo
 ** Element::Base
-*** DONE a method to walk elements
-option to do breadth-first or depth-first. this should be used for other walk
-methods, e.g. find_next_heading(), find_next_subheading()
 *** TODO headline()
 return the headline this element is in.
 *** TODO get_tags()
 return list of tags including inherited tags
-*** DONE get_property()
-return property, including inherited ones
 *** TODO set_property()
 - should create a properties drawer if necessary
-** TODO parse sexp entries?
-e.g.
-
- ** Class 7:00pm-9:00pm
-    <%%(and (= 1 (calendar-day-of-week date)) (diary-block 2 16 2009 4 20 2009))>
-
- * Monthly meeting
-  <%%(diary-float t 3 3)>
-
 ** table
 *** TODO format()
 - this should undef/replace ._raw
@@ -59,7 +45,15 @@ format() needs to worry about this (i prefer the latter).
 ** target
 ** radio target
 ** timestamp & time range
-*** TODO parse repeater interval
+*** TODO parse sexp entries?
+e.g.
+
+ ** Class 7:00pm-9:00pm
+    <%%(and (= 1 (calendar-day-of-week date)) (diary-block 2 16 2009 4 20 2009))>
+
+ * Monthly meeting
+  <%%(diary-float t 3 3)>
+
 ** plain lists (ordered, unordered, description)
 ** headline
 *** TODO what constitutes a valid tag?

@@ -7,23 +7,17 @@ extends 'Org::Element::Base';
 
 =head1 ATTRIBUTES
 
-=head2 datetime1 => DATETIME_OBJ
+=head2 ts1 => TIMESTAMP ELEMENT
 
 =cut
 
-has datetime1 => (is => 'rw');
+has ts1 => (is => 'rw');
 
-=head2 datetime2 => DATETIME_OBJ
-
-=cut
-
-has datetime2 => (is => 'rw');
-
-=head2 is_active => BOOL
+=head2 ts2 => TIMESTAMP ELEMENT
 
 =cut
 
-has is_active => (is => 'rw');
+has ts2 => (is => 'rw');
 
 
 =head1 METHODS
@@ -36,13 +30,9 @@ sub as_string {
     my ($self) = @_;
     return $self->_str if $self->_str;
     join("",
-         $self->is_active ? "<" : "[",
-         $self->datetime1->ymd, " ",
-         # XXX Thu 11:59
-         $self->is_active ? ">--<" : "]--[",
-         $self->datetime2->ymd, " ",
-         # XXX Thu 11:59
-         $self->is_active ? ">" : "]",
+         $self->ts1->as_string,
+         "--",
+         $self->ts2->as_string
      );
 }
 
