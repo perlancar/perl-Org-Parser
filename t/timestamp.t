@@ -13,7 +13,7 @@ use Test::More 0.96;
 require "testlib.pl";
 
 test_parse(
-    name => 'active timestamp',
+    name => 'timestamp basic tests',
     filter_elements => sub {
         $_[0]->isa('Org::Element::Timestamp') },
     doc  => <<'_',
