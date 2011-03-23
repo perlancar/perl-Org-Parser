@@ -1,5 +1,12 @@
 Revision history for Org-Parser
 
+0.06    2011-03-23
+
+        [FIXES]
+
+        - Some regex fixes.
+
+
 0.05    2011-03-23
 
         [INCOMPATIBLE CHANGES]
