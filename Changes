@@ -1,5 +1,12 @@
 Revision history for Org-Parser
 
+0.08    2011-03-23
+
+        [FIXES]
+
+        - Update bin/remind-due-todos.
+
+
 0.07    2011-03-23
 
         [ENHANCEMENTS]
