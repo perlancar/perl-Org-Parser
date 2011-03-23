@@ -1,5 +1,17 @@
 Revision history for Org-Parser
 
+0.05    2011-03-23
+
+        [INCOMPATIBLE CHANGES]
+
+        - Org::Element::TimeRange: datetime1 & datetime2 attributes removed,
+          replaced with ts1 & ts2 (timestamp elements).
+
+        [ENHANCEMENTS]
+
+        - Parses event duration and repeater interval in timestamps.
+
+
 0.04    2011-03-22
 
         This release is a major refactoring from the previous one.
