@@ -1,9 +1,7 @@
 * todo
 ** Element::Base
-*** TODO headline()
+*** DONE headline()
 return the headline this element is in.
-*** TODO get_tags()
-return list of tags including inherited tags
 *** TODO set_property()
 - should create a properties drawer if necessary
 ** table
@@ -16,9 +14,6 @@ return list of tags including inherited tags
 versus
  >|   a | b | cdef |
  >| 123 | 1 |    2 |
-*** export to html
-- should perhaps be put in another dist, e.g. Org::Export::HTML
-- column groups
 *** TODO caption(), label(), etc
 Get it from settings:
 
@@ -56,6 +51,8 @@ e.g.
 
 ** plain lists (ordered, unordered, description)
 ** headline
+*** DONE get_tags()
+return list of tags including inherited tags
 *** TODO what constitutes a valid tag?
 *** TODO Parse headline percentages
 *** TODO next_todo_state() & prev_todo_state()

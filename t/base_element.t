@@ -64,4 +64,41 @@ _
     },
 );
 
+test_parse(
+    name => 'find(), walk_parents(), headline()',
+    doc  => <<'_',
+* a
+** b
+*** c
+**** d
+text
+**** d2
+_
+    test_after_parse => sub {
+        my (%args) = @_;
+        my $doc = $args{result};
+        my @res = $doc->find(
+            sub {
+                $_[0]->isa('Org::Element::Headline') &&
+                    $_[0]->title->as_string =~ /^d/;
+            });
+        is(scalar(@res), 2, "find num results");
+        ok($res[1]->isa("Org::Element::Headline") &&
+               $res[1]->title->as_string eq 'd2', "find result #2");
+
+        my $d = $res[0];
+        my $res = "";
+        $d->walk_parents(
+            sub {
+                my ($el, $parent) = @_;
+                return if $parent->isa('Org::Document');
+                $res .= $parent->title->as_string;
+            });
+        is($res, "cba", "walk_parents()");
+
+        is($d->headline->title->as_string, "c", "headline() 1");
+        is($d->children->[0]->headline->title->as_string, "d", "headline() 2");
+    },
+);
+
 done_testing();

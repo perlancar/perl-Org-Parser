@@ -167,4 +167,27 @@ _
     },
 );
 
+test_parse(
+    name => 'get_tags()',
+    filter_elements => 'Org::Element::Headline',
+    doc  => <<'_',
+#+FILETAGS: :t1:t2:
+* a      :t3:
+** b     :t4:
+* c
+_
+    num => 3,
+    test_after_parse => sub {
+        my (%args) = @_;
+        my $elems = $args{elements};
+        my $tags;
+        $tags = [$elems->[0]->get_tags];
+        is_deeply($tags, [qw/t3 t1 t2/], "get_tags 0") or diag explain $tags;
+        $tags = [$elems->[1]->get_tags];
+        is_deeply($tags, [qw/t4 t3 t1 t2/], "get_tags 1") or diag explain $tags;
+        $tags = [$elems->[2]->get_tags];
+        is_deeply($tags, [qw/t1 t2/], "get_tags 2") or diag explain $tags;
+    },
+);
+
 done_testing();

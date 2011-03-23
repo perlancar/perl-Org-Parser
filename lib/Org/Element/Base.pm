@@ -165,4 +165,69 @@ sub walk {
     }
 }
 
+=head2 find(CRITERIA) -> ELEMENTS
+
+Find subelements. CRITERIA can be a word (e.g. 'Headline' meaning of class
+'Org::Element::Headline') or a class name ('Org::Element::ListItem') or a
+coderef (which will be given the element to test). Will return matched elements.
+
+=cut
+
+sub find {
+    my ($self, $criteria) = @_;
+    return unless $self->children;
+    my @res;
+    $self->walk(
+        sub {
+            my $el = shift;
+            if (ref($criteria) eq 'CODE') {
+                push @res, $el if $criteria->($el);
+            } elsif ($criteria =~ /^\w+$/) {
+                push @res, $el if $el->isa("Org::Element::$criteria");
+            } else {
+                push @res, $el if $el->isa($criteria);
+            }
+        });
+    @res;
+}
+
+=head2 $el->walk_parents(CODE)
+
+Run CODEREF for parent, and its parent, and so on until the root element (the
+document), or until CODEREF returns a false value. CODEREF will be supplied
+($el, $parent). Will return the last parent walked.
+
+=cut
+
+sub walk_parents {
+    my ($self, $code) = @_;
+    my $parent = $self->parent;
+    while ($parent) {
+        return $parent unless $code->($self, $parent);
+        $parent = $parent->parent;
+    }
+    return;
+}
+
+=head2 $el->headline()
+
+Get current headline.
+
+=cut
+
+sub headline {
+    my ($self) = @_;
+    my $h;
+    $self->walk_parents(
+        sub {
+            my ($el, $p) = @_;
+            if ($p->isa('Org::Element::Headline')) {
+                $h = $p;
+                return;
+            }
+            1;
+        });
+    $h;
+}
+
 1;
