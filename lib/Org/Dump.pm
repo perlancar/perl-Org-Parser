@@ -1,4 +1,5 @@
 package Org::Dump;
+#ABSTRACT: Show Org document/element object in a human-friendly format
 
 use 5.010;
 use strict;
