@@ -1,6 +1,6 @@
 * todo
 ** Element::Base
-*** TODO a method to walk elements
+*** DONE a method to walk elements
 option to do breadth-first or depth-first. this should be used for other walk
 methods, e.g. find_next_heading(), find_next_subheading()
 *** TODO headline()
@@ -9,6 +9,8 @@ return the headline this element is in.
 return list of tags including inherited tags
 *** DONE get_property()
 return property, including inherited ones
+*** TODO set_property()
+- should create a properties drawer if necessary
 ** TODO parse sexp entries?
 e.g.
 
@@ -57,7 +59,7 @@ format() needs to worry about this (i prefer the latter).
 ** target
 ** radio target
 ** timestamp & time range
-*** TODO parse time repeats
+*** TODO parse repeater interval
 ** plain lists (ordered, unordered, description)
 ** headline
 *** TODO what constitutes a valid tag?
