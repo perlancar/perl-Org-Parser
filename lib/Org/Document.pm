@@ -515,8 +515,8 @@ sub _add_text {
                 _str=>$+{act_trange},
                 document => $self, parent => $parent,
                 is_active => 1,
-                datetime1 => __parse_timestamp($+{act_tstamp_ts1}),
-                datetime2 => __parse_timestamp($+{act_tstamp_ts2}),
+                datetime1 => __parse_timestamp($+{act_trange_ts1}),
+                datetime2 => __parse_timestamp($+{act_trange_ts2}),
             );
         } elsif ($+{act_tstamp}) {
             require Org::Element::Timestamp;
