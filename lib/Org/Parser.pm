@@ -51,7 +51,7 @@ __END__
  my $doc = $orgp->parse_file("$ENV{HOME}/todo.org");
 
  # parse a string
- $orgp->parse(<<EOF);
+ $doc = $orgp->parse(<<EOF);
  * heading1a
  ** TODO heading2a
  ** DONE heading2b
@@ -60,9 +60,9 @@ __END__
  EOF
 
  # walk the document tree
- $orgp->walk(sub {
+ $doc->walk(sub {
      my ($el) = @_;
-     next unless $el->isa('Org::Element::Headline');
+     return unless $el->isa('Org::Element::Headline');
      say "heading level ", $el->level, ": ", $el->title->as_string;
  });
 
