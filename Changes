@@ -1,5 +1,19 @@
 Revision history for Org-Parser
 
+0.07    2011-03-23
+
+        [ENHANCEMENTS]
+
+        - Org::Element::Base: add find(), walk_parents(), headline()
+
+        - Org::Element::Headline: add get_tags()
+
+
+        [FIXES]
+
+        - Link description can contain markups.
+
+
 0.06    2011-03-23
 
         [FIXES]
