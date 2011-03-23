@@ -39,11 +39,10 @@ sub get_due_todos {
         $log->debug("Parsing $file ...");
         my $orgp = Org::Parser->new;
         my $curtodo;
-        $orgp->handler(
+        my $doc = $orgp->parse_file($file);
+        $doc->walk(
             sub {
-                my ($orgp, $ev, $args) = @_;
-                return unless $ev eq 'element';
-                my $el      = $args->{element};
+                my ($el) = @_;
                 my $is_hl   = $el->isa('Org::Element::Headline');
                 return unless $is_hl && $el->is_todo && !$el->is_done
                     || $el->isa('Org::Element::Timestamp') && $el->is_active;
@@ -64,7 +63,6 @@ sub get_due_todos {
                 }
                 $curtodo = undef;
             });
-        $orgp->parse_file($file);
     }
     [200, "OK", \@res];
 }
