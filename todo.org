@@ -5,15 +5,6 @@ return the headline this element is in.
 *** TODO set_property()
 - should create a properties drawer if necessary
 ** table
-*** TODO format()
-- this should undef/replace ._raw
-- align cell left/right according to whether it's a number
-- optional argument: compress
- >|a|b|cdef
- >|123|1|2
-versus
- >|   a | b | cdef |
- >| 123 | 1 |    2 |
 *** TODO caption(), label(), etc
 Get it from settings:
 
