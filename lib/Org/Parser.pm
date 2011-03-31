@@ -52,11 +52,25 @@ __END__
 
  # parse a string
  $doc = $orgp->parse(<<EOF);
+ #+TODO: TODO | DONE CANCELLED
+ <<<radio target>>>
  * heading1a
  ** TODO heading2a
+ SCHEDULED: <2011-03-31 Thu>
+ [[some][link]]
  ** DONE heading2b
- * TODO heading1b
- * heading1c
+ [2011-03-18 ]
+ this will become a link: radio target
+ * TODO heading1b *bold*
+ - some
+ - plain
+ - list
+ - [ ] with /checkbox/
+   * and
+   * sublist
+ * CANCELLED heading1c
+ + definition :: list
+ + another :: def
  EOF
 
  # walk the document tree
@@ -73,6 +87,24 @@ will print something like:
  heading level 2: heading2b
  heading level 1: heading1b
  heading level 1: heading1c
+
+A command-line utility is provided for debugging:
+
+ % dump-org-structure ~/todo.org
+ Document:
+   Setting: "#+TODO: TODO | DONE CANCELLED\n"
+   RadioTarget: "<<<radio target>>>"
+   Text: "\n"
+   Headline: l=1
+     (title)
+     Text: "heading1a"
+     (children)
+     Headline: l=2 todo=TODO
+       (title)
+       Text: "heading2a"
+       (children)
+       Text: "SCHEDULED: "
+ ...
 
 
 =head1 DESCRIPTION
