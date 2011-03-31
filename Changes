@@ -1,5 +1,12 @@
 Revision history for Org-Parser
 
+0.09    2011-03-31
+
+        [FIXES]
+
+        - Fix SYNOPSIS, use a slightly more complex Org document example.
+
+
 0.08    2011-03-23
 
         [FIXES]
