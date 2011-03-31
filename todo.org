@@ -67,6 +67,13 @@ to note which todo keywords belong to TYP_TODO.
 *** TODO parse buffer-wide header arguments (#+BABEL, 14.8.1)
 *** TODO parse link abbreviation (#+LINK)
 into document's .link_abbrevs()
+*** TODO check tags in document against TAGS
+"TAGS defines tags that will be used in the buffer and defines fast keyboard
+shortcuts for them. Though you are allowed to also use tags that are not in tis
+list." -- carsten
+
+we can introduce a strict mode, for example, where all tags must belong to the
+list specified in TAGS.
 *** TODO TAGS/FILETAGS: parse keyboard shortcuts
  #+TAGS: OFFICE(o) COMPUTER(c) HOME(h) PROJECT(p) READING(r) DVD(d)
 the key should be discarded when checking for known tags
