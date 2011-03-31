@@ -53,6 +53,15 @@ return undef if .document is undef.
 ** drawer & properties
 *** TODO check valid values of property (foo_ALL)
 ** setting
+*** TODO [low] differentiate between TYP_TODO and TODO/SEQ_TODO
+"TODO and SEQ_TODO are the same. TYP_TODO is slightly different in operation.
+When you press C-c C-t in a line with the keyword defined by TYP_TODO, the task
+will immediately switch to DONE, instead of to the next state in the sequence. I
+do believe the manual explains this quite well, but I don't believe many people
+use this." -- carsten
+
+this is probably useful if we already have next_todo_state() et al. We'll need
+to note which todo keywords belong to TYP_TODO.
 *** TODO process includes (#+INCLUDE)
 
 *** TODO parse buffer-wide header arguments (#+BABEL, 14.8.1)
