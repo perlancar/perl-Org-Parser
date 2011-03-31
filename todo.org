@@ -13,7 +13,8 @@ Get it from settings:
  |...|...|
  |...|...|
 
-Question: is this still valid caption?
+note: the setting can be interspersed with other lines/elements, they will be
+apply to the next thing (table) that wants it, e.g.:
 
  #+CAPTION: A long table
  some text
@@ -51,20 +52,11 @@ return undef if .document is undef.
 *** TODO cycle_todo_state($reverse // 0)
 *** TODO promoto_subtree() & demote_subtree()
 ** drawer & properties
-** properties
 *** TODO check valid values of property (foo_ALL)
 ** setting
 *** TODO process includes (#+INCLUDE)
 
 *** TODO parse buffer-wide header arguments (#+BABEL, 14.8.1)
-*** TODO What's the syntax for multiple in-buffer settings on a single line?
-
-Currently the parser assumes a single in-buffer settings per line
-
-*** TODO What's the difference between TYP_TODO and TODO/SEQ_TODO?
-
-Currently we assume it to be the same as the other two.
-
 *** TODO parse link abbreviation (#+LINK)
 into document's .link_abbrevs()
 *** TODO TAGS/FILETAGS: parse keyboard shortcuts
