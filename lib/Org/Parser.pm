@@ -117,7 +117,7 @@ This module uses L<Log::Any> logging framework.
 This module uses L<Moo> object system.
 
 See C<todo.org> in the distribution for the list of already- and not yet
-implemented stuffs,
+implemented stuffs.
 
 
 =head1 ATTRIBUTES
