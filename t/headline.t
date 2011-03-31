@@ -43,8 +43,8 @@ test_parse(
     filter_elements => 'Org::Element::Headline',
     doc  => <<'_',
 *   h1 1
-** h2 1 :tag1:tag2:
-*** h3 1
+** h2 1  :tag1:tag2:
+*** h3 1  :invalid-tag:
 text
 *** TODO [#A] h3 2
     text
@@ -62,7 +62,7 @@ _
         is($elems->[1]->level, 2, "1: level");
         is_deeply($elems->[1]->tags, ['tag1', 'tag2'], "1: tags");
 
-        is($elems->[2]->title->as_string, "h3 1", "2: title");
+        is($elems->[2]->title->as_string, "h3 1  :invalid-tag:", "2: title");
         is($elems->[2]->level, 3, "2: level");
 
         is( $elems->[3]->title->as_string, "h3 2", "3: title");

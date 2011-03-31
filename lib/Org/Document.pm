@@ -64,7 +64,7 @@ List of radio target text.
 
 has radio_targets           => (is => 'rw');
 
-our $tags_re      = qr/:(?:[^:\n]+:)+/;
+our $tags_re      = qr/:(?:[A-Za-z0-9_@#%]+:)+/;
 my  $ls_re        = qr/(?:(?<=[\015\012])|\A)/;
 my  $le_re        = qr/(?:\R|\z)/;
 our $arg_re       = qr/(?: '(?<squote> [^']*)' |
