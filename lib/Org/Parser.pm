@@ -84,7 +84,7 @@ will print something like:
 
  heading level 1: heading1a
  heading level 2: heading2a
- heading level 2: heading2b
+ heading level 2: heading2b *bold*
  heading level 1: heading1b
  heading level 1: heading1c
 
