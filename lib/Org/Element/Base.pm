@@ -153,7 +153,8 @@ sub get_property {
 
 =head2 walk(CODEREF)
 
-Call CODEREF for node and all descendent nodes, depth-first.
+Call CODEREF for node and all descendent nodes, depth-first. Code will be given
+the element object as argument.
 
 =cut
 
