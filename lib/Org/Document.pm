@@ -742,13 +742,13 @@ __END__
 
  use Org::Document;
 
+ # create a new Org document tree from string
  my $org = Org::Document->new(from_string => <<EOF);
  * heading 1a
  some text
  ** heading 2
  * heading 1b
  EOF
-
 
 =head1 DESCRIPTION
 
