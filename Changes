@@ -1,5 +1,18 @@
 Revision history for Org-Parser
 
+0.10    2011-04-21
+
+        [FIXES]
+
+        - Fixes to POD documentation.
+
+        - More specific regex for tag.
+
+        [ETC]
+
+        - Update todo.org (some questions cleared up by Carsten Dominik)
+
+
 0.09    2011-03-31
 
         [FIXES]
