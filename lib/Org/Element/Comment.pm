@@ -16,6 +16,6 @@ __END__
 
 =head1 DESCRIPTION
 
-Derived from Org::Element::Base.
+Derived from L<Org::Element::Base>.
 
 =cut

@@ -45,6 +45,6 @@ __END__
 
 Must have L<Org::Element::ListItem> (or another ::List) as children.
 
-Derived from Org::Element::Base.
+Derived from L<Org::Element::Base>.
 
 =cut

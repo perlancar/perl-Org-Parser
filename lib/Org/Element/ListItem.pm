@@ -56,6 +56,6 @@ __END__
 
 Must have L<Org::Element::List> as parent.
 
-Derived from Org::Element::Base.
+Derived from L<Org::Element::Base>.
 
 =cut
