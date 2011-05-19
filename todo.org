@@ -77,3 +77,20 @@ list specified in TAGS.
 *** TODO TAGS/FILETAGS: parse keyboard shortcuts
  #+TAGS: OFFICE(o) COMPUTER(c) HOME(h) PROJECT(p) READING(r) DVD(d)
 the key should be discarded when checking for known tags
+
+** block: literal example
+*** TODO parse literal example
+
+ #+BEGIN_EXAMPLE
+ Some example from a text file.
+ #+END_EXAMPLE
+
+ Here is an example
+  : Some example from a text file.
+
+ #+BEGIN_SRC emacs-lisp
+   (defun org-xor (a b)
+      "Exclusive or."
+      (if a (not b) b))
+ #+END_SRC
+
