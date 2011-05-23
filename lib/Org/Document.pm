@@ -118,6 +118,8 @@ my $block_elems_re = # top level elements
        (?<setting>   $ls_re (?<setting_indent>[ \t]*) \#\+
                      (?<setting_name> \w+): [ \t]+
                      (?<setting_raw_arg> [^\n]+) $le_re) |
+       (?<shortex>   $ls_re (?<shortex_indent>[ \t]*) :[ ]
+                     (?<shortex_example> [^\n]*) $le_re) |
        (?<comment>   $ls_re \#[^\n]*(?:\R\#[^\n]*)* (?:\R|\z)) |
        (?<headline>  $ls_re (?<h_bullet>\*+) [ \t]
                      (?<h_title>.*?)
@@ -280,6 +282,17 @@ sub _parse {
                     args=>__parse_args($+{setting_raw_arg}),
                 );
             }
+
+        } elsif ($+{shortex}) {
+
+            require Org::Element::ShortExample;
+            $el = Org::Element::ShortExample->new(
+                pass => $pass,
+                _str=>$+{shortex},
+                document=>$self, parent=>$parent,
+                indent => $+{shortex_indent},
+                example=>$+{shortex_example},
+            );
 
         } elsif ($+{comment}) {
 
