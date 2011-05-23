@@ -113,7 +113,7 @@ my $block_elems_re = # top level elements
                      (?:[ \t]+(?<block_raw_arg>[^\n]*))?\R
                      (?<block_content>(?:.|\R)*?)
                      \R\#\+END_\k<block_name> $le_re) |
-       (?<setting>   $ls_re \#\+
+       (?<setting>   $ls_re (?<setting_indent>[ \t]*) \#\+
                      (?<setting_name> \w+): [ \t]+
                      (?<setting_raw_arg> [^\n]+) $le_re) |
        (?<comment>   $ls_re \#[^\n]*(?:\R\#[^\n]*)* (?:\R|\z)) |
@@ -261,13 +261,21 @@ sub _parse {
         } elsif ($+{setting}) {
 
             require Org::Element::Setting;
-            $el = Org::Element::Setting->new(
-                pass => $pass,
-                _str=>$+{setting},
-                document=>$self, parent=>$parent,
-                name=>$+{setting_name},
-                args=>__parse_args($+{setting_raw_arg}),
-            );
+            if ($+{setting_indent} &&
+                    !(uc($+{setting_name}) ~~
+                          @{Org::Element::Setting->indentable_settings})) {
+                push @text, $+{setting};
+                next;
+            } else {
+                $el = Org::Element::Setting->new(
+                    pass => $pass,
+                    _str=>$+{setting},
+                    document=>$self, parent=>$parent,
+                    indent => $+{setting_indent},
+                    name=>$+{setting_name},
+                    args=>__parse_args($+{setting_raw_arg}),
+                );
+            }
 
         } elsif ($+{comment}) {
 

@@ -23,8 +23,30 @@ Setting's arguments.
 
 has args => (is => 'rw');
 
+=head2 indent => STR
+
+Indentation (whitespaces before C<#+>), or empty string if none.
+
+=cut
+
+has indent => (is => 'rw');
+
 
 =head1 METHODS
+
+=cut
+
+=head2 Org::Element::Setting->indentable_settings -> arrayref
+
+Return the list of setting names that can be indented. In Org, some settings can
+be indented and some can't. Setting names are all in uppercase.
+
+=cut
+
+sub indentable_settings {
+    state $data = [qw/TBLFM/];
+    $data;
+}
 
 =for Pod::Coverage as_string BUILD
 
@@ -121,6 +143,7 @@ sub BUILD {
 sub as_string {
     my ($self) = @_;
     join("",
+         $self->indent // "",
          "#+".uc($self->name),
          $self->args && @{$self->args} ?
              " ".Org::Document::__format_args($self->args) : "",
