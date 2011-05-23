@@ -1,5 +1,17 @@
 Revision history for Org-Parser
 
+0.11    2011-05-23
+
+        [ENHANCEMENTS]
+
+        - Compliance: blocks can be indented.
+
+        - Compliance: some settings can be indented.
+
+        - Parse short example (one-line literal example with colon+space prefix
+          syntax). See Org::Element::ShortExample.
+
+
 0.10    2011-04-21
 
         [FIXES]
