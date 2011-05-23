@@ -104,9 +104,12 @@ _
         my $doc = $args{result};
         my $elems = $args{elements};
         is($elems->[0]->name, "DRAWERS", "name");
-        ok("D1"    ~~ @{$doc->drawer_names}, "D1 added to list of known drawers");
-        ok("D2"    ~~ @{$doc->drawer_names}, "D2 added to list of known drawers");
-        ok("CLOCK" ~~ @{$doc->drawer_names}, "default drawers still known");
+        ok("D1"    ~~ @{$doc->drawer_names},
+           "D1 added to list of known drawers");
+        ok("D2"    ~~ @{$doc->drawer_names},
+           "D2 added to list of known drawers");
+        ok("CLOCK" ~~ @{$doc->drawer_names},
+           "default drawers still known");
     },
 );
 
