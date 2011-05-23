@@ -22,6 +22,17 @@ test_parse(
     filter_elements => 'Org::Element::Setting',
     num => 1,
 );
+test_parse(
+    parse_args => [$doc],
+    name => 'indentable_elements (not indentable, test text)',
+    filter_elements => 'Org::Element::Text',
+    num => 1,
+    test_after_parse => sub {
+        my (%args) = @_;
+        my $elems = $args{elements};
+        is($elems->[0]->as_string, " #+TODO: D E | F\n", "text");
+    },
+);
 
 $doc = <<'_';
 #+TBLFM: @2$1=@1$1
