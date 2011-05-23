@@ -78,19 +78,28 @@ list specified in TAGS.
  #+TAGS: OFFICE(o) COMPUTER(c) HOME(h) PROJECT(p) READING(r) DVD(d)
 the key should be discarded when checking for known tags
 
-** block: literal example
-*** TODO parse literal example
+** block
+*** TODO parse dynamic blocks
+see org-mode manual on dynamic blocks.
+
+basically it's just blocks with a slightly different syntax and :param value as
+args:
+
+ #BEGIN: dynblockname :param1 value1 :param2 value2
+ #END:
+
+*** TODO parse short example
+this is one line example using colon+space syntax:
+
+ Here is an example
+  : Some example from a text file.
+    :  Another example.
+
+the above is equivalent to:
 
  #+BEGIN_EXAMPLE
  Some example from a text file.
  #+END_EXAMPLE
-
- Here is an example
-  : Some example from a text file.
-
- #+BEGIN_SRC emacs-lisp
-   (defun org-xor (a b)
-      "Exclusive or."
-      (if a (not b) b))
- #+END_SRC
-
+   #+BEGIN_EXAMPLE
+    Another example.
+   #+END_EXAMPLE
