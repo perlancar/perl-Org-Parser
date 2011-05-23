@@ -32,6 +32,8 @@ sub dump_element {
         $line .= " todo=".$el->todo_state if $el->todo_state;
     } elsif ($type eq 'Footnote') {
         $line .= " name=".($el->name // "");
+    } elsif ($type eq 'Block') {
+        $line .= " name=".($el->name // "");
     } elsif ($type eq 'List') {
         $line .= " ".$el->type;
         $line .= "(".$el->bullet_style.")";
