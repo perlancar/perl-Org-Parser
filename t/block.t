@@ -57,4 +57,21 @@ _
     },
 );
 
+test_parse(
+    name => 'block is indentable',
+    filter_elements => 'Org::Element::Block',
+    doc => <<'_',
+   #+BEGIN_EXAMPLE
+foo
+ #+END_EXAMPLE
+_
+    num => 1,
+    test_after_parse => sub {
+        my %args = @_;
+        my $elems = $args{elements};
+        is($elems->[0]->begin_indent, "   ", "begin_indent attribute");
+        is($elems->[0]->end_indent, " ", "end_indent attribute");
+    },
+);
+
 done_testing();

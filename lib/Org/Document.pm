@@ -109,10 +109,12 @@ my $text_re       =
        #(?<plain_text>   .+?) # too dispersy
       )sxi;
 my $block_elems_re = # top level elements
-    qr/(?<block>     $ls_re \#\+BEGIN_(?<block_name>\w+)
+    qr/(?<block>     $ls_re (?<block_begin_indent>[ \t]*)
+                     \#\+BEGIN_(?<block_name>\w+)
                      (?:[ \t]+(?<block_raw_arg>[^\n]*))?\R
                      (?<block_content>(?:.|\R)*?)
-                     \R\#\+END_\k<block_name> $le_re) |
+                     \R(?<block_end_indent>[ \t]*)
+                     \#\+END_\k<block_name> $le_re) |
        (?<setting>   $ls_re (?<setting_indent>[ \t]*) \#\+
                      (?<setting_name> \w+): [ \t]+
                      (?<setting_raw_arg> [^\n]+) $le_re) |
@@ -254,6 +256,8 @@ sub _parse {
             $el = Org::Element::Block->new(
                 _str=>$+{block},
                 document=>$self, parent=>$parent,
+                begin_indent=>$+{block_begin_indent},
+                end_indent=>$+{block_end_indent},
                 name=>$+{block_name}, args=>__parse_args($+{block_raw_arg}),
                 raw_content=>$+{block_content},
             );

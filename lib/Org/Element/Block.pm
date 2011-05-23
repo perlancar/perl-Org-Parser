@@ -27,6 +27,22 @@ has args => (is => 'rw');
 
 has raw_content => (is => 'rw');
 
+=head2 begin_indent => STR
+
+Indentation on begin line (before C<#+BEGIN>), or empty string if none.
+
+=cut
+
+has begin_indent => (is => 'rw');
+
+=head2 end_indent => STR
+
+Indentation on end line (before C<#+END>), or empty string if none.
+
+=cut
+
+has end_indent => (is => 'rw');
+
 my @known_blocks = qw(
                          ASCII CENTER COMMENT EXAMPLE HTML
                          LATEX QUOTE SRC VERSE
@@ -49,11 +65,13 @@ sub element_as_string {
     my ($self) = @_;
     return $self->_str if defined $self->_str;
     join("",
+         $self->begin_indent // "",
          "#+BEGIN_".uc($self->name),
          $self->args && @{$self->args} ?
              " ".Org::Document::__format_args($self->args) : "",
          "\n",
          $self->raw_content,
+         $self->end_indent // "",
          "#+END_".uc($self->name)."\n");
 }
 
