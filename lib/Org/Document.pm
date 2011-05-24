@@ -122,13 +122,13 @@ my $block_elems_re = # top level elements
                      (?<shortex_example> [^\n]*) $le_re) |
        (?<comment>   $ls_re \#[^\n]*(?:\R\#[^\n]*)* (?:\R|\z)) |
        (?<headline>  $ls_re (?<h_bullet>\*+) [ \t]
-                     (?<h_title>.*?)
+                     (?<h_title>[^\n]*?)
                      (?:[ \t]+(?<h_tags> $tags_re))?[ \t]* $le_re) |
        (?<li_header> $ls_re (?<li_indent>[ \t]*)
                      (?<li_bullet>[+*-]|\d+\.) [ \t]+
                      (?<li_checkbox> \[(?<li_cbstate> [ X-])\])?
                      (?: (?<li_dt> [^\n]+?) [ \t]+ ::)?) |
-       (?<table>     (?: $ls_re [ \t]* \| [ \t]* \S.* $le_re)+) |
+       (?<table>     (?: $ls_re [ \t]* \| [ \t]* \S[^\n]* $le_re)+) |
        (?<drawer>    $ls_re [ \t]* :(?<drawer_name> \w+): [ \t]*\R
                      (?<drawer_content>(?:.|\R)*?)
                      $ls_re [ \t]* :END:) |
