@@ -2,6 +2,7 @@ package Org::Element::Base;
 # ABSTRACT: Base class for element of Org document
 
 use 5.010;
+use locale;
 use Log::Any '$log';
 use Moo;
 use Scalar::Util qw(refaddr);

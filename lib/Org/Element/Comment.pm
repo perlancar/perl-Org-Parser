@@ -2,6 +2,7 @@ package Org::Element::Comment;
 # ABSTRACT: Represent Org comment
 
 use 5.010;
+use locale;
 use Moo;
 extends 'Org::Element::Base';
 

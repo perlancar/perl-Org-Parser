@@ -2,6 +2,7 @@ package Org::Element::Headline;
 # ABSTRACT: Represent Org headline
 
 use 5.010;
+use locale;
 use Moo;
 extends 'Org::Element::Base';
 

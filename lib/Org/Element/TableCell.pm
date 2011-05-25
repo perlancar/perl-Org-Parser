@@ -2,6 +2,7 @@ package Org::Element::TableCell;
 # ABSTRACT: Represent Org table cell
 
 use 5.010;
+use locale;
 use Moo;
 extends 'Org::Element::Base';
 

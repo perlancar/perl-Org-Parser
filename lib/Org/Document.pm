@@ -2,6 +2,7 @@ package Org::Document;
 # ABSTRACT: Represent an Org document
 
 use 5.010;
+use locale;
 use Log::Any '$log';
 use Moo;
 extends 'Org::Element::Base';

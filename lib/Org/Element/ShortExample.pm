@@ -2,6 +2,7 @@ package Org::Element::ShortExample;
 # ABSTRACT: Represent Org in-buffer settings
 
 use 5.010;
+use locale;
 use Moo;
 extends 'Org::Element::Base';
 

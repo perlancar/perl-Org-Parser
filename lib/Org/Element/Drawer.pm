@@ -2,6 +2,7 @@ package Org::Element::Drawer;
 # ABSTRACT: Represent Org drawer
 
 use 5.010;
+use locale;
 use Moo;
 extends 'Org::Element::Base';
 

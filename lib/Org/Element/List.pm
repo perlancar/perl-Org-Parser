@@ -2,6 +2,7 @@ package Org::Element::List;
 # ABSTRACT: Represent Org list
 
 use 5.010;
+use locale;
 use Moo;
 extends 'Org::Element::Base';
 

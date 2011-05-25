@@ -2,6 +2,7 @@ package Org::Element::Block;
 # ABSTRACT: Represent Org block
 
 use 5.010;
+use locale;
 use Moo;
 extends 'Org::Element::Base';
 

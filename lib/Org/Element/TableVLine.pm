@@ -2,6 +2,7 @@ package Org::Element::TableVLine;
 # ABSTRACT: Represent Org table vertical line
 
 use 5.010;
+use locale;
 use Moo;
 extends 'Org::Element::Base';
 

@@ -2,6 +2,7 @@ package Org::Element::Link;
 # ABSTRACT: Represent Org hyperlink
 
 use 5.010;
+use locale;
 use Moo;
 extends 'Org::Element::Base';
 

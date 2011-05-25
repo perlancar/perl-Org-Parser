@@ -2,6 +2,7 @@ package Org::Element::Footnote;
 # ABSTRACT: Represent Org footnote reference and/or definition
 
 use 5.010;
+use locale;
 use Log::Any '$log';
 use Moo;
 extends 'Org::Element::Base';

@@ -2,6 +2,7 @@ package Org::Element::RadioTarget;
 # ABSTRACT: Represent Org radio target
 
 use 5.010;
+use locale;
 use Moo;
 extends 'Org::Element::Base';
 
