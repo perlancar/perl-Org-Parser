@@ -11,7 +11,7 @@ use Scalar::Util qw(refaddr);
 
 =head2 document => DOCUMENT
 
-Link to document object. Elements need this e.g. to access file-wide settings,
+Link to document object. Elements need this to access file-wide settings,
 properties, etc.
 
 =cut
@@ -20,7 +20,7 @@ has document => (is => 'rw');
 
 =head2 parent => undef | ELEMENT
 
-Link to parent element.
+Link to parent element. Undef if this element is the root element.
 
 =cut
 
@@ -152,7 +152,7 @@ sub get_property {
     $self->document->properties->{$name};
 }
 
-=head2 walk(CODEREF)
+=head2 $el->walk(CODEREF)
 
 Call CODEREF for node and all descendent nodes, depth-first. Code will be given
 the element object as argument.
@@ -167,7 +167,7 @@ sub walk {
     }
 }
 
-=head2 find(CRITERIA) -> ELEMENTS
+=head2 $el->find(CRITERIA) => ELEMENTS
 
 Find subelements. CRITERIA can be a word (e.g. 'Headline' meaning of class
 'Org::Element::Headline') or a class name ('Org::Element::ListItem') or a
