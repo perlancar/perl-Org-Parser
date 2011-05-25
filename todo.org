@@ -1,4 +1,22 @@
 * todo
+** parser
+*** TODO add line number information
+perhaps _linenum_start and _linenum_end attributes to signify the starting and
+ending line numbers of current element. so the parser can report:
+
+ syntax error in table (lines XX-YY): invalid line in table 'blah'
+
+and then instead of:
+
+ die "syntax error in table ..."
+
+the elements do something like this instead to report error:
+
+ $doc->_croak("invalid line in table");
+
+and the document will provide the additional line number and element
+information.
+
 ** Element::Base
 *** DONE headline()
 return the headline this element is in.
