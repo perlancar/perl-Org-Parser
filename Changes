@@ -1,5 +1,21 @@
 Revision history for Org-Parser
 
+0.12    2011-05-25
+
+        [ENHANCEMENTS]
+
+        - Compliance: Parse .+/++ repeater forms and warning period in timestamp
+          [thanks Louis B. Moore]
+
+        [BUG FIXES]
+
+        - Fix regex for parsing table [RT#68442, thanks Slaven Rezic]
+
+        [ETC]
+
+        - Use utf8 in dump-org-structure script.
+
+
 0.11    2011-05-23
 
         [ENHANCEMENTS]
