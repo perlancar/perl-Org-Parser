@@ -116,6 +116,11 @@ sub _parse_timestamp {
              (?<close_bracket> \]|>)
              $/x
                  or die "Can't parse timestamp string: $str";
+    # just for sanity. usually doesn't happen though because Document gives us
+    # either "[...]" or "<...>"
+    die "Mismatch open/close brackets in timestamp: $str"
+        if $+{open_bracket} eq '<' && $+{close_bracket} eq ']' ||
+            $+{open_bracket} eq '[' && $+{close_bracket} eq '>';
     die "Duration not allowed in timestamp: $str"
         if !$opts->{allow_event_duration} && $+{event_duration};
     die "Repeater ($+{repeater}) not allowed in timestamp: $str"
