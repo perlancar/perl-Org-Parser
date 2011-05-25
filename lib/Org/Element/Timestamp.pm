@@ -37,6 +37,7 @@ has event_duration => (is => 'rw');
 
 has recurrence => (is => 'rw');
 has _repeater => (is => 'rw'); # stores the raw repeater spec
+has _warning_period => (is => 'rw'); # stores the raw warning period spec
 
 =head2 is_active => BOOL
 
@@ -79,8 +80,12 @@ sub as_string {
                  sprintf("%02d:%02d", $hour2, $min2),
              ) : (),
              $self->_repeater ? (
-                 " +",
+                 " ",
                  $self->_repeater,
+             ) : (),
+             $self->_warning_period ? (
+                 " ",
+                 $self->_warning_period,
              ) : (),
          ) : (),
          $self->is_active ? ">" : "]",
@@ -106,10 +111,16 @@ sub _parse_timestamp {
                              (?<hour2> \d{2}):(?<min2> \d{2}))
                      )?
                  )?
-                 (?:\s\+
-                     (?<repeater>
+                 (?:\s(?<repeater>
+                         (?<repeater_prefix> \+\+|\.\+|\+)
                          (?<repeater_interval> \d+)
                          (?<repeater_unit> [dwmy])
+                     )
+                 )?
+                 (?:\s(?<warning_period>
+                         -
+                         (?<warning_period_interval> \d+)
+                         (?<warning_period_unit> [dwmy])
                      )
                  )?
              )?
@@ -153,6 +164,19 @@ sub _parse_timestamp {
         }
         $self->recurrence($r);
         $self->_repeater($+{repeater});
+    }
+
+    if ($+{warning_period}) {
+        my $i = $+{warning_period_interval};
+        my $u = $+{warning_period_unit};
+        if ($u eq 'd') {
+        } elsif ($u eq 'w') {
+        } elsif ($u eq 'm') {
+        } elsif ($u eq 'y') {
+        } else {
+            die "BUG: Unknown warning period unit $u in timestamp $str";
+        }
+        $self->_warning_period($+{warning_period});
     }
 
     my %dt_args = (year => $+{year}, month=>$+{mon}, day=>$+{day});

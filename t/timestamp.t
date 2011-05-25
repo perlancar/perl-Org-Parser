@@ -72,7 +72,7 @@ _
 );
 
 test_parse(
-    name => 'repeater',
+    name => 'repeater & warning period',
     filter_elements => sub {
         $_[0]->isa('Org::Element::Timestamp') },
     doc  => <<'_',
@@ -80,16 +80,23 @@ test_parse(
 [2011-03-23 Wed 10:12-11:23 +2w]
 [2011-03-23 Wed +3m]
 [2011-03-23 Wed +4y]
+<2011-05-25 Wed ++5m>
+<2011-05-25 Wed .+6m>
+<2011-05-25 Wed +7m -3d>
 _
-    num => 4,
+    num => 7,
     test_after_parse => sub {
         my %args  = @_;
         my $doc   = $args{result};
         my $elems = $args{elements};
-        is($elems->[0]->_repeater, "1d", "[0] _repeater");
-        is($elems->[1]->_repeater, "2w", "[0] _repeater");
-        is($elems->[2]->_repeater, "3m", "[0] _repeater");
-        is($elems->[3]->_repeater, "4y", "[0] _repeater");
+        is($elems->[0]->_repeater, "+1d", "[0] _repeater");
+        is($elems->[1]->_repeater, "+2w", "[1] _repeater");
+        is($elems->[2]->_repeater, "+3m", "[2] _repeater");
+        is($elems->[3]->_repeater, "+4y", "[3] _repeater");
+        is($elems->[4]->_repeater, "++5m", "[4] _repeater");
+        is($elems->[5]->_repeater, ".+6m", "[5] _repeater");
+        is($elems->[6]->_repeater, "+7m", "[6] _repeater");
+        is($elems->[6]->_warning_period, "-3d", "[6] _warning_period");
 
         ok($elems->[0]->recurrence->isa('DateTime::Set::ICal'),
            "[0] recurrence");
