@@ -148,7 +148,7 @@ Just like parse(), but will load document from file instead.
 
 =head1 SEE ALSO
 
-Org::Document
+L<Org::Document>
 
 =cut
 
