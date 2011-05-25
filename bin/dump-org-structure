@@ -14,5 +14,8 @@ use String::Escape qw(elide printable);
 use Org::Parser;
 use Org::Dump;
 
-my $doc = Org::Parser->new->parse([<>]);
+my $input = [<>];
+close ARGV; # so perl doesn't add ", <> line xx" upon dying
+
+my $doc = Org::Parser->new->parse($input);
 print Org::Dump::dump_element($doc);
