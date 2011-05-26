@@ -68,6 +68,50 @@ sub BUILD {
     }
 }
 
+=head2 $table->row_count() => INT
+
+Return the number of rows that the table has.
+
+=cut
+
+sub row_count {
+    my ($self) = @_;
+    return 0 unless $self->children;
+    my $n = 0;
+    for my $el (@{$self->children}) {
+        $n++ if $el->isa('Org::Element::TableRow');
+    }
+    $n;
+}
+
+=head2 $table->column_count() => INT
+
+Return the number of columns that the table has. It is counted from the first
+row.
+
+=cut
+
+sub column_count {
+    my ($self) = @_;
+    return 0 unless $self->children;
+
+    # get first row
+    my $row;
+    for my $el (@{$self->children}) {
+        if ($el->isa('Org::Element::TableRow')) {
+            $row = $el;
+            last;
+        }
+    }
+    return 0 unless $row; # table doesn't have any row
+
+    my $n = 0;
+    for my $el (@{$row->children}) {
+        $n++ if $el->isa('Org::Element::TableCell');
+    }
+    $n;
+}
+
 1;
 __END__
 

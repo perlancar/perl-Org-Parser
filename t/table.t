@@ -21,7 +21,7 @@ _
 );
 
 test_parse(
-    name => 'table',
+    name => 'table basic tests',
     filter_elements => 'Org::Element::Table',
     doc  => <<'_',
 #+CAPTION: test caption
@@ -56,6 +56,9 @@ _
         isa_ok($c5a->children->[0], "Org::Element::Text");
         isa_ok($c5a->children->[1], "Org::Element::Timestamp");
         isa_ok($c5a->children->[2], "Org::Element::Text");
+
+        is($t->row_count, 4, "row_count() method");
+        is($t->column_count, 3, "column_count() method");
     },
 );
 
