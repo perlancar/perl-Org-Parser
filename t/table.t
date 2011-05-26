@@ -59,6 +59,8 @@ _
 
         is($t->row_count, 4, "row_count() method");
         is($t->column_count, 3, "column_count() method");
+        isa_ok($t->rows->[0], "Org::Element::TableRow");
+        isa_ok($t->rows->[0]->cells->[0], 'Org::Element::TableCell');
     },
 );
 

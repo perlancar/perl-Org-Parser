@@ -68,6 +68,22 @@ sub BUILD {
     }
 }
 
+=head2 $table->rows() => ELEMENTS
+
+Return the rows of the table.
+
+=cut
+
+sub rows {
+    my ($self) = @_;
+    return [] unless $self->children;
+    my $rows = [];
+    for my $el (@{$self->children}) {
+        push @$rows, $el if $el->isa('Org::Element::TableRow');
+    }
+    $rows;
+}
+
 =head2 $table->row_count() => INT
 
 Return the number of rows that the table has.

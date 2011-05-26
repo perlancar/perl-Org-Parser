@@ -30,6 +30,23 @@ sub as_string {
          "\n");
 }
 
+=head2 $table->cells() => ELEMENTS
+
+Return the cells of the row.
+
+=cut
+
+sub cells {
+    my ($self) = @_;
+    return [] unless $self->children;
+
+    my $cells = [];
+    for my $el (@{$self->children}) {
+        push @$cells, $el if $el->isa('Org::Element::TableCell');
+    }
+    $cells;
+}
+
 1;
 __END__
 
