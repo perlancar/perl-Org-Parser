@@ -1,5 +1,14 @@
 Revision history for Org-Parser
 
+0.13    2011-06-06
+
+        No functional changes for the parser.
+
+        [REMOVED]
+
+        - Spin off 'remind-due-todos' script into App::ListOrgHeadlines.
+
+
 0.12    2011-05-25
 
         [ENHANCEMENTS]
