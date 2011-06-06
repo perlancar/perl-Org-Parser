@@ -1,5 +1,12 @@
 Revision history for Org-Parser
 
+0.14    2011-06-06
+
+        [ENHANCEMENTS]
+
+        - Headline: Add get_active_timestamp().
+
+
 0.13    2011-06-06
 
         No functional changes for the parser.
