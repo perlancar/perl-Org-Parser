@@ -126,6 +126,31 @@ sub get_tags {
     @res;
 }
 
+=head2 $el->get_active_timestamp() => ELEMENT
+
+Get the first active timestamp element for this headline, either in the title or
+in the child elements.
+
+=cut
+
+sub get_active_timestamp {
+    my ($self) = @_;
+
+    for my $s ($self->title, $self) {
+        my $ats;
+        $s->walk(
+            sub {
+                my ($el) = @_;
+                return if $ats;
+                $ats = $el if $el->isa('Org::Element::Timestamp') &&
+                    $el->is_active;
+            }
+        );
+        return $ats if $ats;
+    }
+    return;
+}
+
 1;
 __END__
 

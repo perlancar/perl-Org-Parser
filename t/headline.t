@@ -190,4 +190,31 @@ _
     },
 );
 
+test_parse(
+    name => 'get_active_timestamp()',
+    filter_elements => 'Org::Element::Headline',
+    doc  => <<'_',
+* TODO <2011-06-06 > t0
+* TODO t1 <2011-06-06 >
+* TODO t2
+  DEADLINE: <2011-06-06 >
+  DEADLINE: <2011-06-07 >
+* TODO [2011-06-06 ] t3
+* TODO t4
+_
+    num => 5,
+    test_after_parse => sub {
+        my (%args) = @_;
+        my $elems = $args{elements};
+        ok( $elems->[0]->get_active_timestamp, "t0 has active timestamp");
+        ok( $elems->[1]->get_active_timestamp, "t1 has active timestamp");
+        ok( $elems->[2]->get_active_timestamp, "t2 has active timestamp");
+        # XXX check only the first timestamp is returned
+        ok(!$elems->[3]->get_active_timestamp,
+           "t3 doesn't have active timestamp");
+        ok(!$elems->[4]->get_active_timestamp,
+           "t4 doesn't have active timestamp");
+    },
+);
+
 done_testing();
