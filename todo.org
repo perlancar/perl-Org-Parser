@@ -50,6 +50,7 @@ format() needs to worry about this (i prefer the latter).
 ** target
 ** radio target
 ** timestamp & time range
+*** what's the difference between SCHEDULED and DEADLINE timestamp?
 *** TODO parse sexp entries?
 e.g.
 
