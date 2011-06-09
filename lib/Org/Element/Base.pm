@@ -232,4 +232,40 @@ sub headline {
     $h;
 }
 
+=head2 $el->field_name()
+
+Try to extract "field name", being defined as either some text on the left side:
+
+ DEADLINE: <2011-06-09 >
+
+or a description term in a description list:
+
+ - wedding anniversary :: <2011-06-10 >
+
+=cut
+
+sub field_name {
+    my ($self) = @_;
+
+    my $prev = $self->prev_sibling;
+    if ($prev && $prev->isa('Org::Element::Text')) {
+        my $text = $prev->as_string;
+        if ($text =~ /(?:\A|\R)\s*(.+?)\s*:\s*\z/) {
+            return $1;
+        }
+    }
+    my $parent = $self->parent;
+    if ($parent && $parent->isa('Org::Element::ListItem')) {
+        my $list = $parent->parent;
+        if ($list->type eq 'D') {
+            return $parent->desc_term->as_string;
+        }
+    }
+    # TODO
+    #if ($parent && $parent->isa('Org::Element::Drawer') &&
+    #        $parent->name eq 'PROPERTIES') {
+    #}
+    return;
+}
+
 1;
