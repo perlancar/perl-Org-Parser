@@ -18,8 +18,6 @@ and the document will provide the additional line number and element
 information.
 
 ** Element::Base
-*** DONE headline()
-return the headline this element is in.
 *** TODO set_property()
 - should create a properties drawer if necessary
 ** table
@@ -62,8 +60,6 @@ e.g.
 
 ** plain lists (ordered, unordered, description)
 ** headline
-*** DONE get_tags()
-return list of tags including inherited tags
 *** TODO Parse headline percentages
 *** TODO next_todo_state() & prev_todo_state()
 return undef if .document is undef.
@@ -71,6 +67,13 @@ return undef if .document is undef.
 *** TODO promoto_subtree() & demote_subtree()
 ** drawer & properties
 *** TODO check valid values of property (foo_ALL)
+*** TODO fix parsing of property values
+need clarification first
+
+: :PROPERTY:
+:   :birthday:  (5 7 1990)
+: :END:
+
 ** setting
 *** TODO [low] differentiate between TYP_TODO and TODO/SEQ_TODO
 "TODO and SEQ_TODO are the same. TYP_TODO is slightly different in operation.
@@ -107,18 +110,3 @@ args:
 : #BEGIN: dynblockname :param1 value1 :param2 value2
 : #END:
 
-*** TODO parse short example
-this is one line example using colon+space syntax:
-
- Here is an example
-  : Some example from a text file.
-    :  Another example.
-
-the above is equivalent to:
-
- #+BEGIN_EXAMPLE
- Some example from a text file.
- #+END_EXAMPLE
-   #+BEGIN_EXAMPLE
-    Another example.
-   #+END_EXAMPLE
