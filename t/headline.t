@@ -217,4 +217,24 @@ _
     },
 );
 
+test_parse(
+    name => 'is_leaf()',
+    filter_elements => 'Org::Element::Headline',
+    doc  => <<'_',
+* a
+** b
+*** c
+* d
+_
+    num => 4,
+    test_after_parse => sub {
+        my (%args) = @_;
+        my $elems = $args{elements};
+        ok(!$elems->[0]->is_leaf, "a is not leaf");
+        ok(!$elems->[1]->is_leaf, "b is not leaf");
+        ok( $elems->[2]->is_leaf, "c is leaf");
+        ok( $elems->[3]->is_leaf, "d is leaf");
+    },
+);
+
 done_testing();

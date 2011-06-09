@@ -151,6 +151,35 @@ sub get_active_timestamp {
     return;
 }
 
+=head2 $el->is_leaf() => BOOL
+
+Returns true if element doesn't contain subtrees.
+
+=cut
+
+sub is_leaf {
+    my ($self) = @_;
+
+    return 1 unless $self->children;
+
+    my $res;
+    for my $child (@{ $self->children }) {
+        $child->walk(
+            sub {
+                return if defined($res);
+                my ($el) = @_;
+                if ($el->isa('Org::Element::Headline')) {
+                    $res = 0;
+                    goto EXIT_WALK;
+                }
+            }
+        );
+    }
+  EXIT_WALK:
+    $res //= 1;
+    $res;
+}
+
 1;
 __END__
 
