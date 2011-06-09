@@ -6,6 +6,12 @@ Revision history for Org-Parser
 
         - dump-org-structure script moved to App::OrgUtils.
 
+        [ENHANCEMENTS]
+
+        - Base: Add field_name().
+
+        - Headline: Add is_leaf().
+
 
 0.14    2011-06-06
 
