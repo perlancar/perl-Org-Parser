@@ -1,5 +1,12 @@
 Revision history for Org-Parser
 
+0.15    2011-06-09
+
+        [REMOVED]
+
+        - dump-org-structure script moved to App::OrgUtils.
+
+
 0.14    2011-06-06
 
         [ENHANCEMENTS]
