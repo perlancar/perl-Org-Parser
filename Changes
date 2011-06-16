@@ -1,5 +1,10 @@
 Revision history for Org-Parser
 
+0.16    2011-06-16
+
+        - Relax timestamp parsing for Chinese/French timestamps.
+
+
 0.15    2011-06-09
 
         [REMOVED]
