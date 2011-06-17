@@ -114,3 +114,9 @@ args:
 : #BEGIN: dynblockname :param1 value1 :param2 value2
 : #END:
 
+** macro
+*** TODO parse macro
+manual section 11.6 Macro replacement
+
+although the parser can also choose to ignore this and let the export handle the
+parsing.
