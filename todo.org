@@ -17,6 +17,10 @@ the elements do something like this instead to report error:
 and the document will provide the additional line number and element
 information.
 
+*** TODO parse horizontal rules
+from the manual: "A line consisting of only dashes, and at least 5 of them, will
+be exported as a horizzontal line (‘<hr/>’ in HTML and \hrule in LaTeX)."
+
 ** Element::Base
 *** TODO set_property()
 - should create a properties drawer if necessary
