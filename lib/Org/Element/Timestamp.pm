@@ -102,6 +102,8 @@ sub _parse_timestamp {
     $opts->{allow_event_duration} //= 1;
     $opts->{allow_repeater} //= 1;
 
+    my $num_re = qr/\d(?:\.\d+)?/;
+
     my $dow_re = qr/\w{1,3} |     # common, chinese 四, english thu
                     \w{3}\.       # french, e.g. mer.
                    /x;
@@ -119,13 +121,13 @@ sub _parse_timestamp {
                  )?
                  (?:\s(?<repeater>
                          (?<repeater_prefix> \+\+|\.\+|\+)
-                         (?<repeater_interval> \d+)
+                         (?<repeater_interval> $num_re)
                          (?<repeater_unit> [dwmy])
                      )
                  )?
                  (?:\s(?<warning_period>
                          -
-                         (?<warning_period_interval> \d+)
+                         (?<warning_period_interval> $num_re)
                          (?<warning_period_unit> [dwmy])
                      )
                  )?
