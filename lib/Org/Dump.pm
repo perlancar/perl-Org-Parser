@@ -1,5 +1,4 @@
 package Org::Dump;
-#ABSTRACT: Show Org document/element object in a human-friendly format
 
 use 5.010;
 use strict;
@@ -8,13 +7,7 @@ use Log::Any qw($log);
 
 use String::Escape qw(elide printable);
 
-=head1 FUNCTIONS
-
-None are exported.
-
-=head2 dump_element($elem) => STR
-
-=cut
+# VERSION
 
 sub dump_element {
     my ($el, $indent_level) = @_;
@@ -102,3 +95,13 @@ sub _format_properties {
 }
 
 1;
+#ABSTRACT: Show Org document/element object in a human-friendly format
+
+=head1 FUNCTIONS
+
+None are exported.
+
+=head2 dump_element($elem) => STR
+
+=cut
+

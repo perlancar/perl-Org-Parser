@@ -1,35 +1,14 @@
 package Org::Element::Drawer;
-# ABSTRACT: Represent Org drawer
 
 use 5.010;
 use locale;
 use Moo;
 extends 'Org::Element::Base';
 
-=head1 ATTRIBUTES
-
-=head2 name => STR
-
-Drawer name.
-
-=cut
+# VERSION
 
 has name => (is => 'rw');
-
-=head2 properties => HASH
-
-Collected properties in the drawer.
-
-=cut
-
 has properties => (is => 'rw');
-
-
-=head1 METHODS
-
-=for Pod::Coverage BUILD as_string
-
-=cut
 
 sub BUILD {
     my ($self, $args) = @_;
@@ -61,10 +40,27 @@ sub as_string {
 }
 
 1;
+# ABSTRACT: Represent Org drawer
 __END__
 
 =head1 DESCRIPTION
 
 Derived from L<Org::Element::Base>.
+
+
+=head1 ATTRIBUTES
+
+=head2 name => STR
+
+Drawer name.
+
+=head2 properties => HASH
+
+Collected properties in the drawer.
+
+
+=head1 METHODS
+
+=for Pod::Coverage BUILD as_string
 
 =cut

@@ -1,31 +1,14 @@
 package Org::Element::TimeRange;
-# ABSTRACT: Represent Org time range (TS1--TS2)
 
 use 5.010;
 use locale;
 use Moo;
 extends 'Org::Element::Base';
 
-=head1 ATTRIBUTES
-
-=head2 ts1 => TIMESTAMP ELEMENT
-
-=cut
+# VERSION
 
 has ts1 => (is => 'rw');
-
-=head2 ts2 => TIMESTAMP ELEMENT
-
-=cut
-
 has ts2 => (is => 'rw');
-
-
-=head1 METHODS
-
-=for Pod::Coverage as_string
-
-=cut
 
 sub as_string {
     my ($self) = @_;
@@ -38,10 +21,27 @@ sub as_string {
 }
 
 1;
+# ABSTRACT: Represent Org time range (TS1--TS2)
 __END__
 
 =head1 DESCRIPTION
 
 Derived from L<Org::Element::Base>.
+
+
+=head1 ATTRIBUTES
+
+=head2 ts1 => TIMESTAMP ELEMENT
+
+Starting timestamp.
+
+=head2 ts2 => TIMESTAMP ELEMENT
+
+Ending timestamp.
+
+
+=head1 METHODS
+
+=for Pod::Coverage as_string
 
 =cut

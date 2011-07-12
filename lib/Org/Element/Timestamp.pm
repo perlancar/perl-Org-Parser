@@ -1,5 +1,4 @@
 package Org::Element::Timestamp;
-# ABSTRACT: Represent Org timestamp
 
 use 5.010;
 use locale;
@@ -7,52 +6,15 @@ use utf8;
 use Moo;
 extends 'Org::Element::Base';
 
-=head1 ATTRIBUTES
-
-=head2 datetime => DATETIME_OBJ
-
-=cut
+# VERSION
 
 has datetime => (is => 'rw');
-
-=head2 has_time => BOOL
-
-=cut
-
 has has_time => (is => 'rw');
-
-=head2 event_duration => INT
-
-Event duration in seconds, e.g. for event timestamp like this:
-
- <2011-03-23 10:15-13:25>
-
-event_duration is 7200+600=7800 (2 hours 10 minutes).
-
-=cut
-
 has event_duration => (is => 'rw');
-
-=head2 recurrence => DateTime::Event::Recurrence object
-
-=cut
-
 has recurrence => (is => 'rw');
 has _repeater => (is => 'rw'); # stores the raw repeater spec
 has _warning_period => (is => 'rw'); # stores the raw warning period spec
-
-=head2 is_active => BOOL
-
-=cut
-
 has is_active => (is => 'rw');
-
-
-=head1 METHODS
-
-=for Pod::Coverage as_string
-
-=cut
 
 our @dow = (undef, qw(Mon Tue Wed Thu Fri Sat Sun));
 
@@ -205,10 +167,35 @@ sub _parse_timestamp {
 }
 
 1;
+# ABSTRACT: Represent Org timestamp
 __END__
 
 =head1 DESCRIPTION
 
 Derived from L<Org::Element::Base>.
+
+
+=head1 ATTRIBUTES
+
+=head2 datetime => DATETIME_OBJ
+
+=head2 has_time => BOOL
+
+=head2 event_duration => INT
+
+Event duration in seconds, e.g. for event timestamp like this:
+
+ <2011-03-23 10:15-13:25>
+
+event_duration is 7200+600=7800 (2 hours 10 minutes).
+
+=head2 recurrence => DateTime::Event::Recurrence object
+
+=head2 is_active => BOOL
+
+
+=head1 METHODS
+
+=for Pod::Coverage as_string
 
 =cut

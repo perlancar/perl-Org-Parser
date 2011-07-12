@@ -1,5 +1,4 @@
 package Org::Element::Base;
-# ABSTRACT: Base class for element of Org document
 
 use 5.010;
 use locale;
@@ -7,29 +6,10 @@ use Log::Any '$log';
 use Moo;
 use Scalar::Util qw(refaddr);
 
-=head1 ATTRIBUTES
-
-=head2 document => DOCUMENT
-
-Link to document object. Elements need this to access file-wide settings,
-properties, etc.
-
-=cut
+# VERSION
 
 has document => (is => 'rw');
-
-=head2 parent => undef | ELEMENT
-
-Link to parent element. Undef if this element is the root element.
-
-=cut
-
 has parent => (is => 'rw');
-
-=head2 children => undef | ARRAY_OF_ELEMENTS
-
-=cut
-
 has children => (is => 'rw');
 
 # store the raw string (to preserve original formatting), not all elements use
@@ -37,28 +17,11 @@ has children => (is => 'rw');
 has _str => (is => 'rw');
 has _str_include_children => (is => 'rw');
 
-
-=head1 METHODS
-
-=head2 $el->children_as_string() => STR
-
-Return a concatenation of children's as_string(), or "" if there are no
-children.
-
-=cut
-
 sub children_as_string {
     my ($self) = @_;
     return "" unless $self->children;
     join "", map {$_->as_string} @{$self->children};
 }
-
-=head2 $el->as_string() => STR
-
-Return the string representation of element. The default implementation will
-just use _str (if defined) concatenated with children_as_string().
-
-=cut
 
 sub as_string {
     my ($self) = @_;
@@ -71,13 +34,6 @@ sub as_string {
     }
 }
 
-=head2 $el->seniority => INT
-
-Find out the ranking of brothers/sisters of all sibling. If we are the first
-child of parent, return 0. If we are the second child, return 1, and so on.
-
-=cut
-
 sub seniority {
     my ($self) = @_;
     my $c;
@@ -89,10 +45,6 @@ sub seniority {
     return undef;
 }
 
-=head2 $el->prev_sibling() => ELEMENT | undef
-
-=cut
-
 sub prev_sibling {
     my ($self) = @_;
 
@@ -101,10 +53,6 @@ sub prev_sibling {
     my $c = $self->parent->children;
     $c->[$sen-1];
 }
-
-=head2 $el->next_sibling() => ELEMENT | undef
-
-=cut
 
 sub next_sibling {
     my ($self) = @_;
@@ -115,18 +63,6 @@ sub next_sibling {
     return undef unless $sen < @$c-1;
     $c->[$sen+1];
 }
-
-=head2 $el->get_property($name, $search_parent) => VALUE
-
-Search for property named $name in the nearest properties drawer. If
-$search_parent is set to true (default is false), will also search in
-upper-level properties (useful for searching for inherited property, like
-foo_ALL). Return undef if property cannot be found in all drawers.
-
-Regardless of $search_parent setting, file-wide properties will be consulted if
-property is not found in nearest properties drawer.
-
-=cut
 
 sub get_property {
     my ($self, $name, $search_parent) = @_;
@@ -152,13 +88,6 @@ sub get_property {
     $self->document->properties->{$name};
 }
 
-=head2 $el->walk(CODEREF)
-
-Call CODEREF for node and all descendent nodes, depth-first. Code will be given
-the element object as argument.
-
-=cut
-
 sub walk {
     my ($self, $code) = @_;
     $code->($self);
@@ -166,14 +95,6 @@ sub walk {
         $_->walk($code) for @{$self->children};
     }
 }
-
-=head2 $el->find(CRITERIA) => ELEMENTS
-
-Find subelements. CRITERIA can be a word (e.g. 'Headline' meaning of class
-'Org::Element::Headline') or a class name ('Org::Element::ListItem') or a
-coderef (which will be given the element to test). Will return matched elements.
-
-=cut
 
 sub find {
     my ($self, $criteria) = @_;
@@ -193,14 +114,6 @@ sub find {
     @res;
 }
 
-=head2 $el->walk_parents(CODE)
-
-Run CODEREF for parent, and its parent, and so on until the root element (the
-document), or until CODEREF returns a false value. CODEREF will be supplied
-($el, $parent). Will return the last parent walked.
-
-=cut
-
 sub walk_parents {
     my ($self, $code) = @_;
     my $parent = $self->parent;
@@ -210,12 +123,6 @@ sub walk_parents {
     }
     return;
 }
-
-=head2 $el->headline()
-
-Get current headline.
-
-=cut
 
 sub headline {
     my ($self) = @_;
@@ -231,18 +138,6 @@ sub headline {
         });
     $h;
 }
-
-=head2 $el->field_name()
-
-Try to extract "field name", being defined as either some text on the left side:
-
- DEADLINE: <2011-06-09 >
-
-or a description term in a description list:
-
- - wedding anniversary :: <2011-06-10 >
-
-=cut
 
 sub field_name {
     my ($self) = @_;
@@ -269,3 +164,92 @@ sub field_name {
 }
 
 1;
+# ABSTRACT: Base class for element of Org document
+
+=head1 SYNOPSIS
+
+ # Don't use directly, use the other Org::Element::* classes.
+
+
+=head1 DESCRIPTION
+
+This is the base class for all the other Org element classes.
+
+
+=head1 ATTRIBUTES
+
+=head2 document => DOCUMENT
+
+Link to document object. Elements need this to access file-wide settings,
+properties, etc.
+
+=head2 parent => undef | ELEMENT
+
+Link to parent element. Undef if this element is the root element.
+
+=head2 children => undef | ARRAY_OF_ELEMENTS
+
+
+=head1 METHODS
+
+=head2 $el->children_as_string() => STR
+
+Return a concatenation of children's as_string(), or "" if there are no
+children.
+
+=head2 $el->as_string() => STR
+
+Return the string representation of element. The default implementation will
+just use _str (if defined) concatenated with children_as_string().
+
+=head2 $el->seniority => INT
+
+Find out the ranking of brothers/sisters of all sibling. If we are the first
+child of parent, return 0. If we are the second child, return 1, and so on.
+
+=head2 $el->prev_sibling() => ELEMENT | undef
+
+=head2 $el->next_sibling() => ELEMENT | undef
+
+=head2 $el->get_property($name, $search_parent) => VALUE
+
+Search for property named $name in the nearest properties drawer. If
+$search_parent is set to true (default is false), will also search in
+upper-level properties (useful for searching for inherited property, like
+foo_ALL). Return undef if property cannot be found in all drawers.
+
+Regardless of $search_parent setting, file-wide properties will be consulted if
+property is not found in nearest properties drawer.
+
+=head2 $el->walk(CODEREF)
+
+Call CODEREF for node and all descendent nodes, depth-first. Code will be given
+the element object as argument.
+
+=head2 $el->find(CRITERIA) => ELEMENTS
+
+Find subelements. CRITERIA can be a word (e.g. 'Headline' meaning of class
+'Org::Element::Headline') or a class name ('Org::Element::ListItem') or a
+coderef (which will be given the element to test). Will return matched elements.
+
+=head2 $el->walk_parents(CODE)
+
+Run CODEREF for parent, and its parent, and so on until the root element (the
+document), or until CODEREF returns a false value. CODEREF will be supplied
+($el, $parent). Will return the last parent walked.
+
+=head2 $el->headline()
+
+Get current headline.
+
+=head2 $el->field_name()
+
+Try to extract "field name", being defined as either some text on the left side:
+
+ DEADLINE: <2011-06-09 >
+
+or a description term in a description list:
+
+ - wedding anniversary :: <2011-06-10 >
+
+=cut

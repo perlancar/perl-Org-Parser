@@ -1,5 +1,4 @@
 package Org::Element::Table;
-# ABSTRACT: Represent Org table
 
 use 5.010;
 use locale;
@@ -7,24 +6,9 @@ use Log::Any '$log';
 use Moo;
 extends 'Org::Element::Base';
 
-=head1 DESCRIPTION
-
-Must have L<Org::Element::TableRow> or L<Org::Element::TableVLine> instances as
-its children.
-
-
-=head1 ATTRIBUTES
-
-=cut
+# VERSION
 
 has _dummy => (is => 'rw'); # workaround Moo bug
-
-
-=head1 METHODS
-
-=for Pod::Coverage BUILD
-
-=cut
 
 sub BUILD {
     require Org::Element::TableRow;
@@ -68,12 +52,6 @@ sub BUILD {
     }
 }
 
-=head2 $table->rows() => ELEMENTS
-
-Return the rows of the table.
-
-=cut
-
 sub rows {
     my ($self) = @_;
     return [] unless $self->children;
@@ -84,12 +62,6 @@ sub rows {
     $rows;
 }
 
-=head2 $table->row_count() => INT
-
-Return the number of rows that the table has.
-
-=cut
-
 sub row_count {
     my ($self) = @_;
     return 0 unless $self->children;
@@ -99,13 +71,6 @@ sub row_count {
     }
     $n;
 }
-
-=head2 $table->column_count() => INT
-
-Return the number of columns that the table has. It is counted from the first
-row.
-
-=cut
 
 sub column_count {
     my ($self) = @_;
@@ -129,10 +94,33 @@ sub column_count {
 }
 
 1;
+# ABSTRACT: Represent Org table
 __END__
 
 =head1 DESCRIPTION
 
-Derived from L<Org::Element::Base>.
+Derived from L<Org::Element::Base>. Must have L<Org::Element::TableRow> or
+L<Org::Element::TableVLine> instances as its children.
+
+
+=head1 ATTRIBUTES
+
+
+=head1 METHODS
+
+=for Pod::Coverage BUILD
+
+=head2 $table->rows() => ELEMENTS
+
+Return the rows of the table.
+
+=head2 $table->row_count() => INT
+
+Return the number of rows that the table has.
+
+=head2 $table->column_count() => INT
+
+Return the number of columns that the table has. It is counted from the first
+row.
 
 =cut

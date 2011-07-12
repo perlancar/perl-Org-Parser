@@ -1,5 +1,4 @@
 package Org::Parser;
-# ABSTRACT: Parse Org documents
 
 use 5.010;
 use Moo;
@@ -7,6 +6,8 @@ use Moo;
 use File::Slurp;
 use Org::Document;
 use Scalar::Util qw(blessed);
+
+# VERSION
 
 sub parse {
     my ($self, $arg) = @_;
@@ -39,6 +40,7 @@ sub parse_file {
 }
 
 1;
+# ABSTRACT: Parse Org documents
 __END__
 
 =head1 SYNOPSIS

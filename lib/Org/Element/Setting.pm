@@ -1,57 +1,20 @@
 package Org::Element::Setting;
-# ABSTRACT: Represent Org in-buffer settings
 
 use 5.010;
 use locale;
 use Moo;
 extends 'Org::Element::Base';
 
-=head1 ATTRIBUTES
-
-=head2 name => STR
-
-Setting name.
-
-=cut
+# VERSION
 
 has name => (is => 'rw');
-
-=head2 args => ARRAY
-
-Setting's arguments.
-
-=cut
-
 has args => (is => 'rw');
-
-=head2 indent => STR
-
-Indentation (whitespaces before C<#+>), or empty string if none.
-
-=cut
-
 has indent => (is => 'rw');
-
-
-=head1 METHODS
-
-=cut
-
-=head2 Org::Element::Setting->indentable_settings -> arrayref
-
-Return the list of setting names that can be indented. In Org, some settings can
-be indented and some can't. Setting names are all in uppercase.
-
-=cut
 
 sub indentable_settings {
     state $data = [qw/TBLFM/];
     $data;
 }
-
-=for Pod::Coverage as_string BUILD
-
-=cut
 
 sub BUILD {
     require Org::Document;
@@ -153,10 +116,36 @@ sub as_string {
 }
 
 1;
+# ABSTRACT: Represent Org in-buffer settings
 __END__
 
 =head1 DESCRIPTION
 
 Derived from L<Org::Element::Base>.
+
+
+=head1 ATTRIBUTES
+
+=head2 name => STR
+
+Setting name.
+
+=head2 args => ARRAY
+
+Setting's arguments.
+
+=head2 indent => STR
+
+Indentation (whitespaces before C<#+>), or empty string if none.
+
+
+=head1 METHODS
+
+=for Pod::Coverage as_string BUILD
+
+=head2 Org::Element::Setting->indentable_settings -> arrayref
+
+Return the list of setting names that can be indented. In Org, some settings can
+be indented and some can't. Setting names are all in uppercase.
 
 =cut

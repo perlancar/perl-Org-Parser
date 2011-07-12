@@ -1,37 +1,15 @@
 package Org::Element::Link;
-# ABSTRACT: Represent Org hyperlink
 
 use 5.010;
 use locale;
 use Moo;
 extends 'Org::Element::Base';
 
-=head1 ATTRIBUTES
-
-=head2 link => STR
-
-=cut
+# VERSION
 
 has link => (is => 'rw');
-
-=head2 description => STR
-
-=cut
-
 has description => (is => 'rw');
-
-=head2 from_radio_target => BOOL
-
-=cut
-
 has from_radio_target => (is => 'rw');
-
-
-=head1 METHODS
-
-=for Pod::Coverage as_string
-
-=cut
 
 sub as_string {
     my ($self) = @_;
@@ -45,10 +23,25 @@ sub as_string {
 }
 
 1;
+# ABSTRACT: Represent Org hyperlink
 __END__
 
 =head1 DESCRIPTION
 
 Derived from L<Org::Element::Base>.
+
+
+=head1 ATTRIBUTES
+
+=head2 link => STR
+
+=head2 description => STR
+
+=head2 from_radio_target => BOOL
+
+
+=head1 METHODS
+
+=for Pod::Coverage as_string
 
 =cut

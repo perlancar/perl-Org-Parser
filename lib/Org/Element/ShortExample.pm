@@ -1,35 +1,14 @@
 package Org::Element::ShortExample;
-# ABSTRACT: Represent Org in-buffer settings
 
 use 5.010;
 use locale;
 use Moo;
 extends 'Org::Element::Base';
 
-=head1 ATTRIBUTES
-
-=head2 example => STR
-
-Example content.
-
-=cut
+# VERSION
 
 has example => (is => 'rw');
-
-=head2 indent => STR
-
-Indentation (whitespaces before C<#+>), or empty string if none.
-
-=cut
-
 has indent => (is => 'rw');
-
-
-=head1 METHODS
-
-=for Pod::Coverage as_string BUILD
-
-=cut
 
 sub as_string {
     my ($self) = @_;
@@ -42,6 +21,7 @@ sub as_string {
 }
 
 1;
+# ABSTRACT: Represent Org in-buffer settings
 __END__
 
 =head1 DESCRIPTION
@@ -64,5 +44,21 @@ which is functionally equivalent to:
    #+END_EXAMPLE
 
 Derived from L<Org::Element::Base>.
+
+
+=head1 ATTRIBUTES
+
+=head2 example => STR
+
+Example content.
+
+=head2 indent => STR
+
+Indentation (whitespaces before C<#+>), or empty string if none.
+
+
+=head1 METHODS
+
+=for Pod::Coverage as_string BUILD
 
 =cut

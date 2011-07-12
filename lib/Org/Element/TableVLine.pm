@@ -1,19 +1,11 @@
 package Org::Element::TableVLine;
-# ABSTRACT: Represent Org table vertical line
 
 use 5.010;
 use locale;
 use Moo;
 extends 'Org::Element::Base';
 
-=head1 ATTRIBUTES
-
-
-=head1 METHODS
-
-=for Pod::Coverage as_string
-
-=cut
+# VERSION
 
 sub as_string {
     my ($self) = @_;
@@ -23,9 +15,18 @@ sub as_string {
 
 1;
 __END__
+# ABSTRACT: Represent Org table vertical line
 
 =head1 DESCRIPTION
 
 Derived from L<Org::Element::Base>.
+
+
+=head1 ATTRIBUTES
+
+
+=head1 METHODS
+
+=for Pod::Coverage as_string
 
 =cut

@@ -1,5 +1,4 @@
 package Org::Document;
-# ABSTRACT: Represent an Org document
 
 use 5.010;
 use locale;
@@ -7,62 +6,14 @@ use Log::Any '$log';
 use Moo;
 extends 'Org::Element::Base';
 
-=head1 ATTRIBUTES
-
-=head2 tags => ARRAY
-
-List of tags for this file, usually set via #+FILETAGS.
-
-=cut
+# VERSION
 
 has tags                    => (is => 'rw');
-
-=head2 todo_states => ARRAY
-
-List of known (action-requiring) todo states. Default is ['TODO'].
-
-=cut
-
 has todo_states             => (is => 'rw');
-
-=head2 done_states => ARRAY
-
-List of known done (non-action-requiring) states. Default is ['DONE'].
-
-=cut
-
 has done_states             => (is => 'rw');
-
-=head2 priorities => ARRAY
-
-List of known priorities. Default is ['A', 'B', 'C'].
-
-=cut
-
 has priorities              => (is => 'rw');
-
-=head2 drawer_names => ARRAY
-
-List of known drawer names. Default is [qw/CLOCK LOGBOOK PROPERTIES/].
-
-=cut
-
 has drawer_names            => (is => 'rw');
-
-=head2 properties => ARRAY
-
-File-wide properties.
-
-=cut
-
 has properties              => (is => 'rw');
-
-=head2 radio_targets => ARRAY
-
-List of radio target text.
-
-=cut
-
 has radio_targets           => (is => 'rw');
 
 our $tags_re       = qr/:(?:[A-Za-z0-9_@#%]+:)+/;
@@ -138,13 +89,6 @@ my $block_elems_re = # top level elements
        #(?<text>      .+?) # too dispersy
       /msxi;
 
-
-=head1 METHODS
-
-=for Pod::Coverage BUILD
-
-=cut
-
 sub _init_pass1 {
     my ($self) = @_;
     $self->tags([]);
@@ -201,12 +145,6 @@ sub __format_args {
     }
     join " ", @s;
 }
-
-=head2 new(from_string => ...)
-
-Create object from string.
-
-=cut
 
 sub BUILD {
     my ($self, $args) = @_;
@@ -763,6 +701,7 @@ sub __split_tags {
 }
 
 1;
+# ABSTRACT: Represent an Org document
 __END__
 
 =head1 SYNOPSIS
@@ -777,8 +716,49 @@ __END__
  * heading 1b
  EOF
 
+
 =head1 DESCRIPTION
 
 Derived from L<Org::Element::Base>.
+
+
+=head1 ATTRIBUTES
+
+=head2 tags => ARRAY
+
+List of tags for this file, usually set via #+FILETAGS.
+
+=head2 todo_states => ARRAY
+
+List of known (action-requiring) todo states. Default is ['TODO'].
+
+=head2 done_states => ARRAY
+
+List of known done (non-action-requiring) states. Default is ['DONE'].
+
+=head2 priorities => ARRAY
+
+List of known priorities. Default is ['A', 'B', 'C'].
+
+=head2 drawer_names => ARRAY
+
+List of known drawer names. Default is [qw/CLOCK LOGBOOK PROPERTIES/].
+
+=head2 properties => ARRAY
+
+File-wide properties.
+
+=head2 radio_targets => ARRAY
+
+List of radio target text.
+
+
+=head1 METHODS
+
+=for Pod::Coverage BUILD
+
+=head2 new(from_string => ...)
+
+Create object from string.
 
 =cut
