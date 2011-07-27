@@ -96,6 +96,98 @@ sub is_leaf {
     $res;
 }
 
+sub promote_node {
+    my ($self, $num_levels) = @_;
+    $num_levels //= 1;
+    return if $num_levels == 0;
+    die "Please specify a positive number of levels" if $num_levels < 0;
+
+    for my $i (1..$num_levels) {
+
+        my $l = $self->level;
+        last if $l <= 1;
+        $l--;
+        $self->level($l);
+
+        $self->_str(undef);
+
+        my $parent = $self->parent;
+        my $siblings = $parent->children;
+        my $pos = $self->seniority;
+
+        # our children stay as children
+
+        # our right sibling headline(s) become children
+        while (1) {
+            my $s = $siblings->[$pos+1];
+            last unless $s && $s->isa('Org::Element::Headline')
+                && $s->level > $l;
+            $self->children([]) unless defined $self->children;
+            push @{$self->children}, $s;
+            splice @$siblings, $pos+1, 1;
+            $s->parent($self);
+        }
+
+        # our parent headline can become sibling if level is the same
+        if ($parent->isa('Org::Element::Headline') && $parent->level == $l) {
+            splice @$siblings, $pos, 1;
+            my $gparent = $parent->parent;
+            splice @{$gparent->children}, $parent->seniority+1, 0, $self;
+            $self->parent($gparent);
+        }
+
+    }
+}
+
+sub demote_node {
+    my ($self, $num_levels) = @_;
+    $num_levels //= 1;
+    return if $num_levels == 0;
+    die "Please specify a positive number of levels" if $num_levels < 0;
+
+    for my $i (1..$num_levels) {
+
+        my $l = $self->level;
+        $l++;
+        $self->level($l);
+
+        $self->_str(undef);
+
+        # prev sibling can become parent
+        my $ps = $self->prev_sibling;
+        if ($ps && $ps->isa('Org::Element::Headline') && $ps->level < $l) {
+            splice @{$self->parent->children}, $self->seniority, 1;
+            $ps->children([]) if !defined($ps->children);
+            push @{$ps->children}, $self;
+            $self->parent($ps);
+        }
+
+    }
+}
+
+sub promote_branch {
+    my ($self, $num_levels) = @_;
+    $num_levels //= 1;
+    return if $num_levels == 0;
+    die "Please specify a positive number of levels" if $num_levels < 0;
+
+    for my $i (1..$num_levels) {
+        last if $self->level <= 1;
+        $_->promote_node() for $self->find('Headline');
+    }
+}
+
+sub demote_branch {
+    my ($self, $num_levels) = @_;
+    $num_levels //= 1;
+    return if $num_levels == 0;
+    die "Please specify a positive number of levels" if $num_levels < 0;
+
+    for my $i (1..$num_levels) {
+        $_->demote_node() for $self->find('Headline');
+    }
+}
+
 1;
 # ABSTRACT: Represent Org headline
 __END__
@@ -157,5 +249,60 @@ in the child elements.
 =head2 $el->is_leaf() => BOOL
 
 Returns true if element doesn't contain subtrees.
+
+=head2 $el->promote_node([$num_levels])
+
+Promote (decrease the level) of this headline node. $level specifies number of
+levels, defaults to 1. Won't further promote if already at level 1.
+Illustration:
+
+ * h1
+ ** h2   <-- promote 1 level
+ *** h3
+ *** h3b
+ ** h4
+ * h5
+
+becomes:
+
+ * h1
+ * h2
+ *** h3
+ *** h3b
+ ** h4
+ * h5
+
+=head2 $el->demote_node([$num_levels])
+
+Does the opposite of promote_node().
+
+=head2 $el->promote_branch([$num_levels])
+
+Like promote_node(), but all children headlines will also be promoted.
+Illustration:
+
+ * h1
+ ** h2   <-- promote 1 level
+ *** h3
+ **** grandkid
+ *** h3b
+
+ ** h4
+ * h5
+
+becomes:
+
+ * h1
+ * h2
+ ** h3
+ *** grandkid
+ ** h3b
+
+ ** h4
+ * h5
+
+=head2 $el->demote_branch([$num_levels])
+
+Does the opposite of promote_branch().
 
 =cut

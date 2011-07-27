@@ -7,6 +7,7 @@ use warnings;
 use FindBin '$Bin';
 use lib $Bin, "$Bin/t";
 
+#use Org::Dump;
 use Org::Parser;
 use Test::More 0.96;
 require "testlib.pl";
@@ -234,6 +235,159 @@ _
         ok(!$elems->[1]->is_leaf, "b is not leaf");
         ok( $elems->[2]->is_leaf, "c is leaf");
         ok( $elems->[3]->is_leaf, "d is leaf");
+    },
+);
+
+test_parse(
+    name => 'promote_node() 1',
+    filter_elements => 'Org::Element::Headline',
+    doc  => <<'_',
+* h1
+** h2
+* h3
+_
+    num => 3,
+    test_after_parse => sub {
+        my (%args) = @_;
+        my $doc    = $args{result};
+        my $elems  = $args{elements};
+        my ($h1, $h2, $h3) = @$elems;
+
+        $h1->promote_node;
+        is($h1->level, 1, "level 1 won't be promoted further");
+
+        $h2->promote_node;
+        is($h2->level, 1, "level 2 becomes level 1 after being promoted");
+        is($h2->as_string, "* h2\n", "_str reset after being promoted");
+        is($h2->prev_sibling, $h1, "parent becomes sibling (1)");
+        is($h2->next_sibling, $h3, "parent becomes sibling (2)");
+    },
+);
+test_parse(
+    name => 'promote_node() 2',
+    filter_elements => 'Org::Element::Headline',
+    doc  => <<'_',
+** h1
+** h2
+** h3
+_
+    num => 3,
+    test_after_parse => sub {
+        my (%args) = @_;
+        my $elems = $args{elements};
+        my ($h1, $h2, $h3) = @$elems;
+
+        $h2->promote_node;
+        ok(!$h2->next_sibling, "no more sibling after promote (2)")
+            or diag explain $h2->next_sibling->as_string;
+        is($h2->children->[0], $h3, "sibling becomes child");
+    },
+);
+test_parse(
+    name => 'promote_node() 3',
+    filter_elements => 'Org::Element::Headline',
+    doc  => <<'_',
+*** h1
+_
+    num => 1,
+    test_after_parse => sub {
+        my (%args) = @_;
+        my $elems = $args{elements};
+        my ($h1) = @$elems;
+
+        $h1->promote_node(2);
+        is($h1->level, 1, "promote with argument, level 3 -> 1");
+    },
+);
+
+test_parse(
+    name => 'demote_node() 1',
+    filter_elements => 'Org::Element::Headline',
+    doc  => <<'_',
+* h1
+* h2
+* h3
+_
+    num => 3,
+    test_after_parse => sub {
+        my (%args) = @_;
+        my $doc    = $args{result};
+        my $elems  = $args{elements};
+        my ($h1, $h2, $h3) = @$elems;
+
+        $h2->demote_node;
+        is($h2->level, 2, "level 1 becomes level 2");
+        is($h2->parent, $h1, "prev_sibling becomes parent");
+        is($h1->next_sibling, $h3, "h1's next_sibling becomes h3");
+        is($h3->prev_sibling, $h1, "h3's prev_sibling becomes h1");
+    },
+);
+test_parse(
+    name => 'demote_node() 2',
+    filter_elements => 'Org::Element::Headline',
+    doc  => <<'_',
+* h1
+_
+    num => 1,
+    test_after_parse => sub {
+        my (%args) = @_;
+        my $elems = $args{elements};
+        my ($h1) = @$elems;
+
+        $h1->demote_node(3);
+        is($h1->level, 4, "demote 3 means level 1 becomes 4");
+    },
+);
+
+test_parse(
+    name => 'promote_branch()',
+    filter_elements => 'Org::Element::Headline',
+    doc  => <<'_',
+** h1
+*** h2
+**** h3
+*** h4
+** h5
+_
+    num => 5,
+    test_after_parse => sub {
+        my (%args) = @_;
+        my $doc    = $args{result};
+        my $elems  = $args{elements};
+        my ($h1, $h2, $h3, $h4, $h5) = @$elems;
+
+        $h1->promote_branch;
+        is($h1->level, 1, "h1 becomes level 1");
+        is($h2->level, 2, "h2 becomes level 2");
+        is($h3->level, 3, "h3 becomes level 3");
+        is($h4->level, 2, "h4 becomes level 2");
+        is($h5->level, 2, "h5 stays at level 2");
+    },
+);
+
+test_parse(
+    name => 'demote_branch()',
+    filter_elements => 'Org::Element::Headline',
+    doc  => <<'_',
+** h1
+*** h2
+**** h3
+*** h4
+** h5
+_
+    num => 5,
+    test_after_parse => sub {
+        my (%args) = @_;
+        my $doc    = $args{result};
+        my $elems  = $args{elements};
+        my ($h1, $h2, $h3, $h4, $h5) = @$elems;
+
+        $h1->demote_branch;
+        is($h1->level, 3, "h1 becomes level 3");
+        is($h2->level, 4, "h2 becomes level 4");
+        is($h3->level, 5, "h3 becomes level 5");
+        is($h4->level, 4, "h4 becomes level 4");
+        is($h5->level, 2, "h5 stays at level 2");
     },
 );
 
