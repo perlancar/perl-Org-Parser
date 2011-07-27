@@ -3,7 +3,7 @@ package Org::Element::List;
 use 5.010;
 use locale;
 use Moo;
-extends 'Org::Element::Base';
+extends 'Org::Element';
 
 # VERSION
 
@@ -19,7 +19,7 @@ __END__
 
 Must have L<Org::Element::ListItem> (or another ::List) as children.
 
-Derived from L<Org::Element::Base>.
+Derived from L<Org::Element>.
 
 
 =head1 ATTRIBUTES

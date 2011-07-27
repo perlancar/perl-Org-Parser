@@ -4,7 +4,7 @@ use 5.010;
 use locale;
 use Log::Any '$log';
 use Moo;
-extends 'Org::Element::Base';
+extends 'Org::Element';
 
 use Time::HiRes qw(gettimeofday tv_interval);
 
@@ -723,7 +723,7 @@ __END__
 
 =head1 DESCRIPTION
 
-Derived from L<Org::Element::Base>.
+Derived from L<Org::Element>.
 
 
 =head1 ATTRIBUTES

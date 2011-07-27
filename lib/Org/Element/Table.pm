@@ -4,7 +4,7 @@ use 5.010;
 use locale;
 use Log::Any '$log';
 use Moo;
-extends 'Org::Element::Base';
+extends 'Org::Element';
 
 # VERSION
 
@@ -99,7 +99,7 @@ __END__
 
 =head1 DESCRIPTION
 
-Derived from L<Org::Element::Base>. Must have L<Org::Element::TableRow> or
+Derived from L<Org::Element>. Must have L<Org::Element::TableRow> or
 L<Org::Element::TableVLine> instances as its children.
 
 

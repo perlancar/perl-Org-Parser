@@ -1,4 +1,4 @@
-package Org::Element::Base;
+package Org::Element;
 
 use 5.010;
 use locale;
@@ -164,7 +164,7 @@ sub field_name {
 }
 
 1;
-# ABSTRACT: Base class for element of Org document
+# ABSTRACT: Base class for Org document elements
 
 =head1 SYNOPSIS
 

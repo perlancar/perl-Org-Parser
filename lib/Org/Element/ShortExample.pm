@@ -3,7 +3,7 @@ package Org::Element::ShortExample;
 use 5.010;
 use locale;
 use Moo;
-extends 'Org::Element::Base';
+extends 'Org::Element';
 
 # VERSION
 
@@ -43,7 +43,7 @@ which is functionally equivalent to:
      another example.
    #+END_EXAMPLE
 
-Derived from L<Org::Element::Base>.
+Derived from L<Org::Element>.
 
 
 =head1 ATTRIBUTES
