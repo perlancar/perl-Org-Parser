@@ -6,6 +6,8 @@ use Log::Any '$log';
 use Moo;
 extends 'Org::Element::Base';
 
+use Time::HiRes qw(gettimeofday tv_interval);
+
 # VERSION
 
 has tags                    => (is => 'rw');
@@ -167,6 +169,7 @@ sub BUILD {
 sub _parse {
     my ($self, $str, $pass) = @_;
     $log->tracef('-> _parse(%s, pass=%d)', $str, $pass);
+    my $t0 = [gettimeofday];
 
     my $last_headline;
     my $last_headlines = [$self]; # [$doc, $last_hl_level1, $last_hl_lvl2, ...]
@@ -376,7 +379,8 @@ sub _parse {
     }
     @text = ();
 
-    $log->tracef('<- _parse()');
+    $log->tracef('<- _parse(), elapsed time=%.3fs',
+                 tv_interval($t0, [gettimeofday]));
 }
 
 sub _add_text_container {
