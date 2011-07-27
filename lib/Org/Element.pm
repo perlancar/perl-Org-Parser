@@ -163,6 +163,13 @@ sub field_name {
     return;
 }
 
+sub remove {
+    my ($self) = @_;
+    my $parent = $self->parent;
+    return unless $parent;
+    splice @{$parent->children}, $self->seniority, 1;
+}
+
 1;
 # ABSTRACT: Base class for Org document elements
 
@@ -238,11 +245,11 @@ Run CODEREF for parent, and its parent, and so on until the root element (the
 document), or until CODEREF returns a false value. CODEREF will be supplied
 ($el, $parent). Will return the last parent walked.
 
-=head2 $el->headline()
+=head2 $el->headline() => ELEMENT
 
 Get current headline.
 
-=head2 $el->field_name()
+=head2 $el->field_name() => STR
 
 Try to extract "field name", being defined as either some text on the left side:
 
@@ -251,5 +258,9 @@ Try to extract "field name", being defined as either some text on the left side:
 or a description term in a description list:
 
  - wedding anniversary :: <2011-06-10 >
+
+=head2 $el->remove()
+
+Remove element from the tree. Basically just remove the element from its parent.
 
 =cut

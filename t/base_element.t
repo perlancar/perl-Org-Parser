@@ -101,4 +101,31 @@ _
     },
 );
 
+test_parse(
+    name => 'remove()',
+    doc  => <<'_',
+* a
+* b
+** b2
+*** b3
+* c
+_
+    filter_elements => 'Org::Element::Headline',
+    num => 5,
+     test_after_parse => sub {
+        my (%args) = @_;
+        my $doc    = $args{result};
+        my $elems  = $args{elements};
+        my ($a, $b, $b2, $b3, $c) = @$elems;
+
+        $b->remove;
+        my @res = $doc->find('Headline');
+        is(scalar(@res), 2, "remove() removes children");
+        is(scalar(@{$doc->children}), 2,
+           "remove() removes from parent's children");
+        is($a->next_sibling, $c, "a's next_sibling becomes c");
+        is($c->prev_sibling, $a, "c's prev_sibling becomes a");
+    },
+);
+
 done_testing();
