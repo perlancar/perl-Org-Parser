@@ -21,10 +21,6 @@ information.
 from the manual: "A line consisting of only dashes, and at least 5 of them, will
 be exported as a horizzontal line (‘<hr/>’ in HTML and \hrule in LaTeX)."
 
-*** TODO performance
-currently parsing is pretty slow, my +- 300 lines (10KB) addressbook needs
-around 5s to parse (x 2 passes, 10s). it should be reduced to less than 1s.
-
 ** Element::Base
 *** TODO set_property()
 - should create a properties drawer if necessary
