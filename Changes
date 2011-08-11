@@ -1,5 +1,15 @@
 Revision history for Org-Parser
 
+0.18    2011-08-11
+
+        [INCOMPATIBLE CHANGES]
+
+        - Rename Org::Element::ShortExample to Org::Element::FixedWidthSection.
+
+        - Allow /^\s*:$/ line as a special case in fixed width section (ref:
+          [org-mode feb52f9028e73f0f49390780bb2e61cc9da04303])
+
+
 0.17    2011-07-27
 
         [INCOMPATIBLE CHANGES]
