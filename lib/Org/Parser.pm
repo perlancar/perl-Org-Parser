@@ -150,6 +150,23 @@ Will die if there are syntax errors in documents.
 Just like parse(), but will load document from file instead.
 
 
+=head1 FAQ
+
+=head2 Why? Just as only perl can parse Perl, only org-mode can parse Org anyway!
+
+True. I'm only targetting good enough. As long as I can parse/process all my Org
+notes and todo files, I have no complaints.
+
+=head2 It's too slow!
+
+Startup is a tad slow (but still under 0.5-1 s), due to having to load largish
+modules like DateTime.
+
+Parser is completely regex-based at the moment (I plan to use L<Marpa> someday).
+Performance is not great but I'm not annoyed enough at the moment to overhaul
+it.
+
+
 =head1 SEE ALSO
 
 L<Org::Document>
