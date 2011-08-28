@@ -90,7 +90,8 @@ will print something like:
  heading level 1: heading1b
  heading level 1: heading1c
 
-A command-line utility is provided for debugging:
+A command-line utility (in a separate distribution: L<App::OrgUtils>) is
+available for debugging:
 
  % dump-org-structure ~/todo.org
  Document:
@@ -123,6 +124,7 @@ implemented stuffs.
 
 
 =head1 ATTRIBUTES
+
 
 =head1 METHODS
 
