@@ -13,7 +13,10 @@ sub _dump_ts {
     my ($self, $ts) = @_;
     my $dump = "";
     $dump .= "A " if $ts->is_active;
-    $dump .= $ts->datetime;
+    my $dt = $ts->datetime;
+    my $tz = $dt->time_zone;
+    $dump .= $dt.
+        ($tz->is_floating ? "F" : $tz->short_name_for_datetime($dt));
     $dump;
 }
 

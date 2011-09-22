@@ -18,6 +18,8 @@ has drawer_names            => (is => 'rw');
 has properties              => (is => 'rw');
 has radio_targets           => (is => 'rw');
 
+has time_zone               => (is => 'rw');
+
 our $tags_re       = qr/:(?:[A-Za-z0-9_@#%]+:)+/;
 my  $ls_re         = qr/(?:(?<=[\015\012])|\A)/;
 my  $le_re         = qr/(?:\R|\z)/;
@@ -752,6 +754,10 @@ File-wide properties.
 =head2 radio_targets => ARRAY
 
 List of radio target text.
+
+=head2 time_zone => ARRAY
+
+If set, will be passed to DateTime->new() (e.g. by L<Org::Element::Timestamp>).
 
 
 =head1 METHODS

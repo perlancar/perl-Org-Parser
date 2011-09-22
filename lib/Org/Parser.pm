@@ -10,8 +10,10 @@ use Scalar::Util qw(blessed);
 # VERSION
 
 sub parse {
-    my ($self, $arg) = @_;
+    my ($self, $arg, $opts) = @_;
     die "Please specify a defined argument to parse()\n" unless defined($arg);
+
+    $opts //= {};
 
     my $str;
     my $r = ref($arg);
@@ -31,12 +33,12 @@ sub parse {
         die "Invalid argument, please supply a ".
             "string|arrayref|coderef|filehandle\n";
     }
-    Org::Document->new(from_string=>$str);
+    Org::Document->new(from_string=>$str, time_zone=>$opts->{time_zone});
 }
 
 sub parse_file {
-    my ($self, $filename) = @_;
-    $self->parse(scalar read_file($filename));
+    my ($self, $filename, $opts) = @_;
+    $self->parse(scalar read_file($filename), $opts);
 }
 
 1;
@@ -132,7 +134,7 @@ implemented stuffs.
 
 Create a new parser instance.
 
-=head2 $orgp->parse($str | $arrayref | $coderef | $filehandle) => $doc
+=head2 $orgp->parse($str | $arrayref | $coderef | $filehandle, $opts) => $doc
 
 Parse document (which can be contained in a scalar $str, an array of lines
 $arrayref, a subroutine which will be called for chunks until it returns undef,
@@ -145,7 +147,10 @@ parsing. See the 'handler' attribute for more details.
 
 Will die if there are syntax errors in documents.
 
-=head2 $orgp->parse_file($filename) => $doc
+$opts is a hashref and can contain these keys: C<time_zone> (will be passed to
+Org::Document's constructor).
+
+=head2 $orgp->parse_file($filename, $opts) => $doc
 
 Just like parse(), but will load document from file instead.
 

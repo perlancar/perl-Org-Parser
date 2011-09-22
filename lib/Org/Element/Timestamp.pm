@@ -125,6 +125,10 @@ sub _parse_timestamp {
     } else {
         $self->has_time(0);
     }
+    if ($self->document->time_zone) {
+        $dt_args{time_zone} = $self->document->time_zone;
+    }
+    use Data::Dump; dd \%dt_args;
     my $dt = DateTime->new(%dt_args);
 
     if ($+{repeater} && !$self->recurrence) {
