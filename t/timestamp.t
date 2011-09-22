@@ -103,4 +103,23 @@ _
     },
 );
 
+test_parse(
+    name => 'time_zone',
+    filter_elements => sub {
+        $_[0]->isa('Org::Element::Timestamp') },
+    parser_opts => {time_zone => 'Asia/Jakarta'},
+    doc  => <<'_',
+[2011-09-23 Wed]
+_
+    num => 1,
+    test_after_parse => sub {
+        my %args  = @_;
+        my $doc   = $args{result};
+        my $elems = $args{elements};
+        my $dt    = $elems->[0]->datetime;
+        my $tz    = $dt->time_zone;
+        is($tz->short_name_for_datetime($dt), "WIT", "time zone's short name");
+    },
+);
+
 done_testing();

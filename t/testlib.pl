@@ -16,7 +16,7 @@ sub test_parse {
         my $res;
         eval {
             if ($args{doc}) {
-                $res = $orgp->parse($args{doc});
+                $res = $orgp->parse($args{doc}, $args{parser_opts});
             } elsif ($args{parse_args}) {
                 $res = $orgp->parse(@{ $args{parse_args} });
             } elsif ($args{parse_file_args}) {
