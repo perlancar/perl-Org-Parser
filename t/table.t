@@ -61,6 +61,16 @@ _
         is($t->column_count, 3, "column_count() method");
         isa_ok($t->rows->[0], "Org::Element::TableRow");
         isa_ok($t->rows->[0]->cells->[0], 'Org::Element::TableCell');
+
+        is_deeply($r1->as_array, ["a", "b", "c"], "row's as_array() method")
+            or diag explain $r1->as_array;
+        is_deeply($t->as_aoa,
+                  [["a", "b", "c"],
+                   [1, '', 2],
+                   [3, "abc", 4],
+                   ["one <2011-03-17 Thu> three"]],
+                  "table's as_aoa() method")
+            or diag explain $t->as_aoa;
     },
 );
 

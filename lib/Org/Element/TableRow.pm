@@ -17,6 +17,12 @@ sub as_string {
          "\n");
 }
 
+sub as_array {
+    my ($self) = @_;
+
+    [map {$_->as_string} @{$self->children}];
+}
+
 sub cells {
     my ($self) = @_;
     return [] unless $self->children;
@@ -48,5 +54,10 @@ instances as its children.
 =head2 $table->cells() => ELEMENTS
 
 Return the cells of the row.
+
+=head2 $table->as_array() => ARRAYREF
+
+Return an arrayref containing the cells of the row, each cells already
+stringified with as_string().
 
 =cut
