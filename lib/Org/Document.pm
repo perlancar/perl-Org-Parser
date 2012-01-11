@@ -29,7 +29,7 @@ our $arg_re        = qr/(?: '(?<squote> [^']*)' |
                        /x;
 our $args_re       = qr/(?: $arg_re (?:[ \t]+ $arg_re)*)/x;
 my  $tstamp_re     = qr/(?:\[\d{4}-\d{2}-\d{2} [ ] [^\n\]]*\])/x;
-my  $act_tstamp_re = qr/(?:<\d{4}-\d{2}-\d{2} [ ] [^\n>]*>)/x;
+my  $act_tstamp_re = qr/(?: <\d{4}-\d{2}-\d{2} [ ] [^\n>]*  >)/x;
 my  $fn_name_re    = qr/(?:[^ \t\n:\]]+)/x;
 my  $text_re       =
     qr(
