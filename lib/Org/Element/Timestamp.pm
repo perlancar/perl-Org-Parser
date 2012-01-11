@@ -71,23 +71,23 @@ sub _parse_timestamp {
                    /x;
 
     $str =~ /^(?<open_bracket> \[|<)
-             (?<year> \d{4})-(?<mon> \d{2})-(?<day> \d{2}) \s
+             (?<year> \d{4})-(?<mon> \d{2})-(?<day> \d{2}) \s+
              (?:
-                 (?<dow> $dow_re)
-                 (?:\s
+                 (?<dow> $dow_re) \s*?
+                 (?:\s+
                      (?<hour> \d{2}):(?<min> \d{2})
                      (?:-
                          (?<event_duration>
                              (?<hour2> \d{2}):(?<min2> \d{2}))
                      )?
                  )?
-                 (?:\s(?<repeater>
+                 (?:\s+(?<repeater>
                          (?<repeater_prefix> \+\+|\.\+|\+)
                          (?<repeater_interval> $num_re)
                          (?<repeater_unit> [dwmy])
                      )
                  )?
-                 (?:\s(?<warning_period>
+                 (?:\s+(?<warning_period>
                          -
                          (?<warning_period_interval> $num_re)
                          (?<warning_period_unit> [dwmy])

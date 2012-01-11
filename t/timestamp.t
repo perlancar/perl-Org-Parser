@@ -28,8 +28,12 @@ test_parse(
   - [2011-03-23 ]
   - [2011-03-23 Wed 01:23]
   - nontimestamps: [2011-03-23]
+
+* additional tests
+  - <2012-01-11 Wed > # space after dow allowed
+  - [2012-01-11   ] [2012-01-11   Wed   ] # multiple spaces allowed
 _
-    num => 6,
+    num => 9,
     test_after_parse => sub {
         my %args = @_;
         my $doc = $args{result};
@@ -47,6 +51,11 @@ _
 
         ok( $elems->[0]->is_active, "ts[0] is_active");
         ok(!$elems->[3]->is_active, "ts[3] !is_active");
+
+        # additional
+        is( $elems->[6]->as_string, "<2012-01-11 Wed>", "ts[6] as_string");
+        is( $elems->[7]->as_string, "[2012-01-11 Wed]", "ts[7] as_string");
+        is( $elems->[8]->as_string, "[2012-01-11 Wed]", "ts[8] as_string");
     },
 );
 
