@@ -156,8 +156,8 @@ sub BUILD {
     if (defined $args->{from_string}) {
 
         # NOTE: parsing is done twice. first pass will set settings (e.g. custom
-        # todo keywords set by #+TODO), scan for radio targets, etc. after that
-        # we scan again
+        # todo keywords set by #+TODO), scan for radio targets. after that we
+        # scan again to build the elements tree.
 
         $self->_init_pass1();
         $self->_parse($args->{from_string}, 1);
@@ -200,7 +200,7 @@ sub _parse {
         }
 
         my $el;
-        if ($m{block}) {
+        if ($m{block} && $pass == 2) {
 
             require Org::Element::Block;
             $el = Org::Element::Block->new(
@@ -231,7 +231,7 @@ sub _parse {
                 );
             }
 
-        } elsif ($m{fixedw}) {
+        } elsif ($m{fixedw} && $pass == 2) {
 
             require Org::Element::FixedWidthSection;
             $el = Org::Element::FixedWidthSection->new(
@@ -240,7 +240,7 @@ sub _parse {
                 document=>$self, parent=>$parent,
             );
 
-        } elsif ($m{comment}) {
+        } elsif ($m{comment} && $pass == 2) {
 
             require Org::Element::Comment;
             $el = Org::Element::Comment->new(
@@ -248,7 +248,7 @@ sub _parse {
                 document=>$self, parent=>$parent,
             );
 
-        } elsif ($m{table}) {
+        } elsif ($m{table} && $pass == 2) {
 
             require Org::Element::Table;
             $el = Org::Element::Table->new(
@@ -257,7 +257,7 @@ sub _parse {
                 document=>$self, parent=>$parent,
             );
 
-        } elsif ($m{drawer}) {
+        } elsif ($m{drawer} && $pass == 2) {
 
             require Org::Element::Drawer;
             my $raw_content = $m{drawer_content};
@@ -272,7 +272,7 @@ sub _parse {
             # i'm not clear yet on how to do this canonically.
             $el->_parse_properties($raw_content);
 
-        } elsif ($m{li_header}) {
+        } elsif ($m{li_header} && $pass == 2) {
 
             require Org::Element::List;
             require Org::Element::ListItem;
@@ -321,7 +321,7 @@ sub _parse {
             splice @$last_lists, $level+1;
             $last_listitem = $el;
 
-        } elsif ($m{headline}) {
+        } elsif ($m{headline} && $pass == 2) {
 
             require Org::Element::Headline;
             my $level = length $m{h_bullet};
@@ -370,7 +370,7 @@ sub _parse {
         }
 
         # we haven't caught other matches to become element
-        die "BUG1: no element" unless $el;
+        die "BUG1: no element" unless $el || $pass != 2;
 
         $parent->children([]) if !$parent->children;
         push @{ $parent->children }, $el;
@@ -415,7 +415,7 @@ sub _add_text {
         #}
         my $el;
 
-        if (defined $m{plain_text}) {
+        if (defined $m{plain_text} && $pass == 2) {
             push @plain_text, $m{plain_text};
             next;
         } else {
@@ -425,7 +425,7 @@ sub _add_text {
             }
         }
 
-        if ($m{link}) {
+        if ($m{link} && $pass == 2) {
             require Org::Element::Link;
             $el = Org::Element::Link->new(
                 document => $self, parent => $parent,
@@ -443,19 +443,19 @@ sub _add_text {
                 document => $self, parent => $parent,
                 target=>$m{rt_target},
             );
-        } elsif ($m{target}) {
+        } elsif ($m{target} && $pass == 2) {
             require Org::Element::Target;
             $el = Org::Element::Target->new(
                 document => $self, parent => $parent,
                 target=>$m{t_target},
             );
-        } elsif ($m{fn_num}) {
+        } elsif ($m{fn_num} && $pass == 2) {
             require Org::Element::Footnote;
             $el = Org::Element::Footnote->new(
                 document => $self, parent => $parent,
                 name=>$m{fn_num_num}, is_ref=>1,
             );
-        } elsif ($m{fn_namedef}) {
+        } elsif ($m{fn_namedef} && $pass == 2) {
             require Org::Element::Footnote;
             $el = Org::Element::Footnote->new(
                 document => $self, parent => $parent,
@@ -464,7 +464,7 @@ sub _add_text {
             );
             $el->def($self->_add_text_container($m{fn_namedef_def},
                                                 $parent, $pass));
-        } elsif ($m{fn_nameidef}) {
+        } elsif ($m{fn_nameidef} && $pass == 2) {
             require Org::Element::Footnote;
             $el = Org::Element::Footnote->new(
                 document => $self, parent => $parent,
@@ -475,7 +475,7 @@ sub _add_text {
             $el->def(length($m{fn_nameidef_def}) ?
                          $self->_add_text_container($m{fn_nameidef_def},
                                                     $parent, $pass) : undef);
-        } elsif ($m{trange}) {
+        } elsif ($m{trange} && $pass == 2) {
             require Org::Element::TimeRange;
             require Org::Element::Timestamp;
             $el = Org::Element::TimeRange->new(
@@ -489,13 +489,13 @@ sub _add_text {
                 document=>$self, parent=>$parent));
             $el->ts2->_parse_timestamp($m{trange_ts2}, $opts);
             $el->children([$el->ts1, $el->ts2]);
-        } elsif ($m{tstamp}) {
+        } elsif ($m{tstamp} && $pass == 2) {
             require Org::Element::Timestamp;
             $el = Org::Element::Timestamp->new(
                 document => $self, parent => $parent,
             );
             $el->_parse_timestamp($m{tstamp});
-        } elsif ($m{act_trange}) {
+        } elsif ($m{act_trange} && $pass == 2) {
             require Org::Element::TimeRange;
             require Org::Element::Timestamp;
             $el = Org::Element::TimeRange->new(
@@ -509,13 +509,13 @@ sub _add_text {
                 document=>$self, parent=>$parent));
             $el->ts2->_parse_timestamp($m{act_trange_ts2}, $opts);
             $el->children([$el->ts1, $el->ts2]);
-        } elsif ($m{act_tstamp}) {
+        } elsif ($m{act_tstamp} && $pass == 2) {
             require Org::Element::Timestamp;
             $el = Org::Element::Timestamp->new(
                 document => $self, parent => $parent,
             );
             $el->_parse_timestamp($m{act_tstamp});
-        } elsif ($m{markup_start}) {
+        } elsif ($m{markup_start} && $pass == 2) {
             require Org::Element::Text;
             $el = Org::Element::Text->new(
                 document => $self, parent => $parent,
@@ -523,7 +523,7 @@ sub _add_text {
             );
             # temporary mark, we need to apply markup later
             $el->{_mu_start}++;
-        } elsif ($m{markup_end}) {
+        } elsif ($m{markup_end} && $pass == 2) {
             require Org::Element::Text;
             $el = Org::Element::Text->new(
                 document => $self, parent => $parent,
@@ -532,13 +532,13 @@ sub _add_text {
             # temporary mark, we need to apply markup later
             $el->{_mu_end}++;
         }
-        die "BUG2: no element" unless $el;
+        die "BUG2: no element" unless $el || $pass != 2;
         $parent->children([]) if !$parent->children;
         push @{ $parent->children }, $el;
     }
 
     # remaining text
-    if (@plain_text) {
+    if (@plain_text && $pass == 2) {
         $parent->children([]) if !$parent->children;
         push @{$parent->children}, Org::Element::Text->new(
             text => join("", @plain_text), style=>'',
