@@ -164,11 +164,8 @@ notes and todo files, I have no complaints.
 
 =head2 It's too slow!
 
-Startup is a tad slow (but still under 0.5-1 s), due to having to load largish
-modules like DateTime.
-
 Parser is completely regex-based at the moment (I plan to use L<Marpa> someday).
-Performance is not great but I'm not annoyed enough at the moment to overhaul
+Performance is quite lousy but I'm not annoyed enough at the moment to overhaul
 it.
 
 
