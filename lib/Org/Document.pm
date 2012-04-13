@@ -183,7 +183,10 @@ sub _parse {
         $parent = $last_listitem // $last_headline // $self;
         #$log->tracef("TMP: parent=%s (%s)", ref($parent), $parent->_str);
         next unless keys %+; # perlre bug?
-        $log->tracef("match block element: %s", \%+);
+        if ($log->is_trace) {
+            # profiler shows that this is very heavy
+            $log->tracef("match block element: %s", \%+);
+        }
 
         if (defined $+{text}) {
             push @text, $+{text};
@@ -404,7 +407,10 @@ sub _add_text {
 
     my @plain_text;
     while ($str =~ /$text_re/g) {
-        $log->tracef("match text: %s", \%+);
+        if ($log->is_trace) {
+            # profiler shows that this is very heavy
+            $log->tracef("match text: %s", \%+);
+        }
         my $el;
 
         if (defined $+{plain_text}) {
