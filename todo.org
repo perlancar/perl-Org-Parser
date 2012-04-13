@@ -1,6 +1,5 @@
-* todo
-** parser
-*** TODO add line number information
+* parser
+** TODO add line number information
 perhaps _linenum_start and _linenum_end attributes to signify the starting and
 ending line numbers of current element. so the parser can report:
 
@@ -17,15 +16,15 @@ the elements do something like this instead to report error:
 and the document will provide the additional line number and element
 information.
 
-*** TODO parse horizontal rules
+** TODO parse horizontal rules
 from the manual: "A line consisting of only dashes, and at least 5 of them, will
 be exported as a horizzontal line (‘<hr/>’ in HTML and \hrule in LaTeX)."
 
-** Element::Base
-*** TODO set_property()
+* Element::Base
+** TODO set_property()
 - should create a properties drawer if necessary
-** table
-*** TODO caption(), label(), etc
+* table
+** TODO caption(), label(), etc
 Get it from settings:
 
 : #+CAPTION: A long table
@@ -43,17 +42,17 @@ apply to the next thing (table) that wants it, e.g.:
 : |...|...|
 : |...|...|
 
-*** TODO column group (manual: 3.3)
+** TODO column group (manual: 3.3)
 probably create Element::TableColGroup which is a special row that contains
 column group instruction. or we can just assume it's a normal row and only
 format() needs to worry about this (i prefer the latter).
-** footnote
-** link
-** target
-** radio target
-** timestamp & time range
-*** what's the difference between SCHEDULED and DEADLINE timestamp?
-*** TODO parse sexp entries?
+* footnote
+* link
+* target
+* radio target
+* timestamp & time range
+** what's the difference between SCHEDULED and DEADLINE timestamp?
+** TODO parse sexp entries?
 e.g.
 
 : ** Class 7:00pm-9:00pm
@@ -62,24 +61,24 @@ e.g.
 : * Monthly meeting
 :  <%%(diary-float t 3 3)>
 
-** plain lists (ordered, unordered, description)
-** headline
-*** TODO Parse headline percentages
-*** TODO next_todo_state() & prev_todo_state()
+* plain lists (ordered, unordered, description)
+* headline
+** TODO Parse headline percentages
+** TODO next_todo_state() & prev_todo_state()
 return undef if .document is undef.
-*** TODO cycle_todo_state($reverse // 0)
-*** TODO promoto_subtree() & demote_subtree()
-** drawer & properties
-*** TODO check valid values of property (foo_ALL)
-*** TODO fix parsing of property values
+** TODO cycle_todo_state($reverse // 0)
+** TODO promoto_subtree() & demote_subtree()
+* drawer & properties
+** TODO check valid values of property (foo_ALL)
+** TODO fix parsing of property values
 need clarification first
 
 : :PROPERTY:
 :   :birthday:  (5 7 1990)
 : :END:
 
-** setting
-*** TODO [low] differentiate between TYP_TODO and TODO/SEQ_TODO
+* setting
+** TODO [low] differentiate between TYP_TODO and TODO/SEQ_TODO
 "TODO and SEQ_TODO are the same. TYP_TODO is slightly different in operation.
 When you press C-c C-t in a line with the keyword defined by TYP_TODO, the task
 will immediately switch to DONE, instead of to the next state in the sequence. I
@@ -88,24 +87,24 @@ use this." -- carsten
 
 this is probably useful if we already have next_todo_state() et al. We'll need
 to note which todo keywords belong to TYP_TODO.
-*** TODO process includes (#+INCLUDE)
+** TODO process includes (#+INCLUDE)
 
-*** TODO parse buffer-wide header arguments (#+BABEL, 14.8.1)
-*** TODO parse link abbreviation (#+LINK)
+** TODO parse buffer-wide header arguments (#+BABEL, 14.8.1)
+** TODO parse link abbreviation (#+LINK)
 into document's .link_abbrevs()
-*** TODO check tags in document against TAGS
+** TODO check tags in document against TAGS
 "TAGS defines tags that will be used in the buffer and defines fast keyboard
 shortcuts for them. Though you are allowed to also use tags that are not in tis
 list." -- carsten
 
 we can introduce a strict mode, for example, where all tags must belong to the
 list specified in TAGS.
-*** TODO TAGS/FILETAGS: parse keyboard shortcuts
+** TODO TAGS/FILETAGS: parse keyboard shortcuts
  #+TAGS: OFFICE(o) COMPUTER(c) HOME(h) PROJECT(p) READING(r) DVD(d)
 the key should be discarded when checking for known tags
 
-** block
-*** TODO parse dynamic blocks
+* block
+** TODO parse dynamic blocks
 see org-mode manual on dynamic blocks.
 
 basically it's just blocks with a slightly different syntax and :param value as
@@ -114,8 +113,8 @@ args:
 : #BEGIN: dynblockname :param1 value1 :param2 value2
 : #END:
 
-** macro
-*** TODO parse macro
+* macro
+** TODO parse macro
 manual section 11.6 Macro replacement
 
 although the parser can also choose to ignore this and let the export handle the
