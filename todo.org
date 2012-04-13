@@ -20,6 +20,24 @@ information.
 from the manual: "A line consisting of only dashes, and at least 5 of them, will
 be exported as a horizzontal line (‘<hr/>’ in HTML and \hrule in LaTeX)."
 
+** TODO [2012-04-14 Sat] performance: lazy parsing
+we can increase performance by doing lazy parsing. one of the heaviest parts is
+parsing the text elements and constructing all the text element objects. not all
+text is required in all cases. one of my most used application of org::parser is
+app::orgutils's list-org-todos. it only needs a list of headlines (block
+elements). we can skip parsing @text and all the text elements (_add_text() and
+_add_text_container()) for example putting those in Org::RawText first.
+
+we could then add walk_block() which only walks block elements.
+list-org-{headlines,todos} can utilize this instead of walk().
+
+children() (and headline's title(), etc) should detect Org::RawText and parse it
+into one or more elements, so we only parse the unparsed text when needed.
+
+i'd reckon, skimming at profiler's result for parsing my addressbook and todo
+list, this could provide about 50% speedup or more, depending on how much
+skipping you do. if you only look at headlines or other block elements, the
+speedup will be more pronounced.
 * Element::Base
 ** TODO set_property()
 - should create a properties drawer if necessary
