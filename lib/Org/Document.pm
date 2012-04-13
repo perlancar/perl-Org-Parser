@@ -182,14 +182,15 @@ sub _parse {
     while ($str =~ /$block_elems_re/g) {
         $parent = $last_listitem // $last_headline // $self;
         #$log->tracef("TMP: parent=%s (%s)", ref($parent), $parent->_str);
-        next unless keys %+; # perlre bug?
+        my %m = %+;
+        next unless keys %m; # perlre bug?
         #if ($log->is_trace) {
         #    # profiler shows that this is very heavy
         #    $log->tracef("match block element: %s", \%+);
         #}
 
-        if (defined $+{text}) {
-            push @text, $+{text};
+        if (defined $m{text}) {
+            push @text, $m{text};
             next;
         } else {
             if (@text) {
@@ -199,70 +200,70 @@ sub _parse {
         }
 
         my $el;
-        if ($+{block}) {
+        if ($m{block}) {
 
             require Org::Element::Block;
             $el = Org::Element::Block->new(
-                _str=>$+{block},
+                _str=>$m{block},
                 document=>$self, parent=>$parent,
-                begin_indent=>$+{block_begin_indent},
-                end_indent=>$+{block_end_indent},
-                name=>$+{block_name}, args=>__parse_args($+{block_raw_arg}),
-                raw_content=>$+{block_content},
+                begin_indent=>$m{block_begin_indent},
+                end_indent=>$m{block_end_indent},
+                name=>$m{block_name}, args=>__parse_args($m{block_raw_arg}),
+                raw_content=>$m{block_content},
             );
 
-        } elsif ($+{setting}) {
+        } elsif ($m{setting}) {
 
             require Org::Element::Setting;
-            if ($+{setting_indent} &&
-                    !(uc($+{setting_name}) ~~
+            if ($m{setting_indent} &&
+                    !(uc($m{setting_name}) ~~
                           @{Org::Element::Setting->indentable_settings})) {
-                push @text, $+{setting};
+                push @text, $m{setting};
                 next;
             } else {
                 $el = Org::Element::Setting->new(
                     pass => $pass,
-                    _str=>$+{setting},
+                    _str=>$m{setting},
                     document=>$self, parent=>$parent,
-                    indent => $+{setting_indent},
-                    name=>$+{setting_name},
-                    args=>__parse_args($+{setting_raw_arg}),
+                    indent => $m{setting_indent},
+                    name=>$m{setting_name},
+                    args=>__parse_args($m{setting_raw_arg}),
                 );
             }
 
-        } elsif ($+{fixedw}) {
+        } elsif ($m{fixedw}) {
 
             require Org::Element::FixedWidthSection;
             $el = Org::Element::FixedWidthSection->new(
                 pass => $pass,
-                _str=>$+{fixedw},
+                _str=>$m{fixedw},
                 document=>$self, parent=>$parent,
             );
 
-        } elsif ($+{comment}) {
+        } elsif ($m{comment}) {
 
             require Org::Element::Comment;
             $el = Org::Element::Comment->new(
-                _str=>$+{comment},
+                _str=>$m{comment},
                 document=>$self, parent=>$parent,
             );
 
-        } elsif ($+{table}) {
+        } elsif ($m{table}) {
 
             require Org::Element::Table;
             $el = Org::Element::Table->new(
                 pass=>$pass,
-                _str=>$+{table},
+                _str=>$m{table},
                 document=>$self, parent=>$parent,
             );
 
-        } elsif ($+{drawer}) {
+        } elsif ($m{drawer}) {
 
             require Org::Element::Drawer;
-            my $raw_content = $+{drawer_content};
+            my $raw_content = $m{drawer_content};
             $el = Org::Element::Drawer->new(
                 document=>$self, parent=>$parent,
-                name => uc($+{drawer_name}), pass => $pass,
+                name => uc($m{drawer_name}), pass => $pass,
             );
             $self->_add_text($raw_content, $el, $pass);
 
@@ -271,16 +272,16 @@ sub _parse {
             # i'm not clear yet on how to do this canonically.
             $el->_parse_properties($raw_content);
 
-        } elsif ($+{li_header}) {
+        } elsif ($m{li_header}) {
 
             require Org::Element::List;
             require Org::Element::ListItem;
 
-            my $level   = length($+{li_indent});
-            my $bullet  = $+{li_bullet};
-            my $indent  = $+{li_indent};
-            my $dt      = $+{li_dt};
-            my $cbstate = $+{li_cbstate};
+            my $level   = length($m{li_indent});
+            my $bullet  = $m{li_bullet};
+            my $indent  = $m{li_indent};
+            my $dt      = $m{li_dt};
+            my $cbstate = $m{li_cbstate};
             my $type    = defined($dt) ? 'D' :
                 $bullet =~ /^\d+\./ ? 'O' : 'U';
             my $bstyle  = $type eq 'O' ? '<N>.' : $bullet;
@@ -320,10 +321,10 @@ sub _parse {
             splice @$last_lists, $level+1;
             $last_listitem = $el;
 
-        } elsif ($+{headline}) {
+        } elsif ($m{headline}) {
 
             require Org::Element::Headline;
-            my $level = length $+{h_bullet};
+            my $level = length $m{h_bullet};
 
             # parent is upper-level headline
             $parent = undef;
@@ -333,12 +334,12 @@ sub _parse {
             $parent //= $self;
 
             $el = Org::Element::Headline->new(
-                _str=>$+{headline},
+                _str=>$m{headline},
                 document=>$self, parent=>$parent,
                 level=>$level,
             );
-            $el->tags(__split_tags($+{h_tags})) if ($+{h_tags});
-            my $title = $+{h_title};
+            $el->tags(__split_tags($m{h_tags})) if ($m{h_tags});
+            my $title = $m{h_title};
 
             # recognize todo keyword. XXX cache re
             my $todo_kw_re = "(?:".
@@ -407,14 +408,15 @@ sub _add_text {
 
     my @plain_text;
     while ($str =~ /$text_re/g) {
+        my %m = %+;
         #if ($log->is_trace) {
         #    # profiler shows that this is very heavy
         #    $log->tracef("match text: %s", \%+);
         #}
         my $el;
 
-        if (defined $+{plain_text}) {
-            push @plain_text, $+{plain_text};
+        if (defined $m{plain_text}) {
+            push @plain_text, $m{plain_text};
             next;
         } else {
             if (@plain_text) {
@@ -423,57 +425,57 @@ sub _add_text {
             }
         }
 
-        if ($+{link}) {
+        if ($m{link}) {
             require Org::Element::Link;
             $el = Org::Element::Link->new(
                 document => $self, parent => $parent,
-                link=>$+{link_link},
+                link=>$m{link_link},
             );
-            if (defined($+{link_desc}) && length($+{link_desc})) {
+            if (defined($m{link_desc}) && length($m{link_desc})) {
                 $el->description(
-                    $self->_add_text_container($+{link_desc},
+                    $self->_add_text_container($m{link_desc},
                                                $el, $pass));
             }
-        } elsif ($+{radio_target}) {
+        } elsif ($m{radio_target}) {
             require Org::Element::RadioTarget;
             $el = Org::Element::RadioTarget->new(
                 pass => $pass,
                 document => $self, parent => $parent,
-                target=>$+{rt_target},
+                target=>$m{rt_target},
             );
-        } elsif ($+{target}) {
+        } elsif ($m{target}) {
             require Org::Element::Target;
             $el = Org::Element::Target->new(
                 document => $self, parent => $parent,
-                target=>$+{t_target},
+                target=>$m{t_target},
             );
-        } elsif ($+{fn_num}) {
+        } elsif ($m{fn_num}) {
             require Org::Element::Footnote;
             $el = Org::Element::Footnote->new(
                 document => $self, parent => $parent,
-                name=>$+{fn_num_num}, is_ref=>1,
+                name=>$m{fn_num_num}, is_ref=>1,
             );
-        } elsif ($+{fn_namedef}) {
+        } elsif ($m{fn_namedef}) {
             require Org::Element::Footnote;
             $el = Org::Element::Footnote->new(
                 document => $self, parent => $parent,
-                name=>$+{fn_namedef_name},
-                is_ref=>$+{fn_namedef_def} ? 0:1,
+                name=>$m{fn_namedef_name},
+                is_ref=>$m{fn_namedef_def} ? 0:1,
             );
-            $el->def($self->_add_text_container($+{fn_namedef_def},
+            $el->def($self->_add_text_container($m{fn_namedef_def},
                                                 $parent, $pass));
-        } elsif ($+{fn_nameidef}) {
+        } elsif ($m{fn_nameidef}) {
             require Org::Element::Footnote;
             $el = Org::Element::Footnote->new(
                 document => $self, parent => $parent,
-                name=>$+{fn_nameidef_name},
-                is_ref=>($+{fn_nameidef_def} ? 0:1) ||
-                    !length($+{fn_nameidef_name}),
+                name=>$m{fn_nameidef_name},
+                is_ref=>($m{fn_nameidef_def} ? 0:1) ||
+                    !length($m{fn_nameidef_name}),
             );
-            $el->def(length($+{fn_nameidef_def}) ?
-                         $self->_add_text_container($+{fn_nameidef_def},
+            $el->def(length($m{fn_nameidef_def}) ?
+                         $self->_add_text_container($m{fn_nameidef_def},
                                                     $parent, $pass) : undef);
-        } elsif ($+{trange}) {
+        } elsif ($m{trange}) {
             require Org::Element::TimeRange;
             require Org::Element::Timestamp;
             $el = Org::Element::TimeRange->new(
@@ -482,18 +484,18 @@ sub _add_text {
             my $opts = {allow_event_duration=>0, allow_repeater=>0};
             $el->ts1(Org::Element::Timestamp->new(
                 document=>$self, parent=>$parent));
-            $el->ts1->_parse_timestamp($+{trange_ts1}, $opts);
+            $el->ts1->_parse_timestamp($m{trange_ts1}, $opts);
             $el->ts2(Org::Element::Timestamp->new(
                 document=>$self, parent=>$parent));
-            $el->ts2->_parse_timestamp($+{trange_ts2}, $opts);
+            $el->ts2->_parse_timestamp($m{trange_ts2}, $opts);
             $el->children([$el->ts1, $el->ts2]);
-        } elsif ($+{tstamp}) {
+        } elsif ($m{tstamp}) {
             require Org::Element::Timestamp;
             $el = Org::Element::Timestamp->new(
                 document => $self, parent => $parent,
             );
-            $el->_parse_timestamp($+{tstamp});
-        } elsif ($+{act_trange}) {
+            $el->_parse_timestamp($m{tstamp});
+        } elsif ($m{act_trange}) {
             require Org::Element::TimeRange;
             require Org::Element::Timestamp;
             $el = Org::Element::TimeRange->new(
@@ -502,30 +504,30 @@ sub _add_text {
             my $opts = {allow_event_duration=>0, allow_repeater=>0};
             $el->ts1(Org::Element::Timestamp->new(
                 document=>$self, parent=>$parent));
-            $el->ts1->_parse_timestamp($+{act_trange_ts1}, $opts);
+            $el->ts1->_parse_timestamp($m{act_trange_ts1}, $opts);
             $el->ts2(Org::Element::Timestamp->new(
                 document=>$self, parent=>$parent));
-            $el->ts2->_parse_timestamp($+{act_trange_ts2}, $opts);
+            $el->ts2->_parse_timestamp($m{act_trange_ts2}, $opts);
             $el->children([$el->ts1, $el->ts2]);
-        } elsif ($+{act_tstamp}) {
+        } elsif ($m{act_tstamp}) {
             require Org::Element::Timestamp;
             $el = Org::Element::Timestamp->new(
                 document => $self, parent => $parent,
             );
-            $el->_parse_timestamp($+{act_tstamp});
-        } elsif ($+{markup_start}) {
+            $el->_parse_timestamp($m{act_tstamp});
+        } elsif ($m{markup_start}) {
             require Org::Element::Text;
             $el = Org::Element::Text->new(
                 document => $self, parent => $parent,
-                style=>'', text=>$+{markup_start},
+                style=>'', text=>$m{markup_start},
             );
             # temporary mark, we need to apply markup later
             $el->{_mu_start}++;
-        } elsif ($+{markup_end}) {
+        } elsif ($m{markup_end}) {
             require Org::Element::Text;
             $el = Org::Element::Text->new(
                 document => $self, parent => $parent,
-                style=>'', text=>$+{markup_end},
+                style=>'', text=>$m{markup_end},
             );
             # temporary mark, we need to apply markup later
             $el->{_mu_end}++;
