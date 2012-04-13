@@ -1,9 +1,16 @@
 Revision history for Org-Parser
 
+0.23    2012-04-14
+
+        No functional changes. Another increase in parsing speed by avoiding
+        doing unnecessary stuffs in first pass and adding m//o flag. A speedup
+        of about 1.25x is expected.
+
+
 0.22    2012-04-13
 
         No functional changes. Faster parsing (reduce overheads from logging
-        statements and %+ access).
+        statements and %+ access). A speedup of about 2x is expected.
 
 
 0.21    2011-09-23
