@@ -183,10 +183,10 @@ sub _parse {
         $parent = $last_listitem // $last_headline // $self;
         #$log->tracef("TMP: parent=%s (%s)", ref($parent), $parent->_str);
         next unless keys %+; # perlre bug?
-        if ($log->is_trace) {
-            # profiler shows that this is very heavy
-            $log->tracef("match block element: %s", \%+);
-        }
+        #if ($log->is_trace) {
+        #    # profiler shows that this is very heavy
+        #    $log->tracef("match block element: %s", \%+);
+        #}
 
         if (defined $+{text}) {
             push @text, $+{text};
@@ -403,14 +403,14 @@ sub _add_text {
     require Org::Element::Text;
     my ($self, $str, $parent, $pass) = @_;
     $parent //= $self;
-    $log->tracef("-> _add_text(%s, pass=%d)", $str, $pass);
+    #$log->tracef("-> _add_text(%s, pass=%d)", $str, $pass);
 
     my @plain_text;
     while ($str =~ /$text_re/g) {
-        if ($log->is_trace) {
-            # profiler shows that this is very heavy
-            $log->tracef("match text: %s", \%+);
-        }
+        #if ($log->is_trace) {
+        #    # profiler shows that this is very heavy
+        #    $log->tracef("match text: %s", \%+);
+        #}
         my $el;
 
         if (defined $+{plain_text}) {
@@ -554,7 +554,7 @@ sub _add_text {
         my $c = $parent->children // [];
     }
 
-    $log->tracef('<- _add_text()');
+    #$log->tracef('<- _add_text()');
 }
 
 # to keep parser's regexes simple and fast, we detect markup in regex rather
