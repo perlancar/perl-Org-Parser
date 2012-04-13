@@ -179,7 +179,7 @@ sub _parse {
     my $parent;
 
     my @text;
-    while ($str =~ /$block_elems_re/g) {
+    while ($str =~ /$block_elems_re/og) {
         $parent = $last_listitem // $last_headline // $self;
         #$log->tracef("TMP: parent=%s (%s)", ref($parent), $parent->_str);
         my %m = %+;
@@ -407,7 +407,7 @@ sub _add_text {
     #$log->tracef("-> _add_text(%s, pass=%d)", $str, $pass);
 
     my @plain_text;
-    while ($str =~ /$text_re/g) {
+    while ($str =~ /$text_re/og) {
         my %m = %+;
         #if ($log->is_trace) {
         #    # profiler shows that this is very heavy
