@@ -25,8 +25,8 @@ sub as_string {
     $self->header_as_string . $self->children_as_string;
 }
 
-__END__
-# ABSTRACT: Represent Org list item
+1;
+#ABSTRACT: Represent Org list item
 
 =head1 DESCRIPTION
 

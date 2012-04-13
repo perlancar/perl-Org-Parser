@@ -14,8 +14,7 @@ sub as_string {
 }
 
 1;
-__END__
-# ABSTRACT: Represent Org table vertical line
+#ABSTRACT: Represent Org table vertical line
 
 =head1 DESCRIPTION
 
