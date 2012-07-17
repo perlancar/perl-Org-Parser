@@ -11,7 +11,7 @@ use Org::Parser;
 use Test::Exception;
 use Test::More 0.96;
 
-for ("t/data/test-croatian-date.org") {
+for (map { "t/data/test-$_.org" } qw/croatian french chinese/) {
     lives_ok { Org::Parser->parse_file($_) } "can parse $_";
 }
 
