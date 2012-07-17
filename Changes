@@ -2,7 +2,7 @@ Revision history for Org-Parser
 
 0.24    2012-07-17 (SHARYANTO)
 
-        - Add binmode => ':utf8' flag to read_file().
+        - Add binmode => ':utf8' flag to read_file() [RT#78423].
 
 
 0.23    2012-04-14 (SHARYANTO)
