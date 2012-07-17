@@ -38,7 +38,7 @@ sub parse {
 
 sub parse_file {
     my ($self, $filename, $opts) = @_;
-    $self->parse(scalar read_file($filename), $opts);
+    $self->parse(scalar read_file($filename, binmode => ':utf8'), $opts);
 }
 
 1;
