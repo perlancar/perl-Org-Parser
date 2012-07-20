@@ -1,5 +1,10 @@
 Revision history for Org-Parser
 
+0.25    2012-07-21 (SHARYANTO)
+
+        No functional changes. Add Unicode test files.
+
+
 0.24    2012-07-17 (SHARYANTO)
 
         - Add binmode => ':utf8' flag to read_file() [RT#78423].
