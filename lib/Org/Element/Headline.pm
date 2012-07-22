@@ -16,6 +16,11 @@ has is_done => (is => 'rw');
 has todo_state => (is => 'rw');
 has progress => (is => 'rw');
 
+sub extra_walkables {
+    my $self = shift;
+    grep {defined} ($self->title);
+}
+
 sub header_as_string {
     my ($self) = @_;
     return $self->_str if defined $self->_str;
