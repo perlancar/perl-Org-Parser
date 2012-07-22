@@ -483,10 +483,10 @@ sub _add_text {
             );
             my $opts = {allow_event_duration=>0, allow_repeater=>0};
             $el->ts1(Org::Element::Timestamp->new(
-                document=>$self, parent=>$parent));
+                _str=>$m{trange_ts1}, document=>$self, parent=>$parent));
             $el->ts1->_parse_timestamp($m{trange_ts1}, $opts);
             $el->ts2(Org::Element::Timestamp->new(
-                document=>$self, parent=>$parent));
+                _str=>$m{trange_ts2}, document=>$self, parent=>$parent));
             $el->ts2->_parse_timestamp($m{trange_ts2}, $opts);
             $el->children([$el->ts1, $el->ts2]);
         } elsif ($m{tstamp} && $pass == 2) {
@@ -503,16 +503,16 @@ sub _add_text {
             );
             my $opts = {allow_event_duration=>0, allow_repeater=>0};
             $el->ts1(Org::Element::Timestamp->new(
-                document=>$self, parent=>$parent));
+                _str=>$m{act_trange_ts1}, document=>$self, parent=>$parent));
             $el->ts1->_parse_timestamp($m{act_trange_ts1}, $opts);
             $el->ts2(Org::Element::Timestamp->new(
-                document=>$self, parent=>$parent));
+                _str=>$m{act_trange_ts2}, document=>$self, parent=>$parent));
             $el->ts2->_parse_timestamp($m{act_trange_ts2}, $opts);
             $el->children([$el->ts1, $el->ts2]);
         } elsif ($m{act_tstamp} && $pass == 2) {
             require Org::Element::Timestamp;
             $el = Org::Element::Timestamp->new(
-                document => $self, parent => $parent,
+                 _str => $m{act_tstamp}, document => $self, parent => $parent,
             );
             $el->_parse_timestamp($m{act_tstamp});
         } elsif ($m{markup_start} && $pass == 2) {
