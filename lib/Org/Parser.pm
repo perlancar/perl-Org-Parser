@@ -40,6 +40,8 @@ sub parse_file {
     my ($self, $filename, $opts) = @_;
     $opts //= {};
 
+    state $loaded;
+
     my $content = scalar read_file($filename, binmode => ':utf8');
 
     my $cf = $opts->{cache_file};
@@ -50,6 +52,7 @@ sub parse_file {
         $cache = !!((-e $cf) && (-M $cf) <= (-M $filename));
         if ($cache) {
             $doc = Storable::retrieve($cf);
+            $doc->load_element_modules unless $loaded++;
         }
     }
 
