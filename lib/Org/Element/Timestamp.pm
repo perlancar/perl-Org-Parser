@@ -8,13 +8,27 @@ extends 'Org::Element';
 
 # VERSION
 
-has datetime => (is => 'rw');
-has has_time => (is => 'rw');
-has event_duration => (is => 'rw');
-has recurrence => (is => 'rw');
-has _repeater => (is => 'rw'); # stores the raw repeater spec
-has _warning_period => (is => 'rw'); # stores the raw warning period spec
-has is_active => (is => 'rw');
+my @attrs = (qw/datetime has_time event_duration recurrence is_active/);
+for (@attrs) {
+    has $_ => (is => 'rw', clearer=>"clear_$_");
+    before $_ => sub {
+        my $self = shift;
+        return unless defined $self->_is_parsed; # never been parsed
+        $self->_parse_timestamp($self->_str)
+            unless $self->_is_parsed; # has been reset, re-set
+    };
+}
+
+has _repeater => (is => 'rw'); # stores the raw repeater spec, for as_string
+has _warning_period => (is => 'rw'); # raw warning period spec, for as_string
+has _is_parsed => (is => 'rw');
+
+sub clear_parse_result {
+    my $self = shift;
+    return unless defined $self->_is_parsed; # never been parsed
+    for (@attrs) { my $m = "clear_$_"; $self->$m }
+    $self->_is_parsed(0);
+}
 
 our @dow = (undef, qw(Mon Tue Wed Thu Fri Sat Sun));
 
@@ -60,6 +74,7 @@ sub _parse_timestamp {
     require DateTime;
     require DateTime::Event::Recurrence;
     my ($self, $str, $opts) = @_;
+    $self->_is_parsed(undef); # to avoid deep recursion
     $opts //= {};
     $opts->{allow_event_duration} //= 1;
     $opts->{allow_repeater} //= 1;
@@ -167,6 +182,7 @@ sub _parse_timestamp {
         $self->_warning_period($+{warning_period});
     }
 
+    $self->_is_parsed(1);
     $self->datetime($dt);
 }
 
@@ -201,5 +217,16 @@ event_duration is 7200+600=7800 (2 hours 10 minutes).
 =head1 METHODS
 
 =for Pod::Coverage as_string
+
+=head2 $el->clear_parse_result
+
+Clear parse result.
+
+Since the DateTime::Set::ICal (recurrence) object contains coderefs (and thus
+poses problem to serialization), an option is provided to remove parse result.
+You can do this prior to serializing the object.
+
+Timestamp will automatically be parsed again from _str when one of the
+attributes is accessed.
 
 =cut

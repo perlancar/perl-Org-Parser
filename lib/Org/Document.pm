@@ -492,7 +492,7 @@ sub _add_text {
         } elsif ($m{tstamp} && $pass == 2) {
             require Org::Element::Timestamp;
             $el = Org::Element::Timestamp->new(
-                document => $self, parent => $parent,
+                _str => $m{tstamp}, document => $self, parent => $parent,
             );
             $el->_parse_timestamp($m{tstamp});
         } elsif ($m{act_trange} && $pass == 2) {
