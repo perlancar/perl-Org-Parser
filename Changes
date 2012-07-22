@@ -1,5 +1,17 @@
 Revision history for Org-Parser
 
+0.26    2012-07-22 (SHARYANTO)
+
+        [ENHANCEMENTS]
+
+        - Org::Parser: Add 'cache_file' option to parse_file().
+
+        - Org::Element: Make walk() able to walk headline's title.
+
+        - Org::Element::Timestamp: Add clear_parse_result() to make timestamp
+          object serializable.
+
+
 0.25    2012-07-21 (SHARYANTO)
 
         No functional changes. Add Unicode test files.

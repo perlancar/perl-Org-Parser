@@ -711,6 +711,16 @@ sub __split_tags {
     [$_[0] =~ /:([^:]+)/g];
 }
 
+sub load_element_modules {
+    require Module::List;
+    require Module::Load;
+
+    my $mm = Module::List::list_modules("Org::Element::", {list_modules=>1});
+    for (keys %$mm) {
+        Module::Load::load($_);
+    }
+}
+
 1;
 # ABSTRACT: Represent an Org document
 __END__
@@ -775,5 +785,11 @@ If set, will be passed to DateTime->new() (e.g. by L<Org::Element::Timestamp>).
 =head2 new(from_string => ...)
 
 Create object from string.
+
+=head2 load_element_modules()
+
+Load all Org::Element::* modules. This is useful when wanting to work with
+element objects retrieved from serialization, where the element modules have not
+been loaded.
 
 =cut
