@@ -26,7 +26,7 @@ _5) this is underline._
 
 unparsed: *ends with spaces *, / start with space/, =no ending. no starting.~
 _
-    num => 13,
+    num => 14,
     test_after_parse => sub {
         my %args = @_;
         my $doc = $args{result};
@@ -40,7 +40,7 @@ _
         is( $elems->[ 9]->style, "C", "elem 2 code");
         is( $elems->[11]->style, "V", "elem 2 verbatim");
         ok(!$elems->[12]->style,      "elem 13 normal");
-
+        # elem [13] = headline's title (text)
         is( $elems->[ 0]->as_string, "0) this is normal.\n",
             "normal as_string");
         is( $elems->[ 1]->as_string, "*1) this /is/ bold.*",

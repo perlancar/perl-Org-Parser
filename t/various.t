@@ -31,7 +31,7 @@ test_parse(
             }
         );
 
-        is($num_elems, 27, 'num_elems');
+        is($num_elems, 41, 'num_elems');
         is($num_elems{"Org::Element::Headline"}, 10, 'num_elems(Headline)');
 
     },

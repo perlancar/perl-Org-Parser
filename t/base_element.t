@@ -58,9 +58,11 @@ _
 
         my $n=0;
         $doc->walk(sub{$n++});
-        # +1 is for document itself
-        # timestamp not walked (part of headline)
-        is($n, 3+1, "num of walked elements");
+        # 1 = document itself
+        # 3 = comment + headline + 'text'
+        # 1 = title
+        # 2 = title's children: text 'h ' + timestamp
+        is($n, 7, "num of walked elements");
     },
 );
 

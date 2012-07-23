@@ -45,7 +45,7 @@ _
             or diag("datetime=".$elems->[0]->datetime);
 
         is( $elems->[0]->as_string, "<2011-03-16 Wed>", "ts[0] as_string");
-        is( $elems->[1]->as_string, "<2011-03-16 Wed>", "ts[1] as_string");
+        is( $elems->[1]->as_string, "<2011-03-16 >", "ts[1] as_string");
         is( $elems->[2]->as_string, "<2011-03-16 Wed 01:23>",
             "ts[2] as_string");
         is( $elems->[3]->as_string, "[2011-03-23 Wed]",
@@ -55,9 +55,9 @@ _
         ok(!$elems->[3]->is_active, "ts[3] !is_active");
 
         # additional
-        is( $elems->[6]->as_string, "<2012-01-11 Wed>", "ts[6] as_string");
-        is( $elems->[7]->as_string, "[2012-01-11 Wed]", "ts[7] as_string");
-        is( $elems->[8]->as_string, "[2012-01-11 Wed]", "ts[8] as_string");
+        is( $elems->[6]->as_string, "<2012-01-11 Wed >", "ts[6] as_string");
+        is( $elems->[7]->as_string, "[2012-01-11   ]", "ts[7] as_string");
+        is($elems->[8]->as_string,"[2012-01-11   Wed   ]","ts[8] as_string");
     },
 );
 

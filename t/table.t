@@ -68,7 +68,7 @@ _
                   [["a", "b", "c"],
                    [1, '', 2],
                    [3, "abc", 4],
-                   ["one <2011-03-17 Thu> three"]],
+                   ["one <2011-03-17 > three"]],
                   "table's as_aoa() method")
             or diag explain $t->as_aoa;
     },
