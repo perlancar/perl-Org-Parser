@@ -10,6 +10,7 @@ use lib $Bin, "$Bin/t";
 use File::Temp qw/tempfile/;
 use File::Slurp;
 use Org::Parser;
+use Test::Exception;
 use Test::More 0.96;
 require "testlib.pl";
 
@@ -74,5 +75,23 @@ test_parse(
         isa_ok($doc, "Org::Document");
     },
 );
+
+subtest "parse_file: cache_file option" => sub {
+    my $orgp = Org::Parser->new;
+    my ($fhc, $filenamec) = tempfile();
+    sleep 2;
+    my ($fh1, $filename1) = tempfile();
+    write_file($filename1, "[2012-07-99 ]");
+    my ($fh2, $filename2) = tempfile();
+    write_file($filename2, "test");
+    lives_ok { $orgp->parse_file($filename2, {cache_file=>$filenamec}) };
+    rename $filename1, $filename2;
+    lives_ok { $orgp->parse_file($filename2, {cache_file=>$filenamec}) }
+        'cached result still used';
+    sleep 2;
+    write_file($filename2, "[2012-07-99 ]");
+    dies_ok { $orgp->parse_file($filename2, {cache_file=>$filenamec}) }
+        'file parsed again';
+};
 
 done_testing();
