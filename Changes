@@ -1,10 +1,14 @@
 Revision history for Org-Parser
 
-0.26    2012-07-22 (SHARYANTO) (not yet released)
+0.26    2012-07-23 (SHARYANTO) (not yet released)
 
         [ENHANCEMENTS]
 
-        - Org::Parser: Add 'cache_file' option to parse_file().
+        - Org::Parser: Add 'cache_file' option to parse_file(). Caching is done
+          by storing the parsed Org::Document object using Storable. The
+          storable file will be used as long as the original Org file is not
+          modified. It is useful if you often parse a less-often-modified,
+          largish Org file.
 
         - Org::Element: Make walk() able to walk headline's title.
 
