@@ -9,6 +9,8 @@ use lib $Bin, "$Bin/t";
 
 use DateTime;
 use Org::Parser;
+use Storable qw(freeze);
+use Test::Exception;
 use Test::More 0.96;
 require "testlib.pl";
 
@@ -128,6 +130,26 @@ _
         my $dt    = $elems->[0]->datetime;
         my $tz    = $dt->time_zone;
         is($tz->short_name_for_datetime($dt), "WIT", "time zone's short name");
+    },
+);
+
+test_parse(
+    name => 'clear_parse_results',
+    filter_elements => sub { $_[0]->isa('Org::Element::Timestamp') },
+    doc  => <<'_',
+[2012-07-23 Mon +1y]
+_
+    test_after_parse => sub {
+        my %args = @_;
+        my $doc = $args{result};
+        dies_ok { freeze $doc }
+            'timestamp object with recurrence contains coderef, unserializable';
+        my $elem = $args{elements}[0];
+        $elem->clear_parse_result;
+        lives_ok { freeze $doc }
+            'after clear_parse_result, coderef is removed, object serializable';
+        isa_ok($elem->datetime, 'DateTime',
+               'if attribute accessed, timestamp automatically parsed again');
     },
 );
 
