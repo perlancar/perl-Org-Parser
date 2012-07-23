@@ -1,5 +1,3 @@
-#!perl -T
-
 use 5.010;
 use strict;
 use warnings;
@@ -12,6 +10,10 @@ sub test_parse {
     my $fe = $args{filter_elements};
 
     subtest $args{name} => sub {
+        if ($args{skip_all_if}) {
+            plan skip_all => 'skipped' if $args{skip_all_if}->();
+        }
+
         my $orgp = Org::Parser->new();
         my $res;
         eval {
