@@ -4,7 +4,7 @@ use 5.010;
 use locale;
 use Log::Any '$log';
 use Moo;
-use Scalar::Util qw(refaddr);
+use Scalar::Util qw(refaddr reftype);
 
 # VERSION
 
@@ -106,7 +106,7 @@ sub find {
     $self->walk(
         sub {
             my $el = shift;
-            if (ref($criteria) eq 'CODE') {
+            if (reftype($criteria) eq 'CODE') {
                 push @res, $el if $criteria->($el);
             } elsif ($criteria =~ /^\w+$/) {
                 push @res, $el if $el->isa("Org::Element::$criteria");
