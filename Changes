@@ -1,5 +1,12 @@
 Revision history for Org-Parser
 
+0.27    2012-08-07 (SHARYANTO)
+
+        No functional changes. Increase Perl minimum version requirement from
+        5.10.0 to 5.10.1 due to failing reports in 5.10.0 [RT#78795]. Thanks,
+        Andreas.
+
+
 0.26    2012-07-23 (SHARYANTO)
 
         [ENHANCEMENTS]
