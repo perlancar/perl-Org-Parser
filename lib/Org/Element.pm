@@ -106,7 +106,7 @@ sub find {
     $self->walk(
         sub {
             my $el = shift;
-            if (reftype($criteria) eq 'CODE') {
+            if (ref($criteria) eq 'CODE') {
                 push @res, $el if $criteria->($el);
             } elsif ($criteria =~ /^\w+$/) {
                 push @res, $el if $el->isa("Org::Element::$criteria");
