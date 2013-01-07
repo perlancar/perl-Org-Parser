@@ -18,7 +18,7 @@ sub as_string {
          "[",
          "[", $self->link, "]",
          (defined($self->description) && length($self->description) ?
-              ("[", $self->description, "]") : ()),
+              ("[", $self->description->as_string, "]") : ()),
          "]");
 }
 
