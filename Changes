@@ -1,5 +1,16 @@
 Revision history for Org-Parser
 
+0.28    2013-01-07 (SHARYANTO)
+
+        Happy new year! (my first release in 2013)
+
+        No functional changes.
+
+        [BUG FIXES]
+
+        - Correct as_string() for link [RT#82334]
+
+
 0.27    2012-08-07 (SHARYANTO)
 
         No functional changes. Increase Perl minimum version requirement from
