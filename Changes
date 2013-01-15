@@ -1,5 +1,17 @@
 Revision history for Org-Parser
 
+0.29    2013-01-15 (SHARYANTO)
+
+        [INCOMPATIBLE CHANGES]
+
+        - Move get_property() from Org::Element to Org::Element::Headline and
+          change it so it searches children instead of siblings. This is the
+          correct behavior, as properties are associated with entries/headlines
+          and not any element. Ref:
+          http://orgmode.org/manual/Properties-and-Columns.html [RT#82658].
+          Thanks Meng Meng Wong.
+
+
 0.28    2013-01-07 (SHARYANTO)
 
         Happy new year! (my first release in 2013)
