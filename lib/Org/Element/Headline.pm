@@ -194,20 +194,25 @@ sub demote_branch {
     }
 }
 
+sub properties_drawer {
+	my $self = shift;
+
+	for my $d (@{$self->children||[]}) {
+        $log->tracef("seeking PROPERTIES drawer in child: %s (%s)", $d->as_string, ref($d));
+		next unless ($d->isa('Org::Element::Drawer')
+					 && $d->name eq 'PROPERTIES'
+					 && $d->properties);
+		return $d->properties;
+	}
+}
+
 sub get_property {
     my ($self, $name, $search_parent) = @_;
     #$log->tracef("-> get_property(%s, search_par=%s)", $name, $search_parent);
     my $p = $self->parent;
-    my $c = $self->children;
 
-    if ($c) {
-        for my $d (@$c) {
-        $log->tracef("searching in child: %s (%s)", $d->as_string, ref($d));
-            next unless $d->isa('Org::Element::Drawer')
-                && $d->name eq 'PROPERTIES' && $d->properties;
-            return $d->properties->{$name} if defined $d->properties->{$name};
-        }
-    }
+	my $pd = $self->properties_drawer;
+	return $pd->{$name} if ($pd and defined $pd->{$name});
 
     if ($p && $search_parent) {
         next unless $p->isa('Org::Element::Headline');
