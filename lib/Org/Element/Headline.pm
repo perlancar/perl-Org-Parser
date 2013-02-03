@@ -194,15 +194,16 @@ sub demote_branch {
     }
 }
 
-sub properties_drawer {
+sub get_drawer {
 	my $self = shift;
+	my $wanted_drawer_name = shift || "PROPERTIES";
 
 	for my $d (@{$self->children||[]}) {
-        $log->tracef("seeking PROPERTIES drawer in child: %s (%s)", $d->as_string, ref($d));
+        $log->tracef("seeking $wanted_drawer_name drawer in child: %s (%s)", $d->as_string, ref($d));
 		next unless ($d->isa('Org::Element::Drawer')
-					 && $d->name eq 'PROPERTIES'
+					 && $d->name eq $wanted_drawer_name
 					 && $d->properties);
-		return $d->properties;
+		return $d;
 	}
 }
 
@@ -211,8 +212,8 @@ sub get_property {
     #$log->tracef("-> get_property(%s, search_par=%s)", $name, $search_parent);
     my $p = $self->parent;
 
-	my $pd = $self->properties_drawer;
-	return $pd->{$name} if ($pd and defined $pd->{$name});
+	my $pd = $self->get_drawer("PROPERTIES");
+	return $pd->properties->{$name} if ($pd and defined $pd->properties->{$name});
 
     if ($p && $search_parent) {
         next unless $p->isa('Org::Element::Headline');
@@ -343,12 +344,17 @@ Does the opposite of promote_branch().
 
 =head2 $el->get_property($name, $search_parent) => VALUE
 
-Search for property named $name in the properties drawer. If $search_parent is
+Search for property named $name in the PROPERTIES drawer. If $search_parent is
 set to true (default is false), will also search in upper-level properties
 (useful for searching for inherited property, like foo_ALL). Return undef if
 property cannot be found.
 
 Regardless of $search_parent setting, file-wide properties will be consulted if
 property is not found in the headline's properties drawer.
+
+=head2 $el->get_drawer([$drawer_name]) => VALUE
+
+Return an entire drawer as an Org::Element::Drawer object. By default, return the
+PROPERTIES drawer. If you want LOGBOOK or CLOCK or some other drawer, ask for it by name.
 
 =cut
