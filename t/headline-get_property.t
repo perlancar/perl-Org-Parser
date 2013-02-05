@@ -28,6 +28,9 @@ test_parse(
   :PROPERTIES:
     :z: 3
   :END:
+  :LOGBOOK:
+    :z: 5
+  :END:
 
 _
     num => 2,
@@ -39,10 +42,11 @@ _
         my $h2 = $elems->[1];
 
         is($h1->get_property('x'), 2, "h1->get_property(x)");
+        is($h2->get_property('z'), 3, "h2->get_property(z)");
+        is($h2->get_drawer("LOGBOOK")->properties->{'z'}, 5, "h2->get_drawer(LOGBOOK) z=5");
+        ok(!$h1->get_property('z'), "h1->get_property(z)");
         return;
         is($h1->get_property('y'), 1, "h1->get_property(y)");
-        ok(!$h1->get_property('z'), "h1->get_property(z)");
-        is($h2->get_property('z'), 3, "h2->get_property(z)");
         ok(!$h2->get_property('p'), "h2->get_property(p) (search_parent=0)");
         is($h2->get_property('p', 1), 4,
            "h2->get_property(p) (search_parent=1)");
