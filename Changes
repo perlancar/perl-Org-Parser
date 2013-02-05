@@ -1,5 +1,12 @@
 Revision history for Org-Parser
 
+0.30    2013-02-06 (SHARYANTO)
+
+        [ENHANCEMENTS]
+
+        - Headline: Add get_drawer() (implemented by Meng Weng Wong).
+
+
 0.29    2013-01-15 (SHARYANTO)
 
         [INCOMPATIBLE CHANGES]
@@ -9,7 +16,7 @@ Revision history for Org-Parser
           correct behavior, as properties are associated with entries/headlines
           and not any element. Ref:
           http://orgmode.org/manual/Properties-and-Columns.html [RT#82658].
-          Thanks Meng Meng Wong.
+          Thanks Meng Weng Wong.
 
 
 0.28    2013-01-07 (SHARYANTO)
