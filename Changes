@@ -4,8 +4,8 @@ Revision history for Org-Parser
 
         [BUG FIXES]
 
-        - ListItem: dumping description list didn't dump the description term
-          and the " ::" string.
+        - ListItem: dumping description list item didn't dump the description
+          term and the " ::" string.
 
 
 0.30    2013-02-06 (SHARYANTO)
