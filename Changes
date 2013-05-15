@@ -1,5 +1,13 @@
 Revision history for Org-Parser
 
+0.31    2013-05-15 (SHARYANTO)
+
+        [BUG FIXES]
+
+        - ListItem: dumping description list didn't dump the description term
+          and the " ::" string.
+
+
 0.30    2013-02-06 (SHARYANTO)
 
         [ENHANCEMENTS]
