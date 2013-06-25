@@ -1,5 +1,10 @@
 Revision history for Org-Parser
 
+0.32    2013-06-25 (SHARYANTO)
+
+        No functional changes. Add 'use experimental "smartmatch"' for 5.18+.
+
+
 0.31    2013-05-15 (SHARYANTO)
 
         [BUG FIXES]
