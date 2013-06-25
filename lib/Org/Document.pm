@@ -1,6 +1,7 @@
 package Org::Document;
 
 use 5.010;
+use experimental 'smartmatch';
 use locale;
 use Log::Any '$log';
 use Moo;

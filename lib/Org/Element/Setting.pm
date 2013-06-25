@@ -1,6 +1,7 @@
 package Org::Element::Setting;
 
 use 5.010;
+use experimental 'smartmatch';
 use locale;
 use Moo;
 extends 'Org::Element';
