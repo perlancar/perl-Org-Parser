@@ -1,10 +1,10 @@
 package Org::Document;
 
 use 5.010;
-use experimental 'smartmatch';
 use locale;
 use Log::Any '$log';
 use Moo;
+use experimental 'smartmatch';
 extends 'Org::Element';
 
 use Time::HiRes qw(gettimeofday tv_interval);

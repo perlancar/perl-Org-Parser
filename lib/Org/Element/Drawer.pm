@@ -1,9 +1,9 @@
 package Org::Element::Drawer;
 
 use 5.010;
-use experimental 'smartmatch';
 use locale;
 use Moo;
+use experimental 'smartmatch';
 extends 'Org::Element';
 
 # VERSION
