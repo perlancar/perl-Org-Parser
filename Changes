@@ -1,5 +1,11 @@
 Revision history for Org-Parser
 
+0.33    2013-06-26 (SHARYANTO)
+
+        No functional changes. Second attempt: add 'use experimental
+        "smartmatch"' must be given after 'use Moo'.
+
+
 0.32    2013-06-25 (SHARYANTO)
 
         No functional changes. Add 'use experimental "smartmatch"' for 5.18+.
