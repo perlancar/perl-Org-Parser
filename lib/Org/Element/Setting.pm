@@ -8,6 +8,91 @@ extends 'Org::Element';
 
 # VERSION
 
+our @known_settings = qw(
+ARCHIVE
+ASCII
+ATTR_ASCII
+ATTR_BEAMER
+ATTR_HTML
+ATTR_LATEX
+ATTR_ODT
+AUTHOR
+BABEL
+BEAMER
+BEAMER_COLOR_THEME
+BEAMER_FONT_THEME
+BEAMER_INNER_THEME
+BEAMER_OUTER_THEME
+BEAMER_THEME
+BEGIN
+BEGIN_ASCII
+BEGIN_BEAMER
+BEGIN_CENTER
+BEGIN_COMMENT
+BEGIN_EXAMPLE
+BEGIN_HTML
+BEGIN_LATEX
+BEGIN_QUOTE
+BEGIN_SRC
+BEGIN_SRC
+BEGIN_VERSE
+BIND
+CALL
+CAPTION
+CATEGORY
+COLUMNS
+CONSTANTS
+DATE
+DESCRIPTION
+DRAWERS
+EMAIL
+EXPORT_EXCLUDE_TAGS
+EXPORT_INCLUDE_TAGS
+FILETAGS
+HEADER
+HEADERS
+HTML
+HTML_HEAD
+HTML_HEAD_EXTRA
+HTML_INCLUDE_STYLE
+INCLUDE
+INDEX
+INFOJS_OPT
+KEYWORDS
+LABEL
+LANGUAGE
+LATEX
+LATEX_CLASS
+LATEX_CLASS_OPTIONS
+LATEX_HEADER
+LATEX_HEADER_EXTRA
+LINK
+LINK_HOME
+LINK_UP
+MACRO
+NAME
+ODT_STYLES_FILE
+OPTIONS
+ORGLST
+ORGTBL
+PLOT
+PRIORITIES
+PROPERTY
+RESULTS
+SEQ_TODO
+SETUPFILE
+STARTUP
+STYLE
+TAGS
+TBLFM
+TEXT
+TITLE
+TOC
+TODO
+TYP_TODO
+XSLT
+                    );
+
 has name => (is => 'rw');
 has args => (is => 'rw');
 has indent => (is => 'rw');
@@ -27,27 +112,13 @@ sub BUILD {
     $self->name($name);
 
     my $args = $self->args;
-    if      ($name eq 'ARCHIVE') {
-    } elsif ($name eq 'AUTHOR') {
-    } elsif ($name eq 'BABEL') {
-    } elsif ($name eq 'CALL') {
-    } elsif ($name eq 'CAPTION') {
-    } elsif ($name eq 'BIND') {
-    } elsif ($name eq 'CATEGORY') {
-    } elsif ($name eq 'COLUMNS') {
-    } elsif ($name eq 'CONSTANTS') {
-    } elsif ($name eq 'DATE') {
-    } elsif ($name eq 'DESCRIPTION') {
-    } elsif ($name eq 'DRAWERS') {
+    if ($name eq 'DRAWERS') {
         if ($pass == 1) {
             for (@$args) {
                 push @{ $doc->drawer_names }, $_
                     unless $_ ~~ @{ $doc->drawer_names };
             }
         }
-    } elsif ($name eq 'EMAIL') {
-    } elsif ($name eq 'EXPORT_EXCLUDE_TAGS') {
-    } elsif ($name eq 'EXPORT_SELECT_TAGS') {
     } elsif ($name eq 'FILETAGS') {
         if ($pass == 1) {
             $args->[0] =~ /^$Org::Document::tags_re$/ or
@@ -58,17 +129,6 @@ sub BUILD {
                     unless $_ ~~ @{ $doc->tags };
             }
         }
-    } elsif ($name eq 'INCLUDE') {
-    } elsif ($name eq 'INDEX') {
-    } elsif ($name eq 'KEYWORDS') {
-    } elsif ($name eq 'LABEL') {
-    } elsif ($name eq 'LANGUAGE') {
-    } elsif ($name eq 'LATEX_HEADER') {
-    } elsif ($name eq 'LINK') {
-    } elsif ($name eq 'LINK_HOME') {
-    } elsif ($name eq 'LINK_UP') {
-    } elsif ($name eq 'OPTIONS') {
-    } elsif ($name eq 'PLOT') {
     } elsif ($name eq 'PRIORITIES') {
         if ($pass == 1) {
             for (@$args) {
@@ -92,16 +152,8 @@ sub BUILD {
                 push @$ary, $arg unless $arg ~~ @$ary;
             }
         }
-    } elsif ($name eq 'SETUPFILE') {
-    } elsif ($name eq 'STARTUP') {
-    } elsif ($name eq 'STYLE') {
-    } elsif ($name eq 'TAGS') {
-    } elsif ($name eq 'TBLFM') {
-    } elsif ($name eq 'TEXT') {
-    } elsif ($name eq 'TITLE') {
-    } elsif ($name eq 'XSLT') {
     } else {
-        die "Unknown setting $name";
+        die "Unknown setting $name" unless $name ~~ @known_settings;
     }
 }
 
