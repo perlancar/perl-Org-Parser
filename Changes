@@ -1,5 +1,10 @@
 Revision history for Org-Parser
 
+0.34    2013-06-28 (SHARYANTO)
+
+        Add some more known settings from the Orgmode manual's index.
+
+
 0.33    2013-06-26 (SHARYANTO)
 
         No functional changes. Second attempt: add 'use experimental
