@@ -15,7 +15,7 @@ test_parse(
     parse_file_args => ["t/data/listitem.org"],
     name => 'list tests',
     filter_elements => 'Org::Element::ListItem',
-    num => 15,
+    num => 17,
     test_after_parse => sub {
         my (%args) = @_;
         my $elems = $args{elements};
@@ -38,6 +38,16 @@ test_parse(
         is($elems->[$i]->parent->type, "O", "item[$i]->list->type");
 
         # XXX the rest of 1..14
+
+        # description list
+        $i=15;
+        is($elems->[$i]->desc_term->as_string, "(15) term1");
+        is($elems->[$i]->children_as_string, " value1\n");
+        is($elems->[$i]->as_string, "- (15) term1 :: value1\n");
+        $i=16;
+        is($elems->[$i]->desc_term->as_string, "(16) t2   ");
+        is($elems->[$i]->children_as_string, "value2\n");
+        is($elems->[$i]->as_string, "- (16) t2    ::value2\n");
     },
 );
 

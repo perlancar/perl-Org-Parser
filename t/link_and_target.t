@@ -44,6 +44,22 @@ _
     },
 );
 
+test_parse(
+    name => 'RT#82334',
+    filter_elements => 'Org::Element::Link',
+    doc  => <<'_',
+[[link][some *description*]]
+_
+    num => 1,
+    test_after_parse => sub {
+        my %args  = @_;
+        my $doc   = $args{result};
+        my $elems = $args{elements};
+        my $link  = $elems->[0];
+        is($link->as_string, "[[link][some *description*]]");
+    },
+);
+
 # TODO: target cannot contain newline
 # TODO: radio target cannot contain newline
 

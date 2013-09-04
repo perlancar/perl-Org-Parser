@@ -3,6 +3,7 @@ package Org::Element::Block;
 use 5.010;
 use locale;
 use Moo;
+use experimental 'smartmatch';
 extends 'Org::Element';
 
 # VERSION

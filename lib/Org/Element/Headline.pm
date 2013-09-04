@@ -2,7 +2,9 @@ package Org::Element::Headline;
 
 use 5.010;
 use locale;
+use Log::Any '$log';
 use Moo;
+use experimental 'smartmatch';
 extends 'Org::Element';
 
 # VERSION
@@ -193,6 +195,37 @@ sub demote_branch {
     }
 }
 
+sub get_drawer {
+	my $self = shift;
+	my $wanted_drawer_name = shift || "PROPERTIES";
+
+	for my $d (@{$self->children||[]}) {
+        $log->tracef("seeking $wanted_drawer_name drawer in child: %s (%s)", $d->as_string, ref($d));
+		next unless ($d->isa('Org::Element::Drawer')
+					 && $d->name eq $wanted_drawer_name
+					 && $d->properties);
+		return $d;
+	}
+}
+
+sub get_property {
+    my ($self, $name, $search_parent) = @_;
+    #$log->tracef("-> get_property(%s, search_par=%s)", $name, $search_parent);
+    my $p = $self->parent;
+
+	my $pd = $self->get_drawer("PROPERTIES");
+	return $pd->properties->{$name} if ($pd and defined $pd->properties->{$name});
+
+    if ($p && $search_parent) {
+        next unless $p->isa('Org::Element::Headline');
+        my $res = $p->get_property($name, 1);
+        return $res if defined $res;
+    }
+
+    $log->tracef("Getting property from document's .properties");
+    $self->document->properties->{$name};
+}
+
 1;
 # ABSTRACT: Represent Org headline
 __END__
@@ -309,5 +342,20 @@ becomes:
 =head2 $el->demote_branch([$num_levels])
 
 Does the opposite of promote_branch().
+
+=head2 $el->get_property($name, $search_parent) => VALUE
+
+Search for property named $name in the PROPERTIES drawer. If $search_parent is
+set to true (default is false), will also search in upper-level properties
+(useful for searching for inherited property, like foo_ALL). Return undef if
+property cannot be found.
+
+Regardless of $search_parent setting, file-wide properties will be consulted if
+property is not found in the headline's properties drawer.
+
+=head2 $el->get_drawer([$drawer_name]) => VALUE
+
+Return an entire drawer as an Org::Element::Drawer object. By default, return the
+PROPERTIES drawer. If you want LOGBOOK or some other drawer, ask for it by name.
 
 =cut

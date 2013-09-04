@@ -17,6 +17,7 @@ sub header_as_string {
          $self->parent->indent,
          $self->bullet, " ",
          defined($self->check_state) ? "[".$self->check_state."]" : "",
+         defined($self->desc_term) ? $self->desc_term->as_string . " ::" : "",
      );
 }
 

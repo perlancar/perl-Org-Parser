@@ -16,3 +16,6 @@
           + (12) PARENT=11
   - (13) PARENT=; SEQ=2
       * (14) PARENT=13; SEQ=1
+* description list
+- (15) term1 :: value1
+- (16) t2    ::value2

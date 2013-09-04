@@ -1,6 +1,6 @@
 package Org::Parser;
 
-use 5.010;
+use 5.010001;
 use Moo;
 
 use File::Slurp;
