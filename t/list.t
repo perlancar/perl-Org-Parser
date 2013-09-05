@@ -15,14 +15,19 @@ test_parse(
     parse_file_args => ["t/data/listitem.org"],
     name => 'list tests',
     filter_elements => 'Org::Element::List',
-    num => 12,
+    num => 16,
+    test_after_parse => sub {
+        my %args = @_;
+        my $elems = $args{elements};
+
+    },
 );
 
 test_parse(
     parse_file_args => ["t/data/listitem.org"],
     name => 'listitem tests',
     filter_elements => 'Org::Element::ListItem',
-    num => 17,
+    num => 22,
     test_after_parse => sub {
         my (%args) = @_;
         my $elems = $args{elements};
