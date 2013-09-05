@@ -14,6 +14,13 @@ require "testlib.pl";
 test_parse(
     parse_file_args => ["t/data/listitem.org"],
     name => 'list tests',
+    filter_elements => 'Org::Element::List',
+    num => 12,
+);
+
+test_parse(
+    parse_file_args => ["t/data/listitem.org"],
+    name => 'listitem tests',
     filter_elements => 'Org::Element::ListItem',
     num => 17,
     test_after_parse => sub {
