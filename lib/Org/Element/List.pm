@@ -11,9 +11,19 @@ has indent => (is => 'rw');
 has type => (is => 'rw');
 has bullet_style => (is => 'rw');
 
+sub items {
+    my $self = shift;
+    my @items;
+    for (@{ $self->children }) {
+        push @items, $_ if $_->isa('Org::Element::ListItem');
+    }
+    \@items;
+}
+
 1;
 # ABSTRACT: Represent Org list
-__END__
+
+=for Pod::Coverage
 
 =head1 DESCRIPTION
 
@@ -40,6 +50,8 @@ E.g. '-', '*', '+'. For ordered list, currently just use '<N>.'
 
 =head1 METHODS
 
-=for Pod::Coverage
+=head2 $list->items() => ARRAY OF OBJECTS
+
+Return the items, which are array of L<Org::Element::ListItem> objects.
 
 =cut
