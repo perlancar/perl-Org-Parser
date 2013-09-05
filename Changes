@@ -1,5 +1,15 @@
 Revision history for Org-Parser
 
+0.35    2013-09-05 (SHARYANTO)
+
+        - Text below a list item, indented at the same level as or less than the
+          list item, can now break the list. This is the behavior of newer
+          Org-mode (7.x?) and the one that makes more sense. Thanks to Trent
+          Fisher for finding out about the issue and providing a test case.
+
+        - List: add items().
+
+
 0.34    2013-06-28 (SHARYANTO)
 
         Add some more known settings from the Orgmode manual's index.
