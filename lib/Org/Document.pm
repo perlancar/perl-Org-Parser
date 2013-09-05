@@ -186,7 +186,7 @@ sub _parse {
         my %m = %+;
         next unless keys %m; # perlre bug?
         #if ($log->is_trace) {
-        #    # profiler shows that this is very heavy
+        #    # profiler shows that this is very heavy, so commenting this out
         #    $log->tracef("match block element: %s", \%+);
         #}
 
@@ -411,7 +411,7 @@ sub _add_text {
     while ($str =~ /$text_re/og) {
         my %m = %+;
         #if ($log->is_trace) {
-        #    # profiler shows that this is very heavy
+        #    # profiler shows that this is very heavy, so commenting this out
         #    $log->tracef("match text: %s", \%+);
         #}
         my $el;
