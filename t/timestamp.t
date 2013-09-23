@@ -129,7 +129,7 @@ _
         my $elems = $args{elements};
         my $dt    = $elems->[0]->datetime;
         my $tz    = $dt->time_zone;
-        is($tz->short_name_for_datetime($dt), "WIT", "time zone's short name");
+        is($tz->short_name_for_datetime($dt), "WIB", "time zone's short name");
     },
 );
 
