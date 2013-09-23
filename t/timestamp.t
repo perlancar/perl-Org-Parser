@@ -129,7 +129,9 @@ _
         my $elems = $args{elements};
         my $dt    = $elems->[0]->datetime;
         my $tz    = $dt->time_zone;
-        is($tz->short_name_for_datetime($dt), "WIB", "time zone's short name");
+        like($tz->short_name_for_datetime($dt),
+             qr/^WI[BT]$/, # newer tzdb uses WIB, older uses WIT
+             "time zone's short name");
     },
 );
 
