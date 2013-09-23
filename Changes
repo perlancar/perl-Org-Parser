@@ -1,5 +1,11 @@
 Revision history for Org-Parser
 
+0.36    2013-09-23 (SHARYANTO)
+
+        - No functional changes. Update test due to updated timezone database
+          (WIT -> WIB) [CT].
+
+
 0.35    2013-09-05 (SHARYANTO)
 
         - Text below a list item, indented at the same level as or less than the
