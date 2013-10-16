@@ -18,18 +18,18 @@ Revision history for Org-Parser
 
 0.34    2013-06-28 (SHARYANTO)
 
-        Add some more known settings from the Orgmode manual's index.
+        - Add some more known settings from the Orgmode manual's index.
 
 
 0.33    2013-06-26 (SHARYANTO)
 
-        No functional changes. Second attempt: add 'use experimental
-        "smartmatch"' must be given after 'use Moo'.
+        - No functional changes. Second attempt: add 'use experimental
+          "smartmatch"' must be given after 'use Moo'.
 
 
 0.32    2013-06-25 (SHARYANTO)
 
-        No functional changes. Add 'use experimental "smartmatch"' for 5.18+.
+        - No functional changes. Add 'use experimental "smartmatch"' for 5.18+.
 
 
 0.31    2013-05-15 (SHARYANTO)
@@ -59,11 +59,9 @@ Revision history for Org-Parser
           Thanks Meng Weng Wong.
 
 
-0.28    2013-01-07 (SHARYANTO)
+0.28    2013-01-07 (SHARYANTO) - Happy new year! (my first release in 2013)
 
-        Happy new year! (my first release in 2013)
-
-        No functional changes.
+        - No functional changes.
 
         [BUG FIXES]
 
@@ -72,9 +70,9 @@ Revision history for Org-Parser
 
 0.27    2012-08-07 (SHARYANTO)
 
-        No functional changes. Increase Perl minimum version requirement from
-        5.10.0 to 5.10.1 due to failing reports in 5.10.0 [RT#78795]. Thanks,
-        Andreas.
+        - No functional changes. Increase Perl minimum version requirement from
+          5.10.0 to 5.10.1 due to failing reports in 5.10.0 [RT#78795]. Thanks,
+          Andreas.
 
 
 0.26    2012-07-23 (SHARYANTO)
@@ -95,7 +93,7 @@ Revision history for Org-Parser
 
 0.25    2012-07-21 (SHARYANTO)
 
-        No functional changes. Add Unicode test files.
+        - No functional changes. Add Unicode test files.
 
 
 0.24    2012-07-17 (SHARYANTO)
@@ -105,20 +103,20 @@ Revision history for Org-Parser
 
 0.23    2012-04-14 (SHARYANTO)
 
-        No functional changes. Another increase in parsing speed by avoiding
-        doing unnecessary stuffs in first pass and adding m//o flag. A speedup
-        of about 1.25x is expected.
+        - No functional changes. Another increase in parsing speed by avoiding
+          doing unnecessary stuffs in first pass and adding m//o flag. A speedup
+          of about 1.25x is expected.
 
 
 0.22    2012-04-13 (SHARYANTO)
 
-        No functional changes. Faster parsing (reduce overheads from logging
-        statements and %+ access). A speedup of about 2x is expected.
+        - No functional changes. Faster parsing (reduce overheads from logging
+          statements and %+ access). A speedup of about 2x is expected.
 
 
 0.21    2011-09-23 (SHARYANTO)
 
-        No functional changes. Remove debug message.
+        - No functional changes. Remove debug message.
 
 
 0.20    2011-09-23 (SHARYANTO)
@@ -189,7 +187,7 @@ Revision history for Org-Parser
 
 0.13    2011-06-06 (SHARYANTO)
 
-        No functional changes for the parser.
+        - No functional changes for the parser.
 
         [REMOVED]
 
@@ -286,7 +284,7 @@ Revision history for Org-Parser
 
 0.04    2011-03-22 (SHARYANTO)
 
-        This release is a major refactoring from the previous one.
+        - This release is a major refactoring from the previous one.
 
         [INCOMPATIBLE CHANGES]
 
@@ -313,39 +311,39 @@ Revision history for Org-Parser
 
         [ENHANCEMENTS]
 
-        Parse text markups (bold, italic, etc).
+        - Parse text markups (bold, italic, etc).
 
-        bin/dump-org-structure outputs nicer format.
+        - bin/dump-org-structure outputs nicer format.
 
         [FIXES]
 
-        Todo keyword can also be separated from title with \W (not just \s),
-        e.g. '* TODO/quit smoking'.
+        - Todo keyword can also be separated from title with \W (not just \s),
+          e.g. '* TODO/quit smoking'.
 
 
 0.02    2011-03-17 (SHARYANTO)
 
         [INCOMPATIBLE CHANGES]
 
-        Refactoring: parser now returns Org::Document instance, which contains
-        Org::Element instances. handler sub parameter changed.
+        - Refactoring: parser now returns Org::Document instance, which contains
+          Org::Element instances. handler sub parameter changed.
 
         [ENHANCEMENTS]
 
-        Parse tables.
+        - Parse tables.
 
-        Headline titles can now contain inline elements (normal text as well as
-        other elements, such as timestamps, etc).
+        - Headline titles can now contain inline elements (normal text as well
+          as other elements, such as timestamps, etc).
 
-        Add another example script: dump-org-structure.
+        - Add another example script: dump-org-structure.
 
-        Recognize blocks: HTML, LATEX, ASCII.
+        - Recognize blocks: HTML, LATEX, ASCII.
 
         [FIXES]
 
-        Setting/block/drawer/property names are case-insensitive.
+        - Setting/block/drawer/property names are case-insensitive.
 
 
 0.01    2011-03-16 (SHARYANTO)
 
-        First release.
+        - First release.
