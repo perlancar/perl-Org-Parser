@@ -1,5 +1,10 @@
 Revision history for Org-Parser
 
+0.37    2013-10-27 (SHARYANTO)
+
+        - Support parsing habit-style repeater (thanks Alex White).
+
+
 0.36    2013-09-23 (SHARYANTO)
 
         - No functional changes. Update test due to updated timezone database
