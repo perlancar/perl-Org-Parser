@@ -37,7 +37,7 @@ sub as_string {
     join("",
          ":", $self->name, ":\n",
          $self->children_as_string,
-         ":END:\n");
+         ":END:");
 }
 
 1;

@@ -74,4 +74,34 @@ _
     },
 );
 
+{
+    my $source_text = <<'END_TEXT';
+   :LOGBOOK:
+   - State "DONE"       from "TODO"       [2013-10-17 Thu 11:22]
+   :END:
+   :PROPERTIES:
+   :Effort:   30m
+   :END:
+END_TEXT
+
+    test_parse(
+        name => 'no blank lines between drawers from doc->as_string',
+        filter_elements => 'Org::Element::Drawer',
+        doc  => $source_text,
+        num => 2,
+        test_after_parse => sub {
+            my %args = @_;
+            my $doc = $args{result};
+
+            # strip leading horizontal whitespace
+            my $doc_string_stripped  = $doc->as_string;
+            $doc_string_stripped     =~  s|^[ \t]+||mg;
+            my $source_text_stripped = $source_text;
+            $source_text_stripped    =~ s|^[ \t]+||mg;
+
+            is($doc_string_stripped, $source_text_stripped, "Checking vertical whitespace in doc->as_string" );
+        },
+    );
+}
+
 done_testing();

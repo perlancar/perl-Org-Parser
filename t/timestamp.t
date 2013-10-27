@@ -115,6 +115,29 @@ _
 );
 
 test_parse(
+    name => 'habit-style repeater & warning period',
+    filter_elements => sub {
+        $_[0]->isa('Org::Element::Timestamp') },
+    doc  => <<'_',
+[2011-03-23 Wed 10:12 +1d/2d]
+[2011-03-23 Wed 10:12 +1w/10d]
+[2011-03-23 Wed 10:12-11:23 +2w/3w]
+_
+    num => 3,
+    test_after_parse => sub {
+        my %args  = @_;
+        my $doc   = $args{result};
+        my $elems = $args{elements};
+        is($elems->[0]->_repeater, "+1d", "[0] _repeater");
+        is($elems->[1]->_repeater, "+1w", "[1] _repeater");
+        is($elems->[2]->_repeater, "+2w", "[2] _repeater");
+
+        ok($elems->[0]->recurrence->isa('DateTime::Set::ICal'),
+           "[0] recurrence");
+    },
+);
+
+test_parse(
     name => 'time_zone',
     filter_elements => sub {
         $_[0]->isa('Org::Element::Timestamp') },
