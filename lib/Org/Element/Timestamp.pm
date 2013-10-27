@@ -190,11 +190,28 @@ sub _parse_timestamp {
 
 1;
 # ABSTRACT: Represent Org timestamp
-__END__
 
 =head1 DESCRIPTION
 
 Derived from L<Org::Element>.
+
+Supported formats:
+
+=over
+
+=item * C<[...]> and C<< <...> >> (active) forms
+
+=item * basic date: C<[2013-10-27 Sun]>
+
+=item * event duration: C<[2011-03-23 Wed 10:12-11:23]>
+
+=item * repeater: C<[2011-03-23 Wed +3m]> including C<++> and C<.+>
+
+=item * habit-style repeater: C<[2011-03-23 Wed 10:12 +1d/2d]>
+
+=item * warning period: C<< <2011-05-25 Wed +17.1m -13.2d> >>
+
+=back
 
 
 =head1 ATTRIBUTES
@@ -230,5 +247,17 @@ You can do this prior to serializing the object.
 
 Timestamp will automatically be parsed again from _str when one of the
 attributes is accessed.
+
+
+=head1 BUGS AND LIMITATIONS
+
+=over
+
+=item * Habit-style repeater (e.g. 2d/3d) is not yet represented in C<recurrence>
+
+The recurrence object currently will still only include 2d (without the maximum
+interval).
+
+=back
 
 =cut
