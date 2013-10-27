@@ -20,6 +20,7 @@ for (@attrs) {
 }
 
 has _repeater => (is => 'rw'); # stores the raw repeater spec, for as_string
+has _repeater_max => (is => 'rw'); # stores the raw repeater spec, for as_string
 has _warning_period => (is => 'rw'); # raw warning period spec, for as_string
 has _is_parsed => (is => 'rw');
 
@@ -60,6 +61,10 @@ sub as_string {
              $self->_repeater ? (
                  " ",
                  $self->_repeater,
+                 $self->_repeater_max ? (
+                     "/",
+                     $self->_repeater_max,
+                 ) : (),
              ) : (),
              $self->_warning_period ? (
                  " ",
@@ -101,8 +106,10 @@ sub _parse_timestamp {
                          (?<repeater_interval> $num_re)
                          (?<repeater_unit> [dwmy])
                      )
-                     (?:\/(?<repeater_interval_max> $num_re)
+                     \/?(?<repeater_max>
+                     (?:(?<repeater_interval_max> $num_re)
                          (?<repeater_unit_max> [dwmy]))?
+                     )
                  )?
                  (?:\s+(?<warning_period>
                          -
@@ -169,6 +176,7 @@ sub _parse_timestamp {
         }
         $self->recurrence($r);
         $self->_repeater($+{repeater});
+        $self->_repeater_max($+{repeater_max});
     }
 
     if ($+{warning_period}) {
