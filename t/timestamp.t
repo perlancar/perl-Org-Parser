@@ -94,8 +94,13 @@ test_parse(
 <2011-05-25 Wed ++5m>
 <2011-05-25 Wed .+6m>
 <2011-05-25 Wed +17.1m -13.2d>
+
+# habit-style repeater
+[2011-03-23 Wed 10:12 +1d/2d]
+[2011-03-23 Wed 10:12 +1w/10d]
+[2011-03-23 Wed 10:12-11:23 +2w/3w]
 _
-    num => 7,
+    num => 10,
     test_after_parse => sub {
         my %args  = @_;
         my $doc   = $args{result};
@@ -109,28 +114,16 @@ _
         is($elems->[6]->_repeater, "+17.1m", "[6] _repeater");
         is($elems->[6]->_warning_period, "-13.2d", "[6] _warning_period");
 
-        ok($elems->[0]->recurrence->isa('DateTime::Set::ICal'),
-           "[0] recurrence");
-    },
-);
+        is($elems->[7]->_repeater, "+1d/2d", "[7] _repeater");
+        is($elems->[8]->_repeater, "+1w/10d", "[8] _repeater");
+        is($elems->[9]->_repeater, "+2w/3w", "[9] _repeater");
 
-test_parse(
-    name => 'habit-style repeater & warning period',
-    filter_elements => sub {
-        $_[0]->isa('Org::Element::Timestamp') },
-    doc  => <<'_',
-[2011-03-23 Wed 10:12 +1d/2d]
-[2011-03-23 Wed 10:12 +1w/10d]
-[2011-03-23 Wed 10:12-11:23 +2w/3w]
-_
-    num => 3,
-    test_after_parse => sub {
-        my %args  = @_;
-        my $doc   = $args{result};
-        my $elems = $args{elements};
-        is($elems->[0]->_repeater, "+1d", "[0] _repeater");
-        is($elems->[1]->_repeater, "+1w", "[1] _repeater");
-        is($elems->[2]->_repeater, "+2w", "[2] _repeater");
+        # make sure warning period is stringified as-is
+        is($elems->[6]->as_string, "<2011-05-25 Wed +17.1m -13.2d>",
+           "[6] as_string");
+        # make sure habit-style repeater is stringified as-is
+        is($elems->[7]->as_string, "[2011-03-23 Wed 10:12 +1d/2d]",
+           "[7] as_string");
 
         ok($elems->[0]->recurrence->isa('DateTime::Set::ICal'),
            "[0] recurrence");

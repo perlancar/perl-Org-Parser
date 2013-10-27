@@ -100,9 +100,9 @@ sub _parse_timestamp {
                          (?<repeater_prefix> \+\+|\.\+|\+)
                          (?<repeater_interval> $num_re)
                          (?<repeater_unit> [dwmy])
+                         (?:\/(?<repeater_interval_max> $num_re)
+                             (?<repeater_unit_max> [dwmy]))?
                      )
-                     (?:\/(?<repeater_interval_max> $num_re)
-                         (?<repeater_unit_max> [dwmy]))?
                  )?
                  (?:\s+(?<warning_period>
                          -
