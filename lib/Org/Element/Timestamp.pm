@@ -86,7 +86,7 @@ sub _parse_timestamp {
                    /x;
 
     $str =~ /^(?<open_bracket> \[|<)
-             (?<year> \d{4})-(?<mon> \d{2})-(?<day> \d{2}) \s+
+             (?<year> \d{4})-(?<mon> \d{2})-(?<day> \d{2}) \s*
              (?:
                  (?<dow> $dow_re) \s*?
                  (?:\s+
