@@ -219,7 +219,3 @@ it.
 =head1 SEE ALSO
 
 L<Org::Document>
-
-=cut
-
-1;
