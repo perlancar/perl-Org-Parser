@@ -8,7 +8,7 @@ use FindBin '$Bin';
 use lib $Bin, "$Bin/t";
 
 use File::Temp qw/tempfile/;
-use File::Slurp;
+use File::Slurp::Tiny qw(write_file);
 use Org::Parser;
 use Test::Exception;
 use Test::More 0.96;
