@@ -3,6 +3,7 @@
 use 5.010;
 use strict;
 use warnings;
+use experimental 'smartmatch';
 
 use FindBin '$Bin';
 use lib $Bin, "$Bin/t";

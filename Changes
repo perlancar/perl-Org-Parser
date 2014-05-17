@@ -1,5 +1,13 @@
 Revision history for Org-Parser
 
+0.38    2014-05-17 (SHARYANTO)
+
+        - Update timestamp parsing to follow newer org-mode ([2014-01-06] is
+          allowed as well as [2014-01-06 ]).
+
+        - Replace File::Slurp with File::Slurp::Tiny.
+
+
 0.37    2013-10-27 (SHARYANTO)
 
         - Support parsing habit-style repeater (thanks Alex White).
