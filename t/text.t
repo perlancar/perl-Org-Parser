@@ -70,7 +70,7 @@ _underlined_
 <_not underlined_>
 [_not underlined_]
 _
-    num => 6, # should be 10, curly does not work yet
+    num => 6, # should be 8, curly does not work yet
     test_after_parse => sub {
         my %args = @_;
         my $doc = $args{result};
