@@ -58,6 +58,31 @@ _
     },
 );
 
+# emacs allows ( and { as well as whitespace to start markup
+test_parse(
+    name => 'markup start characters',
+    filter_elements => 'Org::Element::Text',
+    doc  => <<'_',
+_underlined_
+ _underlined_
+(_underlined_)
+{_underlined_}
+<_not underlined_>
+[_not underlined_]
+_
+    num => 6, # should be 10, curly does not work yet
+    test_after_parse => sub {
+        my %args = @_;
+        my $doc = $args{result};
+        my $elems = $args{elements};
+        diag(explain [map {$_->as_string} @$elems]);
+        is( $elems->[ 0]->style, "U");
+        is( $elems->[ 2]->style, "U");
+        is( $elems->[ 4]->style, "U");
+        #is( $elems->[ 6]->style, "U");
+    },
+);
+
 # emacs only allows a single newline in markup
 test_parse(
     name => 'max newlines',

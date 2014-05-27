@@ -33,7 +33,7 @@ my  $tstamp_re     = qr/(?:\[\d{4}-\d{2}-\d{2} [^\n\]]*\])/x;
 my  $act_tstamp_re = qr/(?: <\d{4}-\d{2}-\d{2} [^\n>]*  >)/x;
 my  $fn_name_re    = qr/(?:[^ \t\n:\]]+)/x;
 my  $text_re       =
-    qr(
+    qr{
        (?<link>         \[\[(?<link_link> [^\]\n]+)\]
                         (?:\[(?<link_desc> (?:[^\]]|\R)+)\])?\]) |
        (?<radio_target> <<<(?<rt_target> [^>\n]+)>>>) |
@@ -54,7 +54,7 @@ my  $text_re       =
        (?<fn_nameidef>  \[fn:(?<fn_nameidef_name> $fn_name_re?):?
                         (?<fn_nameidef_def> ([^\n\]]+)?)\]) |
 
-       (?<markup_start> (?:(?<=\s)|\A)
+       (?<markup_start> (?:(?<=\s|\(|\{)|\A) # whitespace, open paren, open curly paren
                         [*/+=~_]
                         (?=\S)) |
        (?<markup_end>   (?<=\S)
@@ -64,7 +64,7 @@ my  $text_re       =
 
        (?<plain_text>   (?:[^\[<*/+=~_\n]+|.+?))
        #(?<plain_text>   .+?) # too dispersy
-      )sxi;
+      }sxi;
 
 my $block_elems_re = # top level elements
     qr/(?<block>     $ls_re (?<block_begin_indent>[ \t]*)
