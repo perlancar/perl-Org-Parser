@@ -163,7 +163,7 @@ Create a new parser instance.
 
 =head2 $orgp->parse($str | $arrayref | $coderef | $filehandle, \%opts) => $doc
 
-Parse document (which can be contained in a scalar $str, an array of lines
+Parse document (which can be contained in a scalar $str, an arrayref of lines
 $arrayref, a subroutine which will be called for chunks until it returns undef,
 or a filehandle).
 

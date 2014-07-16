@@ -126,10 +126,10 @@ L<Org::Element::TableVLine> instances as its children.
 
 Return the rows of the table.
 
-=head2 $table->as_aoa() => ARRAYREF
+=head2 $table->as_aoa() => ARRAY
 
-Return the rows of the table, each row already an array of cells produced using
-as_array() method. Vertical lines will be skipped/ignored.
+Return the rows of the table, each row already an arrayref of cells produced
+using as_array() method. Vertical lines will be skipped/ignored.
 
 =head2 $table->row_count() => INT
 

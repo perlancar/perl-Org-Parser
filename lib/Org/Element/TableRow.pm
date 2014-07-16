@@ -55,7 +55,7 @@ instances as its children.
 
 Return the cells of the row.
 
-=head2 $table->as_array() => ARRAYREF
+=head2 $table->as_array() => ARRAY
 
 Return an arrayref containing the cells of the row, each cells already
 stringified with as_string().

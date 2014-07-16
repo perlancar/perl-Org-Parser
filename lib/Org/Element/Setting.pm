@@ -196,9 +196,10 @@ Indentation (whitespaces before C<#+>), or empty string if none.
 
 =for Pod::Coverage as_string BUILD
 
-=head2 Org::Element::Setting->indentable_settings -> arrayref
+=head2 Org::Element::Setting->indentable_settings -> ARRAY
 
-Return the list of setting names that can be indented. In Org, some settings can
-be indented and some can't. Setting names are all in uppercase.
+Return an arrayref containing the setting names that can be indented. In Org,
+some settings can be indented and some can't. Setting names are all in
+uppercase.
 
 =cut

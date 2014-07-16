@@ -52,6 +52,6 @@ E.g. '-', '*', '+'. For ordered list, currently just use '<N>.'
 
 =head2 $list->items() => ARRAY OF OBJECTS
 
-Return the items, which are array of L<Org::Element::ListItem> objects.
+Return the items, which are an arrayref of L<Org::Element::ListItem> objects.
 
 =cut
