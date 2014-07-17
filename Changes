@@ -14,7 +14,8 @@ Revision history for Org-Parser
 
         - Non-TODO headlines can have priority too, so the 'todo_priority'
           attribute is renamed to 'priority' [RT#95947](2014-07-16). The old
-          name is still supported for a while.
+          name is deprecated and will be supported for a while before it is
+          removed.
 
         [DOCUMENTATION]
 
