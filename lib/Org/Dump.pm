@@ -42,7 +42,7 @@ sub _dump {
     # per-element important info
     if ($type eq 'Headline') {
         $line .= " l=".$el->level;
-        $line .= " tags ".join(",", @{$el->tags}) if $el->tags;
+        $line .= " tags=[".join(",", @{$el->tags})."]" if $el->tags;
         $line .= " todo=".$el->todo_state if $el->todo_state;
         $line .= " prio=".$el->priority if $el->priority;
         $line .= " prog=".$el->progress if $el->progress;
