@@ -391,7 +391,7 @@ sub _parse {
                 $el->priority($1);
             }
 
-            # recognize priority
+            # recognize progress cookie
             if ($title =~ s!\[(\d+%|\d+/\d+)\]\s*!!o) {
                 $el->progress($1);
             }
