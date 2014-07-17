@@ -1,5 +1,26 @@
 Revision history for Org-Parser
 
+0.39    2014-07-17 (SHARYANTO)
+
+        [ENHANCEMENTS]
+
+        - Support parsing progress cookie in headline (e.g. '* TODO title [5/10]').
+
+        - Accept ( and { to start markup, like Emacs (but { hasn't worked yet)
+          [RT#95947].
+
+
+        [BUG FIXES]
+
+        - Non-TODO headlines can have priority too, so the 'todo_priority'
+          attribute is renamed to 'priority' [RT#95947](2014-07-16). The old
+          name is still supported for a while.
+
+        [DOCUMENTATION]
+
+        - Reduce confusion about array/list/arrayref [RT#97244].
+
+
 0.38    2014-05-17 (SHARYANTO)
 
         - Update timestamp parsing to follow newer org-mode ([2014-01-06] is

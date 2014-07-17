@@ -232,7 +232,8 @@ sub get_property {
 
 1;
 # ABSTRACT: Represent Org headline
-__END__
+
+=for Pod::Coverage ^(todo_priority)$
 
 =head1 DESCRIPTION
 
