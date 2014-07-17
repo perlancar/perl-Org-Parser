@@ -382,13 +382,13 @@ sub _parse {
                 $el->is_todo(1);
                 $el->todo_state($state);
                 $el->is_done($state ~~ @{ $self->done_states } ? 1:0);
+            }
 
-                # recognize priority
-                my $prio_re = "(?:".
-                    join("|", map {quotemeta} @{$self->priorities}) . ")";
-                if ($title =~ s/\[#($prio_re)\]\s*//o) {
-                    $el->todo_priority($1);
-                }
+            # recognize priority
+            my $prio_re = "(?:".
+                join("|", map {quotemeta} @{$self->priorities}) . ")";
+            if ($title =~ s/\[#($prio_re)\]\s*//o) {
+                $el->priority($1);
             }
 
             $el->title($self->_add_text_container($title, $parent, $pass));

@@ -11,12 +11,15 @@ extends 'Org::Element';
 
 has level => (is => 'rw');
 has title => (is => 'rw');
-has todo_priority => (is => 'rw');
+has priority => (is => 'rw');
 has tags => (is => 'rw');
 has is_todo => (is => 'rw');
 has is_done => (is => 'rw');
 has todo_state => (is => 'rw');
 has progress => (is => 'rw');
+
+# old name, deprecated since 2014-07-17, will be removed in the future
+sub todo_priority { shift->priority(@_) }
 
 sub extra_walkables {
     my $self = shift;
@@ -30,7 +33,7 @@ sub header_as_string {
          "*" x $self->level,
          " ",
          $self->is_todo ? $self->todo_state." " : "",
-         $self->todo_priority ? "[#".$self->todo_priority."] " : "",
+         $self->priority ? "[#".$self->priority."] " : "",
          $self->title->as_string,
          $self->tags && @{$self->tags} ?
              "  :".join(":", @{$self->tags}).":" : "",
@@ -245,7 +248,7 @@ Level of headline (e.g. 1, 2, 3). Corresponds to the number of bullet stars.
 
 L<Org::Element::Text> representing the headline title
 
-=head2 todo_priority => STR
+=head2 priority => STR
 
 String (optional) representing priority.
 
@@ -268,7 +271,7 @@ TODO state.
 
 =head2 progress => STR
 
-Progress.
+Progress. (NOT YET IMPLEMENTED)
 
 =head1 METHODS
 

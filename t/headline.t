@@ -50,7 +50,7 @@ text
 *** TODO [#A] h3 2
     text
 ** DONE h2 2
-* h1 2
+* h1 2[#B]
 _
     num => 6,
     test_after_parse => sub {
@@ -71,7 +71,7 @@ _
         is( $elems->[3]->is_todo, 1, "3: is_todo");
         ok(!$elems->[3]->is_done, "3: is_done");
         is( $elems->[3]->todo_state, "TODO", "3: todo_state");
-        is( $elems->[3]->todo_priority, "A", "3: todo_priority");
+        is( $elems->[3]->priority, "A", "3: priority");
 
         is($elems->[4]->title->as_string, "h2 2", "4: title");
         is($elems->[4]->level, 2, "4: level");
@@ -82,6 +82,7 @@ _
 
         is($elems->[5]->title->as_string, "h1 2", "5: title");
         is($elems->[5]->level, 1, "5: level");
+        is($elems->[5]->priority, "B", "5: priority");
     },
 );
 
