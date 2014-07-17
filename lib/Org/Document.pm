@@ -391,6 +391,11 @@ sub _parse {
                 $el->priority($1);
             }
 
+            # recognize priority
+            if ($title =~ s!\[(\d+%|\d+/\d+)\]\s*!!o) {
+                $el->progress($1);
+            }
+
             $el->title($self->_add_text_container($title, $parent, $pass));
 
             $last_headlines->[$el->level] = $el;

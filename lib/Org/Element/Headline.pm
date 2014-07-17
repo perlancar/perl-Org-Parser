@@ -34,6 +34,7 @@ sub header_as_string {
          " ",
          $self->is_todo ? $self->todo_state." " : "",
          $self->priority ? "[#".$self->priority."] " : "",
+         $self->progress ? "[".$self->progress."] " : "",
          $self->title->as_string,
          $self->tags && @{$self->tags} ?
              "  :".join(":", @{$self->tags}).":" : "",
@@ -271,7 +272,7 @@ TODO state.
 
 =head2 progress => STR
 
-Progress. (NOT YET IMPLEMENTED)
+Progress cookie, e.g. '5/10' or '50%'
 
 =head1 METHODS
 

@@ -50,9 +50,10 @@ text
 *** TODO [#A] h3 2
     text
 ** DONE h2 2
-* h1 2[#B]
+* h1 2[#B][5/10]
+* h1 3 [50%]
 _
-    num => 6,
+    num => 7,
     test_after_parse => sub {
         my (%args) = @_;
         my $elems = $args{elements};
@@ -83,6 +84,11 @@ _
         is($elems->[5]->title->as_string, "h1 2", "5: title");
         is($elems->[5]->level, 1, "5: level");
         is($elems->[5]->priority, "B", "5: priority");
+        is($elems->[5]->progress, "5/10", "5: progress (a/b style)");
+
+        is($elems->[6]->title->as_string, "h1 3 ", "6: title");
+        is($elems->[6]->level, 1, "6: level");
+        is($elems->[6]->progress, "50%", "6: progress (percent style)");
     },
 );
 
