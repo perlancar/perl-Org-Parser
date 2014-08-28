@@ -122,7 +122,7 @@ sub __parse_args {
     return [] unless defined($args) && length($args);
     #$log->tracef("args = %s", $args);
     my @args;
-    while ($args =~ /$arg_re (?:\s+|\z)/xgo) {
+    while ($args =~ /$arg_re (?:\s+|\z)/xg) {
         if (defined $+{squote}) {
             push @args, $+{squote};
         } elsif (defined $+{dquote}) {
@@ -376,7 +376,7 @@ sub _parse {
             my $todo_kw_re = "(?:".
                 join("|", map {quotemeta}
                          @{$self->todo_states}, @{$self->done_states}) . ")";
-            if ($title =~ s/^($todo_kw_re)(\s+|\W)/$2/o) {
+            if ($title =~ s/^($todo_kw_re)(\s+|\W)/$2/) {
                 my $state = $1;
                 $title =~ s/^\s+//;
                 $el->is_todo(1);
@@ -387,7 +387,7 @@ sub _parse {
             # recognize priority
             my $prio_re = "(?:".
                 join("|", map {quotemeta} @{$self->priorities}) . ")";
-            if ($title =~ s/\[#($prio_re)\]\s*//o) {
+            if ($title =~ s/\[#($prio_re)\]\s*//) {
                 $el->priority($1);
             }
 
