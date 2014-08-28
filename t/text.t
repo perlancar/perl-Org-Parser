@@ -75,7 +75,7 @@ _
         my %args = @_;
         my $doc = $args{result};
         my $elems = $args{elements};
-        diag(explain [map {$_->as_string} @$elems]);
+        note(explain [map {$_->as_string} @$elems]);
         is( $elems->[ 0]->style, "U");
         is( $elems->[ 2]->style, "U");
         is( $elems->[ 4]->style, "U");
