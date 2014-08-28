@@ -1,5 +1,11 @@
 Revision history for Org-Parser
 
+0.40    2014-07-17 (PERLANCAR)
+
+        - [Bugfix] miscached todo keywords and priorities from previous parse
+          due to the use of /o regex modifier [RT#98375].
+
+
 0.39    2014-07-17 (SHARYANTO)
 
         [ENHANCEMENTS]
