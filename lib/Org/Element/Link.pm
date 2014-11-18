@@ -35,7 +35,7 @@ Derived from L<Org::Element>.
 
 =head2 link => STR
 
-=head2 description => STR
+=head2 description => OBJ
 
 =head2 from_radio_target => BOOL
 
