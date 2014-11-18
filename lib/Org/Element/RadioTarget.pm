@@ -34,6 +34,8 @@ sub as_text {
 1;
 # ABSTRACT: Represent Org radio target
 
+=for Pod::Coverage ^(BUILD)$
+
 =head1 DESCRIPTION
 
 Derived from L<Org::Element>.

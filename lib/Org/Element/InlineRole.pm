@@ -34,4 +34,4 @@ itself.
 
 =head1 METHODS
 
-=head1 children_as_text => str
+=head2 children_as_text => str

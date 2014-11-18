@@ -36,11 +36,11 @@ Derived from L<Org::Element>.
 
 =head1 METHODS
 
-=head1 as_string => str
+=head2 as_string => str
 
 From L<Org::Element>.
 
-=head1 as_text => str
+=head2 as_text => str
 
 From L<Org::Element::InlineRole>.
 

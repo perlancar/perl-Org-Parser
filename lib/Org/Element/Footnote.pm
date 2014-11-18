@@ -35,6 +35,8 @@ sub as_text {
 1;
 # ABSTRACT: Represent Org footnote reference and/or definition
 
+=for Pod::Coverage ^(BUILD)$
+
 =head1 DESCRIPTION
 
 Derived from L<Org::Element>.

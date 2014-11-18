@@ -1,5 +1,18 @@
 Revision history for Org-Parser
 
+0.41    2014-11-18 (PERLANCAR)
+
+        - Add role: Org::Element::InlineRole, which adds the 'as_text' method to
+          get "rendered plaintext" representation of element. This is mostly
+          identical to what 'as_string' returns, except for links in which case
+          'as_text' will return the description or the link instead of the raw
+          representation [RT#100396].
+
+        - Fix documentation [RT#100395].
+
+        - Add some known settings [RT#100394].
+
+
 0.40    2014-07-17 (PERLANCAR)
 
         - [Bugfix] miscached todo keywords and priorities from previous parse
