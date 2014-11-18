@@ -1,12 +1,14 @@
 package Org::Element::Timestamp;
 
+# DATE
+# VERSION
+
 use 5.010;
 use locale;
 use utf8;
 use Moo;
 extends 'Org::Element';
-
-# VERSION
+with 'Org::Element::InlineRole';
 
 my @attrs = (qw/datetime has_time event_duration recurrence is_active/);
 for (@attrs) {
@@ -68,6 +70,10 @@ sub as_string {
          ) : (),
          $self->is_active ? ">" : "]",
      );
+}
+
+sub as_text {
+    goto \&as_string;
 }
 
 sub _parse_timestamp {
@@ -235,8 +241,6 @@ event_duration is 7200+600=7800 (2 hours 10 minutes).
 
 =head1 METHODS
 
-=for Pod::Coverage as_string
-
 =head2 $el->clear_parse_result
 
 Clear parse result.
@@ -247,6 +251,14 @@ You can do this prior to serializing the object.
 
 Timestamp will automatically be parsed again from _str when one of the
 attributes is accessed.
+
+=head2 as_string => str
+
+From L<Org::Element>.
+
+=head2 as_text => str
+
+From L<Org::Element::InlineRole>.
 
 
 =head1 BUGS AND LIMITATIONS

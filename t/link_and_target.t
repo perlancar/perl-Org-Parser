@@ -35,9 +35,11 @@ _
         my $elems = $args{elements};
         is( $elems->[0]->link       , "link1",          "0: link");
         ok(!$elems->[0]->description,                   "0: description");
+        is( $elems->[0]->as_text    , "link1",          "0: as_text");
         is( $elems->[1]->link       , "link2",          "1: link");
         is( $elems->[1]->description->as_string,
             "description2",                             "1: description");
+        is( $elems->[1]->as_text    , "description2",   "1: as_text");
         is( $elems->[2]->link       , "link3",          "2: link");
         is( $elems->[2]->description->as_string,
             "description\n*can* contain markups",       "2: description");

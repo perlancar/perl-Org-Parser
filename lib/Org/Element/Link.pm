@@ -1,11 +1,13 @@
 package Org::Element::Link;
 
+# DATE
+# VERSION
+
 use 5.010;
 use locale;
 use Moo;
 extends 'Org::Element';
-
-# VERSION
+with 'Org::Element::InlineRole';
 
 has link => (is => 'rw');
 has description => (is => 'rw');
@@ -22,9 +24,14 @@ sub as_string {
          "]");
 }
 
+sub as_text {
+    my $self = shift;
+    my $desc = $self->description;
+    defined($desc) ? $desc->as_text : $self->link;
+}
+
 1;
 # ABSTRACT: Represent Org hyperlink
-__END__
 
 =head1 DESCRIPTION
 
@@ -42,6 +49,10 @@ Derived from L<Org::Element>.
 
 =head1 METHODS
 
-=for Pod::Coverage as_string
+=head1 as_string => str
 
-=cut
+From L<Org::Element>.
+
+=head2 as_text => str
+
+From L<Org::Element::InlineRole>.

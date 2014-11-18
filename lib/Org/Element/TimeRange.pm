@@ -1,11 +1,13 @@
 package Org::Element::TimeRange;
 
+# DATE
+# VERSION
+
 use 5.010;
 use locale;
 use Moo;
 extends 'Org::Element';
-
-# VERSION
+with 'Org::Element::InlineRole';
 
 has ts1 => (is => 'rw');
 has ts2 => (is => 'rw');
@@ -20,9 +22,12 @@ sub as_string {
      );
 }
 
+sub as_text {
+    goto \&as_string;
+}
+
 1;
 # ABSTRACT: Represent Org time range (TS1--TS2)
-__END__
 
 =head1 DESCRIPTION
 
@@ -42,6 +47,11 @@ Ending timestamp.
 
 =head1 METHODS
 
-=for Pod::Coverage as_string
+=head2 as_string => str
 
-=cut
+From L<Org::Element>.
+
+=head2 as_text => str
+
+From L<Org::Element::InlineRole>.
+

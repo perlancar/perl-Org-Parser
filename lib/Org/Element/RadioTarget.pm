@@ -1,11 +1,13 @@
 package Org::Element::RadioTarget;
 
+# DATE
+# VERSION
+
 use 5.010;
 use locale;
 use Moo;
 extends 'Org::Element';
-
-# VERSION
+with 'Org::Element::InlineRole';
 
 has target => (is => 'rw');
 
@@ -25,9 +27,12 @@ sub as_string {
          "<<<", $self->target, ">>>");
 }
 
+sub as_text {
+    goto \&as_string;
+}
+
 1;
 # ABSTRACT: Represent Org radio target
-__END__
 
 =head1 DESCRIPTION
 
@@ -41,6 +46,12 @@ Derived from L<Org::Element>.
 
 =head1 METHODS
 
-=for Pod::Coverage as_string BUILD
+=head2 as_string => str
+
+From L<Org::Element>.
+
+=head2 as_text => str
+
+From L<Org::Element::InlineRole>.
 
 =cut
