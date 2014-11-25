@@ -47,7 +47,7 @@ sub as_string {
 }
 
 sub get_tags {
-    my ($self, $name, $search_parent) = @_;
+    my ($self, $name) = @_;
     my @res = @{ $self->tags // [] };
     $self->walk_parents(
         sub {
