@@ -31,27 +31,34 @@ test_parse(
   :LOGBOOK:
     :z: 5
   :END:
-
+*** head3
+ some text
+ :PROPERTIES:
+  :z: 6
+ :END:
 _
-    num => 2,
+    num => 3,
     test_after_parse => sub {
         my (%args) = @_;
         my $doc = $args{result};
         my $elems = $args{elements};
         my $h1 = $elems->[0];
         my $h2 = $elems->[1];
+        my $h3 = $elems->[2];
 
-        is($h1->get_property('x'), 2, "h1->get_property(x)");
-        is($h2->get_property('z'), 3, "h2->get_property(z)");
-        is($h2->get_drawer("LOGBOOK")->properties->{'z'}, 5, "h2->get_drawer(LOGBOOK) z=5");
-        ok(!$h1->get_property('z'), "h1->get_property(z)");
-        return;
-        is($h1->get_property('y'), 1, "h1->get_property(y)");
-        ok(!$h2->get_property('p'), "h2->get_property(p) (search_parent=0)");
-        is($h2->get_property('p', 1), 4,
-           "h2->get_property(p) (search_parent=1)");
+        is($h1->get_property('x'), 2, "h1->get_property(x)"); # from own
+        is($h1->get_property('y'), 1, "h1->get_property(y)"); # from file-wide property
+        ok(!$h1->get_property('z'), "h1->get_property(z)"); # not found
 
-        # TODO: search_parent=1
+        is($h2->get_property('z'), 3, "h2->get_property(z)"); # from own
+        is($h2->get_drawer("LOGBOOK")->properties->{'z'}, 5, "h2->get_drawer(LOGBOOK) z=5"); # from a named drawer other than PROPERTIES
+        ok(!$h2->get_property('p'), "h2->get_property(p) (search_parent=0)"); # not found
+        is($h2->get_property('p', 1), 4, "h2->get_property(p) (search_parent=1)"); # from parent
+        is($h2->get_property('y'), 1, "h2->get_property(y)"); # from file-wide property
+
+        is($h3->get_property('z'), 6, "h3->get_property(z)"); # from own
+        is($h3->get_property('x', 1), 2, "h3->get_property(x)"); # from grand-parent
+
     },
 );
 

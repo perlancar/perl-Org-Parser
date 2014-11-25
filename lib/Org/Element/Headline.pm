@@ -217,13 +217,16 @@ sub get_property {
     #$log->tracef("-> get_property(%s, search_par=%s)", $name, $search_parent);
     my $p = $self->parent;
 
-	my $pd = $self->get_drawer("PROPERTIES");
-	return $pd->properties->{$name} if ($pd and defined $pd->properties->{$name});
+    my $pd = $self->get_drawer("PROPERTIES");
+    return $pd->properties->{$name} if ($pd and defined $pd->properties->{$name});
 
     if ($p && $search_parent) {
-        next unless $p->isa('Org::Element::Headline');
-        my $res = $p->get_property($name, 1);
-        return $res if defined $res;
+        while ($p) {
+            next unless $p->isa('Org::Element::Headline');
+            my $res = $p->get_property($name, 1);
+            return $res if defined $res;
+            $p = $p->parent;
+        }
     }
 
     $log->tracef("Getting property from document's .properties");
