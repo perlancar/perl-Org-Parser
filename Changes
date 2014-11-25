@@ -1,5 +1,11 @@
 Revision history for Org-Parser
 
+0.42    2014-11-26 (PERLANCAR)
+
+	- Fix get_property()'s search_parent argument (was not properly
+	  implemented).
+
+
 0.41    2014-11-18 (PERLANCAR)
 
         - Add role: Org::Element::InlineRole, which adds the 'as_text' method to
