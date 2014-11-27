@@ -144,10 +144,6 @@ available for debugging:
 This module parses Org documents. See http://orgmode.org/ for more details on
 Org documents.
 
-This module uses L<Log::Any> logging framework.
-
-This module uses L<Moo> object system.
-
 See C<todo.org> in the distribution for the list of already- and not yet
 implemented stuffs.
 
