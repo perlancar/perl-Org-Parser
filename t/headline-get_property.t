@@ -52,12 +52,12 @@ _
 
         is($h2->get_property('z'), 3, "h2->get_property(z)"); # from own
         is($h2->get_drawer("LOGBOOK")->properties->{'z'}, 5, "h2->get_drawer(LOGBOOK) z=5"); # from a named drawer other than PROPERTIES
-        ok(!$h2->get_property('p'), "h2->get_property(p) (search_parent=0)"); # not found
-        is($h2->get_property('p', 1), 4, "h2->get_property(p) (search_parent=1)"); # from parent
+        ok(!$h2->get_property('p'), "h2->get_property(p)"); # not found
+        is($h2->get_property('p', 1), 4, "h2->get_property(p,1)"); # from parent
         is($h2->get_property('y'), 1, "h2->get_property(y)"); # from file-wide property
 
         is($h3->get_property('z'), 6, "h3->get_property(z)"); # from own
-        is($h3->get_property('x', 1), 2, "h3->get_property(x)"); # from grand-parent
+        is($h3->get_property('x', 1), 2, "h3->get_property(x,1)"); # from grand-parent
 
     },
 );

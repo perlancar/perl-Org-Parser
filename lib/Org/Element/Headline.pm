@@ -1,13 +1,14 @@
 package Org::Element::Headline;
 
+# DATE
+# VERSION
+
 use 5.010;
 use locale;
 use Log::Any '$log';
 use Moo;
 use experimental 'smartmatch';
 extends 'Org::Element';
-
-# VERSION
 
 has level => (is => 'rw');
 has title => (is => 'rw');
@@ -213,24 +214,29 @@ sub get_drawer {
 }
 
 sub get_property {
-    my ($self, $name, $search_parent) = @_;
+    my ($self, $name, $search_parent, $search_docprop) = @_;
     #$log->tracef("-> get_property(%s, search_par=%s)", $name, $search_parent);
-    my $p = $self->parent;
+    my $parent = $self->parent;
 
-    my $pd = $self->get_drawer("PROPERTIES");
-    return $pd->properties->{$name} if ($pd and defined $pd->properties->{$name});
+    my $propd = $self->get_drawer("PROPERTIES");
+    return $propd->properties->{$name} if
+        $propd && defined $propd->properties->{$name};
 
-    if ($p && $search_parent) {
-        while ($p) {
-            next unless $p->isa('Org::Element::Headline');
-            my $res = $p->get_property($name, 1);
-            return $res if defined $res;
-            $p = $p->parent;
+    if ($parent && $search_parent) {
+        while ($parent) {
+            if ($parent->isa('Org::Element::Headline')) {
+                my $res = $parent->get_property($name, 0, 0);
+                return $res if defined $res;
+            }
+            $parent = $parent->parent;
         }
     }
 
-    $log->tracef("Getting property from document's .properties");
-    $self->document->properties->{$name};
+    if ($search_docprop // 1) {
+        $log->tracef("Getting property from document's .properties");
+        return $self->document->properties->{$name};
+    }
+    undef;
 }
 
 1;
