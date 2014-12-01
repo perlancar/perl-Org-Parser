@@ -4,13 +4,14 @@ Revision history for Org-Parser
 
 	- No functional changes.
 
-	- [Bugfix] Fix logic in headline's get_property().
+	- [Bugfix] Fix logic in headline's get_property(), the previous fix
+          didn't really fix the problem [RT#100553].
 
 
 0.42    2014-11-26 (PERLANCAR)
 
 	- Fix get_property()'s search_parent argument (was not properly
-	  implemented).
+	  implemented) [RT#100553].
 
 
 0.41    2014-11-18 (PERLANCAR)
