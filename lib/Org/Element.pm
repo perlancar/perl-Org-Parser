@@ -1,12 +1,13 @@
 package Org::Element;
 
+# DATE
+# VERSION
+
 use 5.010;
 use locale;
 use Log::Any '$log';
 use Moo;
-use Scalar::Util qw(refaddr reftype);
-
-# VERSION
+use Scalar::Util qw(refaddr);
 
 has document => (is => 'rw');
 has parent => (is => 'rw');
