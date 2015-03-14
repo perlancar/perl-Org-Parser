@@ -1,5 +1,8 @@
 package Org::Document;
 
+# DATE
+# VERSION
+
 use 5.010;
 use locale;
 use Log::Any '$log';
@@ -7,9 +10,8 @@ use Moo;
 use experimental 'smartmatch';
 extends 'Org::Element';
 
+use List::MoreUtils qw(firstidx);
 use Time::HiRes qw(gettimeofday tv_interval);
-
-# VERSION
 
 has tags                    => (is => 'rw');
 has todo_states             => (is => 'rw');
@@ -758,6 +760,17 @@ sub load_element_modules {
     }
 }
 
+sub cmp_priorities {
+    my ($self, $p1, $p2) = @_;
+
+    my $pp = $self->priorities;
+    my $pos1 = firstidx {$_ eq $p1} @$pp;
+    return undef unless $pos1 >= 0;
+    my $pos2 = firstidx {$_ eq $p2} @$pp;
+    return undef unless $pos2 >= 0;
+    $pos1 <=> $pos2;
+}
+
 1;
 # ABSTRACT: Represent an Org document
 __END__
@@ -828,5 +841,24 @@ Create object from string.
 Load all Org::Element::* modules. This is useful when wanting to work with
 element objects retrieved from serialization, where the element modules have not
 been loaded.
+
+=head2 cmp_priorities($p1, $p2) => -1|0|-1
+
+Compare two priorities C<$p1> and C<$p2>. Return result like Perl's C<cmp>: 0 if
+the two are the same, -1 if C<$p1> is of I<higher> priority (since it's more to
+the left position in priority list, which is sorted highest-first) than C<$p2>,
+and 1 if C<$p2> is of I<lower> priority than C<$p1>.
+
+If either C<$p1> or C<$p2> has unknown priority, will return undef.
+
+Examples:
+
+ $doc->cmp_priorities('A', 'A')  # -> 0
+ $doc->cmp_priorities('A', 'B')  # -> -1 (A is higher than B)
+ $doc->cmp_priorities('C', 'B')  # -> 1 (C is lower than B)
+ $doc->cmp_priorities('X', 'A')  # -> undef (X is unknown)
+
+Note that X could be known if there is a C<#+PRIORITIES> setting which defines
+it.
 
 =cut
