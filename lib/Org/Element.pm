@@ -119,6 +119,20 @@ sub headline {
     $h;
 }
 
+sub headlines {
+    my ($self) = @_;
+    my @res;
+    $self->walk_parents(
+        sub {
+            my ($el, $p) = @_;
+            if ($p->isa('Org::Element::Headline')) {
+                push @res, $p;
+            }
+            1;
+        });
+    @res;
+}
+
 sub field_name {
     my ($self) = @_;
 
@@ -223,7 +237,13 @@ document), or until CODEREF returns a false value. CODEREF will be supplied
 
 =head2 $el->headline() => ELEMENT
 
-Get current headline.
+Get current headline. Return undef if element is not under any headline.
+
+=head2 $el->headline() => ELEMENTS
+
+Get current headline (in the first element of the result list), its parent, its
+parent's parent, and so on until the topmost headline. Return empty list if
+element is not under any headline.
 
 =head2 $el->field_name() => STR
 

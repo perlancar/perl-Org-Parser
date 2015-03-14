@@ -67,7 +67,7 @@ _
 );
 
 test_parse(
-    name => 'find(), walk_parents(), headline()',
+    name => 'find(), walk_parents(), headline(), headlines()',
     doc  => <<'_',
 * a
 ** b
@@ -100,6 +100,14 @@ _
 
         is($d->headline->title->as_string, "c", "headline() 1");
         is($d->children->[0]->headline->title->as_string, "d", "headline() 2");
+
+        {
+            my @res = $d->headlines;
+            is(~~@res, 3, "headlines() count");
+            is($res[0]->title->as_string, "c", "headlines() 1");
+            is($res[1]->title->as_string, "b", "headlines() 2");
+            is($res[2]->title->as_string, "a", "headlines() 3");
+        }
     },
 );
 
