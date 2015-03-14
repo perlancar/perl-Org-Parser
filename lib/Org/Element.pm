@@ -239,7 +239,7 @@ document), or until CODEREF returns a false value. CODEREF will be supplied
 
 Get current headline. Return undef if element is not under any headline.
 
-=head2 $el->headline() => ELEMENTS
+=head2 $el->headlines() => ELEMENTS
 
 Get current headline (in the first element of the result list), its parent, its
 parent's parent, and so on until the topmost headline. Return empty list if
