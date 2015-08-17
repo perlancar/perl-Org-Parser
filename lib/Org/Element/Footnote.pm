@@ -5,7 +5,7 @@ package Org::Element::Footnote;
 
 use 5.010;
 use locale;
-use Log::Any '$log';
+use Log::Any::IfLOG '$log';
 use Moo;
 extends 'Org::Element';
 with 'Org::Element::InlineRole';
@@ -67,5 +67,3 @@ From L<Org::Element>.
 =head2 as_text => str
 
 From L<Org::Element::InlineRole>.
-
-

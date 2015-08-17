@@ -5,7 +5,7 @@ package Org::Element::Headline;
 
 use 5.010;
 use locale;
-use Log::Any '$log';
+use Log::Any::IfLOG '$log';
 use Moo;
 use experimental 'smartmatch';
 extends 'Org::Element';

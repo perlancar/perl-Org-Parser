@@ -1,13 +1,14 @@
 package Org::Dump;
 
+# DATE
+# VERSION
+
 use 5.010;
 use strict;
 use warnings;
-use Log::Any qw($log);
+use Log::Any::IfLOG qw($log);
 
 use String::Escape qw(elide printable);
-
-# VERSION
 
 sub _dump_ts {
     my ($self, $ts) = @_;
@@ -128,4 +129,3 @@ None are exported.
 =head2 dump_element($elem) => STR
 
 =cut
-

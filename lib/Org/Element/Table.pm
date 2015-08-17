@@ -1,12 +1,13 @@
 package Org::Element::Table;
 
+# DATE
+# VERSION
+
 use 5.010;
 use locale;
-use Log::Any '$log';
+use Log::Any::IfLOG '$log';
 use Moo;
 extends 'Org::Element';
-
-# VERSION
 
 has _dummy => (is => 'rw'); # workaround Moo bug
 
