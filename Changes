@@ -1,5 +1,12 @@
 Revision history for Org-Parser
 
+0.45    2015-08-18 (PERLANCAR)
+
+	- No functional changes.
+
+	- Switch from Log::Any to Log::Any::IfLOG.
+
+
 0.44    2015-03-14 (PERLANCAR)
 
 	- Add cmp_priorities() method to Org::Document.
