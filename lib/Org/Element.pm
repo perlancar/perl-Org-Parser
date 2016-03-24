@@ -74,7 +74,7 @@ sub walk {
     if ($self->children) {
         $_->walk($code, $_level+1) for @{$self->children};
     }
-    $_->walk($code) for $self->extra_walkables;
+    $_->walk($code, $_level+1) for $self->extra_walkables;
 }
 
 sub find {
