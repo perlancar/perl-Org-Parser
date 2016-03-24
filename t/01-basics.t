@@ -8,7 +8,7 @@ use FindBin '$Bin';
 use lib $Bin, "$Bin/t";
 
 use File::Temp qw/tempfile/;
-use File::Slurp::Tiny qw(write_file);
+use File::Slurper qw(write_text);
 use Org::Parser;
 use Test::Exception;
 use Test::More 0.96;
@@ -39,7 +39,7 @@ test_parse(
     parse_args => [\&org],
 );
 my ($fh, $filename) = tempfile();
-write_file($filename, $doc);
+write_text($filename, $doc);
 open $fh, "<", $filename;
 test_parse(
     name       => "parse() accepts filehandle",
@@ -81,15 +81,15 @@ subtest "parse_file: cache_file option" => sub {
     my ($fhc, $filenamec) = tempfile();
     sleep 2;
     my ($fh1, $filename1) = tempfile();
-    write_file($filename1, "[2012-07-99 ]");
+    write_text($filename1, "[2012-07-99 ]");
     my ($fh2, $filename2) = tempfile();
-    write_file($filename2, "test");
+    write_text($filename2, "test");
     lives_ok { $orgp->parse_file($filename2, {cache_file=>$filenamec}) };
     rename $filename1, $filename2;
     lives_ok { $orgp->parse_file($filename2, {cache_file=>$filenamec}) }
         'cached result still used';
     sleep 2;
-    write_file($filename2, "[2012-07-99 ]");
+    write_text($filename2, "[2012-07-99 ]");
     dies_ok { $orgp->parse_file($filename2, {cache_file=>$filenamec}) }
         'file parsed again';
 };

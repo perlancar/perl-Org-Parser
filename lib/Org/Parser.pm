@@ -6,7 +6,6 @@ package Org::Parser;
 use 5.010001;
 use Moo;
 
-use File::Slurp::Tiny qw(read_file);
 use Org::Document;
 use Scalar::Util qw(blessed);
 
@@ -38,12 +37,14 @@ sub parse {
 }
 
 sub parse_file {
+    require File::Slurper;
+
     my ($self, $filename, $opts) = @_;
     $opts //= {};
 
     state $loaded;
 
-    my $content = scalar read_file($filename, binmode => ':utf8');
+    my $content = File::Slurper::read_text($filename, binmode => ':utf8');
 
     my $cf = $opts->{cache_file};
     my $doc;
