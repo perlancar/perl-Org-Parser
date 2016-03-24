@@ -68,10 +68,11 @@ sub next_sibling {
 sub extra_walkables { return () }
 
 sub walk {
-    my ($self, $code) = @_;
-    $code->($self);
+    my ($self, $code, $_level) = @_;
+    $_level //= 0;
+    $code->($self, $_level);
     if ($self->children) {
-        $_->walk($code) for @{$self->children};
+        $_->walk($code, $_level+1) for @{$self->children};
     }
     $_->walk($code) for $self->extra_walkables;
 }
