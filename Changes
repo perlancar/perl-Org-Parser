@@ -1,5 +1,14 @@
 Revision history for Org-Parser
 
+0.46    2016-03-24 (PERLANCAR)
+
+        - walk(): Pass 2nd argument to code: level (currently undocumented).
+          Currently this is used by the `stat-org-document` script to get tree
+          depth and number of elements at each level.
+
+        - Replace File::Slurp::Tiny with File::Slurper.
+
+
 0.45    2015-08-18 (PERLANCAR)
 
 	- No functional changes.

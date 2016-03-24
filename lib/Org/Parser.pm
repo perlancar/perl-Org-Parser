@@ -44,7 +44,7 @@ sub parse_file {
 
     state $loaded;
 
-    my $content = File::Slurper::read_text($filename, binmode => ':utf8');
+    my $content = File::Slurper::read_text($filename);
 
     my $cf = $opts->{cache_file};
     my $doc;
