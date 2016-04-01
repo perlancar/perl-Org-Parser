@@ -38,7 +38,6 @@ sub parse {
 
 sub parse_file {
     require File::Slurper;
-
     my ($self, $filename, $opts) = @_;
     $opts //= {};
 
@@ -46,9 +45,23 @@ sub parse_file {
 
     my $content = File::Slurper::read_text($filename);
 
-    my $cf = $opts->{cache_file};
+    my $cf = $opts->{cache_file}; # old option, new option is 'cache' (automatic setting of cache file)
     my $doc;
     my $cache; # undef = no caching; 0 = not cached, should cache; 1 = cached
+    if (!$cf && ($opts->{cache} // $ENV{PERL_ORG_PARSER_CACHE})) {
+        require Cwd;
+        require Digest::MD5;
+        my @dirs = ("$ENV{HOME}/.cache/perl-org-parser", $ENV{HOME});
+        my $dir;
+        for (@dirs) {
+            if (-d $_) { $dir = $_; last }
+            elsif (mkdir $_) { $dir = $_; last }
+        }
+        die "Can't find a suitable cache directory" unless $dir;
+        my $abs = Cwd::abs_path($filename) or die "Can't find $filename";
+        my $base = $abs; $base =~ s!.+/!!;
+        $cf = "$dir/$base.".Digest::MD5::md5_hex($abs).".storable";
+    }
     if ($cf) {
         require Storable;
         $cache = !!((-e $cf) && (-M $cf) <= (-M $filename));
@@ -190,13 +203,16 @@ Known options (aside from those known by parse()):
 
 =over 4
 
-=item * cache_file => STR
-
-Path to cache file.
+=item * cache => bool (default: from PERL_ORG_PARSER_CACHE, or 0)
 
 Since Org::Parser can spend some time to parse largish Org files, this is an
-option to store the parse result (using L<Storable>). Caching is turned on if
-this option is set.
+option to store the parse result (using L<Storable>). If caching is turned on,
+then after the first parse, the result will be stored in:
+
+ ~/.cache/perl-org-parser/<filename>.<md5-digest-of-file-absolute-path>.storable
+
+and subsequent calls to this function can directly use this cache, as long as
+the cache is not stale.
 
 =back
 
@@ -212,6 +228,13 @@ notes and todo files, I have no complaints.
 Parser is completely regex-based at the moment (I plan to use L<Marpa> someday).
 Performance is quite lousy but I'm not annoyed enough at the moment to overhaul
 it.
+
+
+=head1 ENVIRONMENT
+
+=head2 PERL_ORG_PARSER_CACHE => bool
+
+Set default for C<cache> option in C<parse_file()>.
 
 
 =head1 SEE ALSO
