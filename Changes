@@ -1,5 +1,14 @@
 Revision history for Org-Parser
 
+0.47    2016-04-01 (PERLANCAR)
+
+        - parse_file(): Add option 'cache' to turn on caching (the old
+          'cache_file' is replaced by this option; the 'cache' option selects a
+          default cache dir in ~/.cache/perl-org-parser/ to make things more
+          transparent and caching easier). Caching can also be enabled (or
+          disabled) by setting PERL_ORG_PARSER_CACHE=1 (or 0).
+
+
 0.46    2016-03-24 (PERLANCAR)
 
         - walk(): Pass 2nd argument to code: level (currently undocumented).
