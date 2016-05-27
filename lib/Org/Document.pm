@@ -24,8 +24,8 @@ has radio_targets           => (is => 'rw');
 has time_zone               => (is => 'rw');
 
 our $tags_re       = qr/:(?:[A-Za-z0-9_@#%]+:)+/;
-my  $ls_re         = qr/(?:(?<=[\015\012])|\A)/;
-my  $le_re         = qr/(?:\R|\z)/;
+my  $ls_re         = qr/(?:(?<=[\015\012])|\A)/; # line start
+my  $le_re         = qr/(?:\R|\z)/;              # line end
 our $arg_re        = qr/(?: '(?<squote> [^']*)' |
                             "(?<dquote> [^"]*)" |
                             (?<bare> \S+) )
@@ -79,7 +79,7 @@ my $block_elems_re = # top level elements
                      (?<setting_name> \w+): [ \t]+
                      (?<setting_raw_arg> [^\n]+) $le_re) |
        (?<fixedw>    (?: $ls_re [ \t]* (?::[ ][^\n]* | :$) $le_re )+ ) |
-       (?<comment>   $ls_re \#[^\n]*(?:\R\#[^\n]*)* (?:\R|\z)) |
+       (?<comment>   $ls_re [ \t]*\#[^\n]*(?:\R\#[^\n]*)* (?:\R|\z)) |
        (?<headline>  $ls_re (?<h_bullet>\*+) [ \t]
                      (?<h_title>[^\n]*?)
                      (?:[ \t]+(?<h_tags> $tags_re))?[ \t]* $le_re) |
