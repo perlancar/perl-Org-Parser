@@ -15,11 +15,13 @@ test_parse(
     parse_file_args => ["t/data/listitem.org"],
     name => 'list tests',
     filter_elements => 'Org::Element::List',
-    num => 16,
+    num => 19,
     test_after_parse => sub {
         my %args = @_;
         my $elems = $args{elements};
 
+        is($elems->[18]->indent, " "x4);
+        is(ref($elems->[18]->parent), "Org::Element::Headline");
     },
 );
 
@@ -27,7 +29,7 @@ test_parse(
     parse_file_args => ["t/data/listitem.org"],
     name => 'listitem tests',
     filter_elements => 'Org::Element::ListItem',
-    num => 22,
+    num => 25,
     test_after_parse => sub {
         my (%args) = @_;
         my $elems = $args{elements};

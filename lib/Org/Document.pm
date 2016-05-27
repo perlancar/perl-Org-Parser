@@ -91,7 +91,7 @@ my $block_elems_re = # top level elements
        (?<drawer>    $ls_re [ \t]* :(?<drawer_name> \w+): [ \t]*\R
                      (?<drawer_content>(?:.|\R)*?)
                      $ls_re [ \t]* :END:) |
-       (?<text>      (?:[^#|:+*0-9\n-]+|\n|.)+?)
+       (?<text>      (?:[^#|:+*0-9\n-]+|\n+|.)+?)
        #(?<text>      .+?) # too dispersy
       /msxi;
 
@@ -200,9 +200,16 @@ sub _parse {
             if (@text) {
                 my $text = join("", @text);
                 if ($last_el && $last_el->isa('Org::Element::ListItem')) {
-                    # new in org-mode 7.x? the presence of text below a list
-                    # item, indented at the same level as or less than the list
-                    # item, will break the list.
+                    # a list is broken by either: a) another list (where the
+                    # bullet type or indent is different; handled in the
+                    # handling of $m{li_header}) or b) by two blank lines, or c)
+                    # by non-blank text that is indented less than or equal to
+                    # the last list item's indent.
+
+                    # a single blank line does not break a list. a text that is
+                    # more indented than the last list item's indent will become
+                    # the child of that list item.
+
                     my ($firstline, $restlines) = $text =~ /(.*?\r?\n)(.+)/s;
                     if ($restlines) {
                         $restlines =~ /\A([ \t]*)/;
@@ -387,7 +394,7 @@ sub _parse {
                 $el->is_done($state ~~ @{ $self->done_states } ? 1:0);
             }
 
-            # recognize priority
+            # recognize priority cookie
             my $prio_re = "(?:".
                 join("|", map {quotemeta} @{$self->priorities}) . ")";
             if ($title =~ s/\[#($prio_re)\]\s*//) {
