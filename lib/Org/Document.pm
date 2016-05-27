@@ -377,7 +377,8 @@ sub _parse {
             # recognize todo keyword
             my $todo_kw_re = "(?:".
                 join("|", map {quotemeta}
-                         @{$self->todo_states}, @{$self->done_states}) . ")";
+                     "COMMENT",
+                     @{$self->todo_states}, @{$self->done_states}) . ")";
             if ($title =~ s/^($todo_kw_re)(\s+|\W)/$2/) {
                 my $state = $1;
                 $title =~ s/^\s+//;
