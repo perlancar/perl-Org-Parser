@@ -1,0 +1,9 @@
+todo keywords can be set after the todos themselves. this means we must scan the
+'#+TODO' settings first in the first pass, then re-scan the document to parse
+the elements. to scan the '#+TODO' settings we can simply use a regex since the
+settings must be put at the beginning of lines.
+* FOO foo
+* BAR bar
+* BAZ baz
+* TODO blah
+#+TODO: FOO | BAR BAZ
