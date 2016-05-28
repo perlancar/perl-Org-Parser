@@ -68,6 +68,12 @@ my  $text_re       =
        #(?<plain_text>   .+?) # too dispersy
       }sxi;
 
+# XXX parser must be fixed: block elements have different precedence instead of
+# flat like this. a headline has the highest precedence and a block or a drawer
+# cannot contain a headline (e.g. "#+BEGIN_SRC foo\n* header\n#+END_SRC" should
+# not contain a literal "* header" text but that is a headline. currently, a
+# block or a drawer swallows a headline.
+
 my $block_elems_re = # top level elements
     qr/(?<block>     $ls_re (?<block_begin_indent>[ \t]*)
                      \#\+BEGIN_(?<block_name>\w+)
@@ -180,7 +186,25 @@ sub _parse {
     my $last_listitem;
     my $last_lists = []; # [last_List_obj_for_indent_level0, ...]
     my $last_el;
+    my $indent;
     my $parent;
+
+    # a headline can be parent for all other block elements (including other
+    # headlines with higher level).
+    #
+    # a block and a drawer can be parent to all other block elements except
+    # headline. but a block will render a drawer etc as literal.
+    #
+    # a list item can be parent for other block elements which are more indented
+    # than itself (in other words, a headline or setting cannot be a child
+    # because they are never indented).
+    #
+    # all the other block elems (setting, fixedw, comment, table) do not act as
+    # parent/container for other block elements.
+    #
+    # this routine will choose a parent for the current block element.
+    my $code_choose_parent = sub {
+    };
 
     my @text;
     while ($str =~ /$block_elems_re/og) {
