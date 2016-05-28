@@ -22,9 +22,9 @@ test_parse(
 # comment
 #
 
- # not comment (not started on line 1)
+ # comment can be indented
 _
-    num => 2,
+    num => 3,
     test_after_parse => sub {
         my %args  = @_;
         my $doc   = $args{result};
@@ -40,4 +40,3 @@ _
 );
 
 done_testing();
-
