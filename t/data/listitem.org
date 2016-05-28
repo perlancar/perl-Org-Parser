@@ -63,10 +63,10 @@ or document.
 |------+------+
 | a    | b    |
 - (30) list item, list (22)
- :DRAWER:
+ :LOGBOOK:
  :END:
 - (31) list item, list (22)
-:DRAWER:
+:LOGBOOK:
 :END:
 - (32) list item, list (23)
  # COMMENT
