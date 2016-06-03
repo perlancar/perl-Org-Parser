@@ -181,13 +181,12 @@ sub _parse {
     $log->tracef('-> _parse(%s, pass=%d)', $str, $pass);
     my $t0 = [gettimeofday];
 
-    my $last_headline;
-    my $last_headlines = [$self]; # [$doc, $last_hl_level1, $last_hl_lvl2, ...]
-    my $last_listitem;
-    my $last_lists = []; # [last_List_obj_for_indent_level0, ...]
     my $last_el;
-    my $indent;
-    my $parent;
+    my $indent = 0;
+    my $last_headlines = []; # [$last_hl_level1, $last_hl_lvl2, ...]
+    my $last_drawers_and_blocks = [];
+    my $last_listitems = []; # [$last_listitem_with_indent1, ...]
+    my $last_parent;
 
     # a headline can be parent for all other block elements (including other
     # headlines with higher level).
@@ -202,7 +201,8 @@ sub _parse {
     # all the other block elems (setting, fixedw, comment, table) do not act as
     # parent/container for other block elements.
     #
-    # this routine will choose a parent for the current block element.
+    # this routine will choose the appropriate parent for the current block
+    # element.
     my $code_choose_parent = sub {
     };
 
