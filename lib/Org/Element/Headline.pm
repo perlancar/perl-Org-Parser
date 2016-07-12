@@ -17,7 +17,7 @@ has tags => (is => 'rw');
 has is_todo => (is => 'rw');
 has is_done => (is => 'rw');
 has todo_state => (is => 'rw');
-has progress => (is => 'rw');
+has statistics_cookie => (is => 'rw');
 
 # old name, deprecated since 2014-07-17, will be removed in the future
 sub todo_priority { shift->priority(@_) }
@@ -35,7 +35,7 @@ sub header_as_string {
          " ",
          $self->is_todo ? $self->todo_state." " : "",
          $self->priority ? "[#".$self->priority."] " : "",
-         $self->progress ? "[".$self->progress."] " : "",
+         $self->statistics_cookie ? "[".$self->statistics_cookie."] " : "",
          $self->title->as_string,
          $self->tags && @{$self->tags} ?
              "  :".join(":", @{$self->tags}).":" : "",
@@ -239,6 +239,52 @@ sub get_property {
     undef;
 }
 
+sub update_statistics_cookie {
+    my $self = shift;
+
+    my $statc = $self->statistics_cookie;
+    return unless $statc;
+
+    my $num_done = 0;
+    my $num_total = 0;
+
+    # count using checks on first-level list's children, or from first-level
+    # subheadlines
+    for my $chld (@{ $self->children // [] }) {
+        if ($chld->isa("Org::Element::Headline")) {
+            for my $el (@{ $self->children }) {
+                next unless $el->isa("Org::Element::Headline");
+                if ($el->is_todo) {
+                    $num_total++;
+                    $num_done++ if $el->is_done;
+                }
+            }
+            last;
+        } elsif ($chld->isa("Org::Element::List")) {
+            for my $el (@{ $self->children }) {
+                next unless $el->isa("Org::Element::List");
+                for my $el2 (@{ $el->children }) {
+                    next unless $el2->isa("Org::Element::ListItem");
+                    my $state = $el2->check_state;
+                    if (defined $state) {
+                        $num_total++;
+                        $num_done++ if $state eq 'X';
+                    }
+                }
+            }
+            last;
+        }
+    }
+
+    undef $self->{_str}; # we modify content
+    if ($statc =~ /%/) {
+        $self->statistics_cookie(
+            sprintf("%d%%", $num_total == 0 ? 0 : $num_done/$num_total * 100));
+    } else {
+        $self->statistics_cookie(sprintf("%d/%d", $num_done, $num_total));
+    }
+}
+
 1;
 # ABSTRACT: Represent Org headline
 
@@ -280,9 +326,10 @@ e.g. DONE). Only meaningful if headline is a TODO item.
 
 TODO state.
 
-=head2 progress => STR
+=head2 statistics_cookie => STR
 
-Progress cookie, e.g. '5/10' or '50%'
+Statistics cookie, e.g. '5/10' or '50%'. TODO: there might be more than one
+statistics cookie.
 
 =head1 METHODS
 
@@ -371,5 +418,12 @@ property is not found in the headline's properties drawer.
 
 Return an entire drawer as an Org::Element::Drawer object. By default, return the
 PROPERTIES drawer. If you want LOGBOOK or some other drawer, ask for it by name.
+
+=head2 $el->update_statistics_cookies
+
+Update the statistics cookies by recalculating the number of TODO and
+checkboxes.
+
+Will do nothing if the headline does not have any statistics cookie.
 
 =cut
