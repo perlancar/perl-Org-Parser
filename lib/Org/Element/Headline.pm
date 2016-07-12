@@ -17,7 +17,7 @@ has tags => (is => 'rw');
 has is_todo => (is => 'rw');
 has is_done => (is => 'rw');
 has todo_state => (is => 'rw');
-has progress => (is => 'rw');
+has statistics_cookie => (is => 'rw');
 
 # old name, deprecated since 2014-07-17, will be removed in the future
 sub todo_priority { shift->priority(@_) }
@@ -35,7 +35,7 @@ sub header_as_string {
          " ",
          $self->is_todo ? $self->todo_state." " : "",
          $self->priority ? "[#".$self->priority."] " : "",
-         $self->progress ? "[".$self->progress."] " : "",
+         $self->statistics_cookie ? "[".$self->statistics_cookie."] " : "",
          $self->title->as_string,
          $self->tags && @{$self->tags} ?
              "  :".join(":", @{$self->tags}).":" : "",
@@ -239,6 +239,9 @@ sub get_property {
     undef;
 }
 
+sub update_statistics_cookie {
+}
+
 1;
 # ABSTRACT: Represent Org headline
 
@@ -280,9 +283,10 @@ e.g. DONE). Only meaningful if headline is a TODO item.
 
 TODO state.
 
-=head2 progress => STR
+=head2 statistics_cookie => STR
 
-Progress cookie, e.g. '5/10' or '50%'
+Statistics cookie, e.g. '5/10' or '50%'. TODO: there might be more than one
+statistics cookie.
 
 =head1 METHODS
 
@@ -371,5 +375,12 @@ property is not found in the headline's properties drawer.
 
 Return an entire drawer as an Org::Element::Drawer object. By default, return the
 PROPERTIES drawer. If you want LOGBOOK or some other drawer, ask for it by name.
+
+=head2 $el->update_statistics_cookies
+
+Update the statistics cookies by recalculating the number of TODO and
+checkboxes.
+
+Will do nothing if the headline does not have any statistics cookie.
 
 =cut

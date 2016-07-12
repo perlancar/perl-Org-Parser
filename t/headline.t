@@ -84,11 +84,11 @@ _
         is($elems->[5]->title->as_string, "h1 2", "5: title");
         is($elems->[5]->level, 1, "5: level");
         is($elems->[5]->priority, "B", "5: priority");
-        is($elems->[5]->progress, "5/10", "5: progress (a/b style)");
+        is($elems->[5]->statistics_cookie, "5/10", "5: statistics cookie (a/b style)");
 
         is($elems->[6]->title->as_string, "h1 3 ", "6: title");
         is($elems->[6]->level, 1, "6: level");
-        is($elems->[6]->progress, "50%", "6: progress (percent style)");
+        is($elems->[6]->statistics_cookie, "50%", "6: statistics cookie (percent style)");
     },
 );
 
