@@ -240,6 +240,49 @@ sub get_property {
 }
 
 sub update_statistics_cookie {
+    my $self = shift;
+
+    my $statc = $self->statistics_cookie;
+    return unless $statc;
+
+    my $num_done = 0;
+    my $num_total = 0;
+
+    # count using checks on first-level list's children, or from first-level
+    # subheadlines
+    for my $chld (@{ $self->children // [] }) {
+        if ($chld->isa("Org::Element::Headline")) {
+            for my $el (@{ $self->children }) {
+                next unless $el->isa("Org::Element::Headline");
+                if ($el->is_todo) {
+                    $num_total++;
+                    $num_done++ if $el->is_done;
+                }
+            }
+            last;
+        } elsif ($chld->isa("Org::Element::List")) {
+            for my $el (@{ $self->children }) {
+                next unless $el->isa("Org::Element::List");
+                for my $el2 (@{ $el->children }) {
+                    next unless $el2->isa("Org::Element::ListItem");
+                    my $state = $el2->check_state;
+                    if (defined $state) {
+                        $num_total++;
+                        $num_done++ if $state eq 'X';
+                    }
+                }
+            }
+            last;
+        }
+    }
+
+    undef $self->{_str}; # we modify content
+    if ($statc =~ /%/) {
+        $self->statistics_cookie(
+            sprintf("%d%%", $num_total == 0 ? 0 : $num_done/$num_total * 100));
+    } else {
+        $self->statistics_cookie(sprintf("%d/%d", $num_done, $num_total));
+    }
 }
 
 1;
