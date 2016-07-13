@@ -84,11 +84,11 @@ _
         is($elems->[5]->title->as_string, "h1 2", "5: title");
         is($elems->[5]->level, 1, "5: level");
         is($elems->[5]->priority, "B", "5: priority");
-        is($elems->[5]->progress, "5/10", "5: progress (a/b style)");
+        is($elems->[5]->statistics_cookie, "5/10", "5: statistics cookie (a/b style)");
 
         is($elems->[6]->title->as_string, "h1 3 ", "6: title");
         is($elems->[6]->level, 1, "6: level");
-        is($elems->[6]->progress, "50%", "6: progress (percent style)");
+        is($elems->[6]->statistics_cookie, "50%", "6: statistics cookie (percent style)");
     },
 );
 
@@ -398,4 +398,35 @@ _
     },
 );
 
+test_parse(
+    name => 'update_statistics_cookie()',
+    filter_elements => sub { $_[0]->isa('Org::Element::Headline') },
+    doc  => <<'_',
+* 0 [1/2]
+* 1 [50%]
+* 2 [0/0]
+** TODO a
+** TODO b
+** DONE c
+*** TODO d
+* 3 [0/0]
+- [ ] item 1
+- [X] item 2
+- [X] item 3
+  - [X] item 4
+_
+    num => 8,
+    test_after_parse => sub {
+        my (%args) = @_;
+        my $doc    = $args{result};
+        my $elems  = $args{elements};
+
+        $_->update_statistics_cookie for @$elems;
+
+        is_deeply($elems->[0]->statistics_cookie, "0/0");
+        is_deeply($elems->[1]->statistics_cookie, "0%");
+        is_deeply($elems->[2]->statistics_cookie, "1/3");
+        is_deeply($elems->[7]->statistics_cookie, "2/3");
+    },
+);
 done_testing();

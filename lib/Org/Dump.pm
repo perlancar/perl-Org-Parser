@@ -46,7 +46,7 @@ sub _dump {
         $line .= " tags=[".join(",", @{$el->tags})."]" if $el->tags;
         $line .= " todo=".$el->todo_state if $el->todo_state;
         $line .= " prio=".$el->priority if $el->priority;
-        $line .= " prog=".$el->progress if $el->progress;
+        $line .= " prog=".$el->statistics_cookie if $el->statistics_cookie;
     } elsif ($type eq 'Footnote') {
         $line .= " name=".($el->name // "");
     } elsif ($type eq 'Block') {
