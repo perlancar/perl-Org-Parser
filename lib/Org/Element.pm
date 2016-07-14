@@ -72,7 +72,13 @@ sub walk {
     $_level //= 0;
     $code->($self, $_level);
     if ($self->children) {
-        $_->walk($code, $_level+1) for @{$self->children};
+        # we need to copy children first to a temporary array so that in the
+        # event when during walk a child is removed, all the children are still
+        # walked into.
+        my @children = @{ $self->children };
+        for (@children) {
+            $_->walk($code, $_level+1);
+        }
     }
     $_->walk($code, $_level+1) for $self->extra_walkables;
 }

@@ -419,7 +419,7 @@ property is not found in the headline's properties drawer.
 Return an entire drawer as an Org::Element::Drawer object. By default, return the
 PROPERTIES drawer. If you want LOGBOOK or some other drawer, ask for it by name.
 
-=head2 $el->update_statistics_cookies
+=head2 $el->update_statistics_cookie
 
 Update the statistics cookies by recalculating the number of TODO and
 checkboxes.

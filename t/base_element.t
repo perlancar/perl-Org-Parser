@@ -67,6 +67,36 @@ _
 );
 
 test_parse(
+    name => 'walk() still walks entire children even when '.
+        'a child is removed in the middle',
+    doc  => <<'_',
+* a
+* b
+* c
+* d
+* e
+_
+    test_after_parse => sub {
+        my (%args) = @_;
+        my $doc = $args{result};
+
+        my $n=0;
+        $doc->walk(
+            sub{
+                my $el = shift;
+                if ($el->isa("Org::Element::Headline")) {
+                    $n++;
+                    if ($n == 3) {
+                        splice @{$doc->children}, 3, 1;
+                    }
+                }
+            }
+        );
+        is($n, 5, "num of walked elements");
+        is(scalar(@{ $doc->children }), 4, "current num of children");
+    },
+);
+test_parse(
     name => 'find(), walk_parents(), headline(), headlines()',
     doc  => <<'_',
 * a

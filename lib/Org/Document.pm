@@ -147,7 +147,7 @@ sub __format_args {
     my ($args) = @_;
     my @s;
     for (@$args) {
-        if (/\A[A-Za-z0-9_:-]+\z/) {
+        if (/\A(?:[A-Za-z0-9_:-]+|\|)\z/) {
             push @s, $_;
         } elsif (/"/) {
             push @s, qq('$_');

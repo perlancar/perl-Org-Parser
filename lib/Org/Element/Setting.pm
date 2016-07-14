@@ -164,7 +164,7 @@ sub as_string {
     my ($self) = @_;
     join("",
          $self->indent // "",
-         "#+".uc($self->name),
+         "#+".uc($self->name), ":",
          $self->args && @{$self->args} ?
              " ".Org::Document::__format_args($self->args) : "",
          "\n"
