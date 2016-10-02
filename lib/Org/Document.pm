@@ -183,50 +183,16 @@ sub _parse {
 
     my $last_el;
 
-    # a headline can be parent for all other block elements (including other
-    # headlines with higher level).
-    #
-    # a block and a drawer can be parent to all other block elements except
-    # headline. but a block will render a drawer etc as literal.
-    #
-    # a list item can be parent for other block elements which are more indented
-    # than itself (in other words, a headline or setting cannot be a child
-    # because they are never indented).
-    #
-    # all the other block elems (setting, fixedw, comment, table) do not act as
-    # parent/container for other block elements.
-    #
-    # this routine will choose the appropriate parent for the current block
-    # element.
-    my $code_choose_parent = sub {
-        my ($self, $el) = @_;
-        return $self unless $last_el;
-
-        my @candidates = ($last_el);
-        while (1) {
-            last unless my $p = $candidates[0]->parent;
-            unshift @candidates, $p;
-        }
-
-        my $eltype = ref($el);
-        if ($eltype eq 'Headline') {
-            my $p;
-            for my $i (reverse @candidates) {
-                next unless ref($candidates[$i]) eq 'Org::Element::Headline';
-                if ($candidates[$i]->level < $el->level) {
-                    $p = $candidates[$i];
-                    splice @candidates, $i+1;
-                    last;
-                }
-                push @$last_headlines, $el;
-            }
-            return $p // $self;
-        } else {
-        }
-    };
+    my $last_headline;
+    my $last_headlines = [$self]; # [$doc, $last_hl_level1, $last_hl_lvl2, ...]
+    my $last_listitem;
+    my $last_lists = []; # [last_List_obj_for_indent_level0, ...]
+    my $parent;
 
     my @text;
     while ($str =~ /$block_elems_re/og) {
+        $parent = $last_listitem // $last_headline // $self;
+        #$log->tracef("TMP: parent=%s (%s)", ref($parent), $parent->_str);
         my %m = %+;
         next unless keys %m; # perlre bug?
         #if ($log->is_trace) {
@@ -702,6 +668,7 @@ sub _apply_markup {
         #             $has_text, $has_unmarkable, $newlines, $valid
         #         );
         if ($valid) {
+            no warnings 'once';
             my $mu_el = Org::Element::Text->new(
                 document => $self, parent => $parent,
                 style=>$Org::Element::Text::mu2style{$mu}, text=>'',
