@@ -66,8 +66,14 @@ sub parse_file {
         require Storable;
         $cache = !!((-e $cf) && (-M $cf) <= (-M $filename));
         if ($cache) {
-            $doc = Storable::retrieve($cf);
-            $doc->load_element_modules unless $loaded++;
+            eval {
+                $doc = Storable::retrieve($cf);
+                $doc->load_element_modules unless $loaded++;
+            };
+            if ($@) {
+                warn "Failed retrieving document from cache: $@, reparsing ...";
+                $cache = 0;
+            }
         }
     }
 
