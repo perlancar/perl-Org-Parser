@@ -7,6 +7,7 @@ use 5.010;
 use locale;
 use utf8;
 use Moo;
+no if $] ge 5.021_006, warnings => "locale";
 extends 'Org::Element';
 with 'Org::Element::InlineRole';
 

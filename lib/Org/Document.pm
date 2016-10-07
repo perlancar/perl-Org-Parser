@@ -8,6 +8,7 @@ use locale;
 use Log::Any::IfLOG '$log';
 use Moo;
 use experimental 'smartmatch';
+no if $] ge 5.021_006, warnings => "locale";
 extends 'Org::Element';
 
 use List::MoreUtils qw(firstidx);
