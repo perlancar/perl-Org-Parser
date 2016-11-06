@@ -85,8 +85,8 @@ my $block_elems_re = # top level elements
                      \R(?<block_end_indent>[ \t]*)
                      \#\+END_\k<block_name> $le_re) |
        (?<setting>   $ls_re (?<setting_indent>[ \t]*) \#\+
-                     (?<setting_name> \w+): [ \t]+
-                     (?<setting_raw_arg> [^\n]+) $le_re) |
+                     (?<setting_name> \w+): (?: [ \t]+
+                     (?<setting_raw_arg> [^\n]*))? $le_re) |
        (?<fixedw>    (?: $ls_re [ \t]* (?::[ ][^\n]* | :$) $le_re )+ ) |
        (?<comment>   $ls_re [ \t]*\#[^\n]*(?:\R\#[^\n]*)* (?:\R|\z)) |
        (?<headline>  $ls_re (?<h_bullet>\*+) [ \t]
