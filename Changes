@@ -1,5 +1,12 @@
 Revision history for Org-Parser
 
+0.51    2016-11-06 (PERLANCAR)
+
+        - Shuts up warning about problematic locale in 5.22 (Karl Williamson).
+
+        - Add document attribute/parser option: ignore_unknown_settings.
+
+
 0.50    2016-10-02 (PERLANCAR)
 
 	- When we fail getting cached document (e.g. Storable document got

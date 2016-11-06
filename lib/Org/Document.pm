@@ -846,6 +846,10 @@ List of radio target text.
 
 If set, will be passed to DateTime->new() (e.g. by L<Org::Element::Timestamp>).
 
+=head2 ignore_unknown_settings => bool
+
+If set to true, unknown settings will not cause a parse failure.
+
 
 =head1 METHODS
 
