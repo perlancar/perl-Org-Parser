@@ -1,5 +1,11 @@
 Revision history for Org-Parser
 
+0.52    2016-11-06 (PERLANCAR)
+
+	- Use $] >= ... instead of $] ge ... to avoid test failures on
+	  FreeBSD on 5.20.x perls [suggested by Slaven Rezic, RT#118647].
+
+
 0.51    2016-11-06 (PERLANCAR)
 
         - Shuts up warning about problematic locale in 5.22 (Karl Williamson).
