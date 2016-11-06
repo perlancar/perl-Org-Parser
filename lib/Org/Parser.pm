@@ -33,7 +33,11 @@ sub parse {
         die "Invalid argument, please supply a ".
             "string|arrayref|coderef|filehandle\n";
     }
-    Org::Document->new(from_string=>$str, time_zone=>$opts->{time_zone});
+    Org::Document->new(
+        from_string=>$str,
+        time_zone=>$opts->{time_zone},
+        ignore_unknown_settings=>$opts->{ignore_unknown_settings},
+    );
 }
 
 sub parse_file {

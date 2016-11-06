@@ -1,12 +1,13 @@
 package Org::Element::Setting;
 
-use 5.010;
+# DATE
+# VERSION
+
+use 5.010001;
 use locale;
 use Moo;
 use experimental 'smartmatch';
 extends 'Org::Element';
-
-# VERSION
 
 our @known_settings = qw(
 ARCHIVE
@@ -156,7 +157,9 @@ sub BUILD {
             }
         }
     } else {
-        die "Unknown setting $name" unless $name ~~ @known_settings;
+        unless ($self->document->ignore_unknown_settings) {
+            die "Unknown setting $name" unless $name ~~ @known_settings;
+        }
     }
 }
 
