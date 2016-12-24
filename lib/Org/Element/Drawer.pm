@@ -1,12 +1,15 @@
 package Org::Element::Drawer;
 
+# DATE
+# VERSION
+
 use 5.010;
 use locale;
 use Moo;
 use experimental 'smartmatch';
 extends 'Org::Element';
-
-# VERSION
+with 'Org::Element::Role';
+with 'Org::Element::BlockRole';
 
 has name => (is => 'rw');
 has properties => (is => 'rw');
@@ -42,7 +45,8 @@ sub as_string {
 
 1;
 # ABSTRACT: Represent Org drawer
-__END__
+
+=for Pod::Coverage BUILD as_string
 
 =head1 DESCRIPTION
 
@@ -61,7 +65,5 @@ Collected properties in the drawer.
 
 
 =head1 METHODS
-
-=for Pod::Coverage BUILD as_string
 
 =cut

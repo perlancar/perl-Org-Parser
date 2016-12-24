@@ -9,6 +9,8 @@ use Log::Any::IfLOG '$log';
 use Moo;
 use experimental 'smartmatch';
 extends 'Org::Element';
+with 'Org::Element::Role';
+with 'Org::Element::BlockRole';
 
 has level => (is => 'rw');
 has title => (is => 'rw');
@@ -288,7 +290,7 @@ sub update_statistics_cookie {
 1;
 # ABSTRACT: Represent Org headline
 
-=for Pod::Coverage ^(todo_priority)$
+=for Pod::Coverage ^(header_as_string|as_string|todo_priority)$
 
 =head1 DESCRIPTION
 
@@ -331,9 +333,8 @@ TODO state.
 Statistics cookie, e.g. '5/10' or '50%'. TODO: there might be more than one
 statistics cookie.
 
-=head1 METHODS
 
-=for Pod::Coverage header_as_string as_string
+=head1 METHODS
 
 =head2 $el->get_tags() => ARRAY
 

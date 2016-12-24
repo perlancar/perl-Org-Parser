@@ -1,11 +1,14 @@
 package Org::Element::FixedWidthSection;
 
+# DATE
+# VERSION
+
 use 5.010;
 use locale;
 use Moo;
 extends 'Org::Element';
-
-# VERSION
+with 'Org::Element::Role';
+with 'Org::Element::BlockRole';
 
 sub text {
     my ($self) = @_;
@@ -16,12 +19,12 @@ sub text {
 
 1;
 # ABSTRACT: Represent Org fixed-width section
-__END__
 
 =head1 SYNOPSIS
 
  use Org::Element::FixedWidthSection;
  my $el = Org::Element::FixedWidthSection->new(_str => ": line1\n: line2\n");
+
 
 =head1 DESCRIPTION
 

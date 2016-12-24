@@ -7,6 +7,7 @@ use 5.010;
 use locale;
 use Moo;
 extends 'Org::Element';
+with 'Org::Element::Role';
 with 'Org::Element::InlineRole';
 
 has text => (is => 'rw');

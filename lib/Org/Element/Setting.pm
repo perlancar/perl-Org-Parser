@@ -8,6 +8,8 @@ use locale;
 use Moo;
 use experimental 'smartmatch';
 extends 'Org::Element';
+with 'Org::Element::Role';
+with 'Org::Element::BlockRole';
 
 our @known_settings = qw(
 ARCHIVE
@@ -101,6 +103,7 @@ has name => (is => 'rw');
 has args => (is => 'rw');
 has indent => (is => 'rw');
 
+# static method
 sub indentable_settings {
     state $data = [qw/TBLFM/];
     $data;
@@ -176,7 +179,8 @@ sub as_string {
 
 1;
 # ABSTRACT: Represent Org in-buffer settings
-__END__
+
+=for Pod::Coverage as_string BUILD
 
 =head1 DESCRIPTION
 
@@ -199,8 +203,6 @@ Indentation (whitespaces before C<#+>), or empty string if none.
 
 
 =head1 METHODS
-
-=for Pod::Coverage as_string BUILD
 
 =head2 Org::Element::Setting->indentable_settings -> ARRAY
 

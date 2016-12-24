@@ -8,6 +8,7 @@ use locale;
 use Log::Any::IfLOG '$log';
 use Moo;
 extends 'Org::Element';
+with 'Org::Element::Role';
 with 'Org::Element::InlineRole';
 
 has name => (is => 'rw');

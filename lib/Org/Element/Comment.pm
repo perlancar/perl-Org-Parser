@@ -1,15 +1,17 @@
 package Org::Element::Comment;
 
+# DATE
+# VERSION
+
 use 5.010;
 use locale;
 use Moo;
 extends 'Org::Element';
-
-# VERSION
+with 'Org::Element::Role';
+with 'Org::Element::BlockRole';
 
 1;
 # ABSTRACT: Represent Org comment
-__END__
 
 =head1 DESCRIPTION
 

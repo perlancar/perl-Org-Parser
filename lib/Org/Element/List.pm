@@ -1,11 +1,12 @@
 package Org::Element::List;
 
+# DATE
+# VERSION
+
 use 5.010;
 use locale;
 use Moo;
 extends 'Org::Element';
-
-# VERSION
 
 has indent => (is => 'rw');
 has type => (is => 'rw');

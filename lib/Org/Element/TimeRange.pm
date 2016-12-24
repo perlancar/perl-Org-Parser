@@ -7,6 +7,7 @@ use 5.010;
 use locale;
 use Moo;
 extends 'Org::Element';
+with 'Org::Element::Role';
 with 'Org::Element::InlineRole';
 
 has ts1 => (is => 'rw');
@@ -54,4 +55,3 @@ From L<Org::Element>.
 =head2 as_text => str
 
 From L<Org::Element::InlineRole>.
-

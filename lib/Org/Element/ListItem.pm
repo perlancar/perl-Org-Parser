@@ -1,11 +1,12 @@
 package Org::Element::ListItem;
 
+# DATE
+# VERSION
+
 use 5.010;
 use locale;
 use Moo;
 extends 'Org::Element';
-
-# VERSION
 
 has bullet => (is => 'rw');
 has check_state => (is => 'rw');

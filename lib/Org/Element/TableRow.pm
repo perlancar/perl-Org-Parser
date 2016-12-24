@@ -1,11 +1,12 @@
 package Org::Element::TableRow;
 
+# DATE
+# VERSION
+
 use 5.010;
 use locale;
 use Moo;
 extends 'Org::Element';
-
-# VERSION
 
 sub as_string {
     my ($self) = @_;
@@ -36,7 +37,8 @@ sub cells {
 
 1;
 # ABSTRACT: Represent Org table row
-__END__
+
+=for Pod::Coverage as_string
 
 =head1 DESCRIPTION
 
@@ -48,8 +50,6 @@ instances as its children.
 
 
 =head1 METHODS
-
-=for Pod::Coverage as_string
 
 =head2 $table->cells() => ELEMENTS
 

@@ -1,12 +1,15 @@
 package Org::Element::Block;
 
+# DATE
+# VERSION
+
 use 5.010;
 use locale;
 use Moo;
 use experimental 'smartmatch';
 extends 'Org::Element';
-
-# VERSION
+with 'Org::Element::Role';
+with 'Org::Element::BlockRole';
 
 has name => (is => 'rw');
 has args => (is => 'rw');
@@ -41,7 +44,8 @@ sub element_as_string {
 
 1;
 # ABSTRACT: Represent Org block
-__END__
+
+=for Pod::Coverage element_as_string BUILD
 
 =head1 DESCRIPTION
 
@@ -68,7 +72,5 @@ Indentation on end line (before C<#+END>), or empty string if none.
 
 
 =head1 METHODS
-
-=for Pod::Coverage element_as_string BUILD
 
 =cut

@@ -8,6 +8,8 @@ use locale;
 use Log::Any::IfLOG '$log';
 use Moo;
 extends 'Org::Element';
+with 'Org::Element::Role';
+with 'Org::Element::BlockRole';
 
 has _dummy => (is => 'rw'); # workaround Moo bug
 
@@ -108,7 +110,8 @@ sub as_aoa {
 
 1;
 # ABSTRACT: Represent Org table
-__END__
+
+=for Pod::Coverage BUILD
 
 =head1 DESCRIPTION
 
@@ -120,8 +123,6 @@ L<Org::Element::TableVLine> instances as its children.
 
 
 =head1 METHODS
-
-=for Pod::Coverage BUILD
 
 =head2 $table->rows() => ELEMENTS
 

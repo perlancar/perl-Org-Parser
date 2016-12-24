@@ -1,11 +1,12 @@
 package Org::Element::TableVLine;
 
+# DATE
+# VERSION
+
 use 5.010;
 use locale;
 use Moo;
 extends 'Org::Element';
-
-# VERSION
 
 sub as_string {
     my ($self) = @_;
