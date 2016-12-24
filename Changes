@@ -1,5 +1,11 @@
 Revision history for Org-Parser
 
+0.53    2016-12-24 (PERLANCAR)
+
+	- Add methods is_block & is_inline to make it easy to check whether
+	  an element is a 'blocky' element or an 'inline' element.
+
+
 0.52    2016-11-06 (PERLANCAR)
 
 	- Use $] >= ... instead of $] ge ... to avoid test failures on
