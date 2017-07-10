@@ -1,3 +1,10 @@
+0.54    2017-07-10 (PERLANCAR)
+
+	- No functional changes.
+
+	- Replace Log::Any with Log::ger.
+
+
 0.53    2016-12-24 (PERLANCAR)
 
 	- Add methods is_block & is_inline to make it easy to check whether
