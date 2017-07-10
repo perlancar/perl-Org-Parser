@@ -5,7 +5,7 @@ package Org::Element::Footnote;
 
 use 5.010;
 use locale;
-use Log::Any::IfLOG '$log';
+use Log::ger;
 use Moo;
 extends 'Org::Element';
 with 'Org::Element::Role';
@@ -17,7 +17,7 @@ has def => (is => 'rw');
 
 sub BUILD {
     my ($self, $args) = @_;
-    $log->tracef("name = %s", $self->name);
+    log_trace("name = %s", $self->name);
 }
 
 sub as_string {

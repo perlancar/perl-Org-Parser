@@ -5,7 +5,7 @@ package Org::Element::Headline;
 
 use 5.010;
 use locale;
-use Log::Any::IfLOG '$log';
+use Log::ger;
 use Moo;
 use experimental 'smartmatch';
 extends 'Org::Element';
@@ -207,7 +207,7 @@ sub get_drawer {
 	my $wanted_drawer_name = shift || "PROPERTIES";
 
 	for my $d (@{$self->children||[]}) {
-        $log->tracef("seeking $wanted_drawer_name drawer in child: %s (%s)", $d->as_string, ref($d));
+        log_trace("seeking $wanted_drawer_name drawer in child: %s (%s)", $d->as_string, ref($d));
 		next unless ($d->isa('Org::Element::Drawer')
 					 && $d->name eq $wanted_drawer_name
 					 && $d->properties);
@@ -235,7 +235,7 @@ sub get_property {
     }
 
     if ($search_docprop // 1) {
-        $log->tracef("Getting property from document's .properties");
+        log_trace("Getting property from document's .properties");
         return $self->document->properties->{$name};
     }
     undef;

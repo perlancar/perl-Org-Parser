@@ -6,7 +6,7 @@ package Org::Dump;
 use 5.010;
 use strict;
 use warnings;
-use Log::Any::IfLOG qw($log);
+use Log::ger;
 
 use String::Escape qw(elide printable);
 

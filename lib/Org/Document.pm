@@ -5,7 +5,7 @@ package Org::Document;
 
 use 5.010;
 use locale;
-use Log::Any::IfLOG '$log';
+use Log::ger;
 use Moo;
 use experimental 'smartmatch';
 no if $] >= 5.021_006, warnings => "locale";
@@ -181,7 +181,7 @@ sub BUILD {
 # parse blocky elements: setting, blocks, headline, drawer
 sub _parse {
     my ($self, $str, $pass) = @_;
-    $log->tracef('-> _parse(%s, pass=%d)', $str, $pass);
+    log_trace('-> _parse(%s, pass=%d)', $str, $pass);
     my $t0 = [gettimeofday];
 
     my $last_el;
@@ -439,7 +439,7 @@ sub _parse {
     }
     @text = ();
 
-    $log->tracef('<- _parse(), elapsed time=%.3fs',
+    log_trace('<- _parse(), elapsed time=%.3fs',
                  tv_interval($t0, [gettimeofday]));
 }
 

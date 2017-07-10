@@ -5,7 +5,7 @@ package Org::Element::Table;
 
 use 5.010;
 use locale;
-use Log::Any::IfLOG '$log';
+use Log::ger;
 use Moo;
 extends 'Org::Element';
 with 'Org::Element::Role';
@@ -32,7 +32,7 @@ sub BUILD {
         my @rows0 = split /\R/, $_str;
         $self->children([]);
         for my $row0 (@rows0) {
-            $log->tracef("table line: %s", $row0);
+            log_trace("table line: %s", $row0);
             next unless $row0 =~ /\S/;
             my $row;
             if ($row0 =~ /^\s*\|--+(?:\+--+)*\|?\s*$/) {

@@ -5,7 +5,7 @@ package Org::Element;
 
 use 5.010;
 use locale;
-use Log::Any::IfLOG '$log';
+use Log::ger;
 use Moo;
 use Scalar::Util qw(refaddr);
 
