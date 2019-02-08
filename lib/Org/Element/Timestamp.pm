@@ -94,9 +94,9 @@ sub _parse_timestamp {
                    /x;
 
     $str =~ /^(?<open_bracket> \[|<)
-             (?<year> \d{4})-(?<mon> \d{2})-(?<day> \d{2}) \s*
+             (?<year> \d{4})-(?<mon> \d{2})-(?<day> \d{2})
              (?:
-                 (?<dow> $dow_re) \s*?
+                 (?:\s* (?<dow> $dow_re) \s*)?
                  (?:\s+
                      (?<hour> \d{2}):(?<min> \d{2})
                      (?:-
@@ -119,7 +119,7 @@ sub _parse_timestamp {
                      )
                  )?
              )?
-             (?<close_bracket> \]|>)
+             \s* (?<close_bracket> \]|>)
              $/x
                  or die "Can't parse timestamp string: $str";
     # just for sanity. usually doesn't happen though because Document gives us

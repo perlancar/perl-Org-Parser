@@ -20,8 +20,10 @@ test_parse(
         $_[0]->isa('Org::Element::Timestamp') },
     doc  => <<'_',
 * TODO active timestamps
-  without dow: <2011-03-23 >
-  without dow & without space: <2011-03-23>
+  without dow & time: <2011-03-23 >
+  without dow & time & space: <2011-03-23>
+  without dow: <2011-03-23 11:59 >
+  without dow & space: <2011-03-23 11:59>
   SCHEDULED: <2011-03-16 Wed>
   TEST: <2011-03-16 Wed 01:23>
 
@@ -30,12 +32,13 @@ test_parse(
   - [2011-03-23]
   - [2011-03-23 Wed]
   - [2011-03-23 Wed 01:23]
+  - [2011-03-23 01:23]
 
 * additional tests
   - <2012-01-11 Wed > # space after dow allowed
   - [2012-01-11   ] [2012-01-11   Wed   ] # multiple spaces allowed
 _
-    num => 11,
+    num => 14,
     test_after_parse => sub {
         my %args = @_;
         my $doc = $args{result};
@@ -44,25 +47,28 @@ _
                              $elems->[0]->datetime), 0, "ts[0] datetime")
             or diag("datetime=".$elems->[0]->datetime);
 
-        is( $elems->[0]->as_string, "<2011-03-23 >", "ts[0] as_string");
-        is( $elems->[1]->as_string, "<2011-03-23>", "ts[1] as_string");
-        is( $elems->[2]->as_string, "<2011-03-16 Wed>", "ts[2] as_string");
-        is( $elems->[3]->as_string, "<2011-03-16 Wed 01:23>",
-            "ts[3] as_string");
+        # active
+        is( $elems->[0]->as_string, "<2011-03-23 >");
+        is( $elems->[1]->as_string, "<2011-03-23>");
+        is( $elems->[2]->as_string, "<2011-03-23 11:59 >");
+        is( $elems->[3]->as_string, "<2011-03-23 11:59>");
+        is( $elems->[4]->as_string, "<2011-03-16 Wed>");
+        is( $elems->[5]->as_string, "<2011-03-16 Wed 01:23>");
 
-        is( $elems->[4]->as_string, "[2011-03-23 ]", "ts[4] as_string");
-        is( $elems->[5]->as_string, "[2011-03-23]", "ts[5] as_string");
-        is( $elems->[6]->as_string, "[2011-03-23 Wed]", "ts[6] as_string");
-        is( $elems->[7]->as_string, "[2011-03-23 Wed 01:23]",
-            "ts[7] as_string");
+        # inactive
+        is( $elems->[6]->as_string, "[2011-03-23 ]");
+        is( $elems->[7]->as_string, "[2011-03-23]");
+        is( $elems->[8]->as_string, "[2011-03-23 Wed]");
+        is( $elems->[9]->as_string, "[2011-03-23 Wed 01:23]");
+        is( $elems->[10]->as_string, "[2011-03-23 01:23]");
 
-        ok( $elems->[0]->is_active, "ts[0] is_active");
-        ok(!$elems->[4]->is_active, "ts[3] !is_active");
+        ok( $elems->[0]->is_active);
+        ok(!$elems->[6]->is_active);
 
         # additional
-        is($elems->[ 8]->as_string,"<2012-01-11 Wed >", "ts[8] as_string");
-        is($elems->[ 9]->as_string,"[2012-01-11   ]", "ts[9] as_string");
-        is($elems->[10]->as_string,"[2012-01-11   Wed   ]", "ts[10] as_string");
+        is($elems->[11]->as_string,"<2012-01-11 Wed >");
+        is($elems->[12]->as_string,"[2012-01-11   ]");
+        is($elems->[13]->as_string,"[2012-01-11   Wed   ]");
     },
 );
 
