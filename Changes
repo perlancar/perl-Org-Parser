@@ -1,3 +1,10 @@
+0.550   2019-02-08 (PERLANCAR)
+
+	- [bugfix][compliance] Make weekday name in timestamp optional when
+	  there's time of day (e.g. [2019-02-08 11:05] instead of [2019-02-08
+	  Fri 11:05]) [RT#128450].
+
+
 0.54    2017-07-10 (PERLANCAR)
 
 	- No functional changes.
