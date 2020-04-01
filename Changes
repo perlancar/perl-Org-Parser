@@ -1,3 +1,10 @@
+0.551   2020-04-01  Released-By: PERLANCAR; Urgency: medium
+
+	[Removed]
+
+        - Split Org::Dump to its own distribution.
+
+
 0.550   2019-02-08  Released-By: PERLANCAR
 
 	- [bugfix][compliance] Make weekday name in timestamp optional when
