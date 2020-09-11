@@ -277,6 +277,7 @@ sub _parse {
                     document=>$self, parent=>$parent,
                     indent => $m{setting_indent},
                     name=>$m{setting_name},
+                    raw_arg => $m{setting_raw_arg},
                     args=>__parse_args($m{setting_raw_arg}),
                 );
             }

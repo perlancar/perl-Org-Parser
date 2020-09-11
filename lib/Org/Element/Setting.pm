@@ -1,6 +1,8 @@
 package Org::Element::Setting;
 
+# AUTHORITY
 # DATE
+# DIST
 # VERSION
 
 use 5.010001;
@@ -100,6 +102,7 @@ XSLT
                     );
 
 has name => (is => 'rw');
+has raw_arg => (is => 'ro');
 has args => (is => 'rw');
 has indent => (is => 'rw');
 
@@ -118,7 +121,7 @@ sub BUILD {
     my $name    = uc $self->name;
     $self->name($name);
 
-    my $args = $self->args;
+    my $args = defined $self->args;
     if ($name eq 'DRAWERS') {
         if ($pass == 1) {
             for (@$args) {
