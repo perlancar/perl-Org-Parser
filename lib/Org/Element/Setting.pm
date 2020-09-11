@@ -121,7 +121,7 @@ sub BUILD {
     my $name    = uc $self->name;
     $self->name($name);
 
-    my $args = defined $self->args;
+    my $args = $self->args;
     if ($name eq 'DRAWERS') {
         if ($pass == 1) {
             for (@$args) {
@@ -131,6 +131,7 @@ sub BUILD {
         }
     } elsif ($name eq 'FILETAGS') {
         if ($pass == 1) {
+            no warnings 'once';
             $args->[0] =~ /^$Org::Document::tags_re$/ or
                 die "Invalid argument for FILETAGS: $args->[0]";
             for (split /:/, $args->[0]) {
@@ -195,6 +196,11 @@ Derived from L<Org::Element>.
 =head2 name => STR
 
 Setting name.
+
+=head2 raw_arg => ARRAY
+
+String, read-only (can only be set during instantiation). Setting's raw
+arguments.
 
 =head2 args => ARRAY
 
