@@ -1,3 +1,12 @@
+0.553   2020-09-17  Released-By: PERLANCAR; Urgency: medium
+
+	- [INCOMPATIBLE CHANGE] Drawer: properties() now returns unparsed
+	  values, e.g. ':Title: foo bar baz' now because {Title => 'foo bar
+	  baz'} instead of {Title => ['foo','bar','baz']}
+
+        - [doc] Drawer: add examples.
+
+
 0.552   2020-09-11  Released-By: PERLANCAR; Urgency: medium
 
 	- Org::Element::Setting: provide raw_arg() method.
