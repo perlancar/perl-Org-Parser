@@ -60,7 +60,7 @@ test_parse(
     doc  => <<'_',
     :PROPERTIES:
       :foo: 1 "2 3"
-      :bar: 2
+      :bar:   2
     :END:
 _
     num => 1,
@@ -70,7 +70,7 @@ _
         my $elems = $args{elements};
         my $d = $elems->[0];
         is($d->name, "PROPERTIES", "name");
-        is_deeply($d->properties, {foo=>[1, "2 3"], bar=>2}, "properties");
+        is_deeply($d->properties, {foo=>'1 "2 3"', bar=>2}, "properties");
     },
 );
 

@@ -1,6 +1,8 @@
 package Org::Element::Drawer;
 
+# AUTHORITY
 # DATE
+# DIST
 # VERSION
 
 use 5.010;
@@ -30,8 +32,7 @@ sub _parse_properties {
     $self->properties({}) unless $self->properties;
     while ($raw_content =~ /^[ \t]*:(\w+):[ \t]+
                             ($Org::Document::args_re)[ \t]*(?:\R|\z)/mxg) {
-        my $args = Org::Document::__parse_args($2);
-        $self->properties->{$1} = @$args == 1 ? $args->[0] : $args;
+        $self->properties->{$1} = $2;
     }
 }
 
@@ -52,6 +53,22 @@ sub as_string {
 
 Derived from L<Org::Element>.
 
+Example of a drawer in an Org document:
+
+ * A heading
+ :SOMEDRAWER:
+ some text
+ more text ...
+ :END:
+
+A special drawer named C<PROPERTIES> is used to store a list of properties:
+
+ * A heading
+ :PROPERTIES:
+ :Title:   the title
+ :Publisher:   the publisher
+ :END:
+
 
 =head1 ATTRIBUTES
 
@@ -61,7 +78,13 @@ Drawer name.
 
 =head2 properties => HASH
 
-Collected properties in the drawer.
+Collected properties in the drawer. In the example properties drawer above,
+C<properties()> will result in:
+
+ {
+   Title => "the title",
+   Publisher => "the publisher",
+ }
 
 
 =head1 METHODS
