@@ -1,9 +1,11 @@
 package Org::Document;
 
+# AUTHORITY
 # DATE
+# DIST
 # VERSION
 
-use 5.010;
+use 5.010001;
 use locale;
 use Log::ger;
 use Moo;
@@ -179,7 +181,7 @@ sub BUILD {
 }
 
 # parse blocky elements: setting, blocks, headline, drawer
-sub _parse {
+sub_ parse {
     my ($self, $str, $pass) = @_;
     log_trace('-> _parse(%s, pass=%d)', $str, $pass);
     my $t0 = [gettimeofday];
@@ -856,9 +858,22 @@ If set to true, unknown settings will not cause a parse failure.
 
 =for Pod::Coverage BUILD
 
-=head2 new(from_string => ...)
+=head2 new
 
-Create object from string.
+Usage:
+
+ $doc = Org::Document->new(%args);
+
+Create document object. If C<from_string> argument is specified, will parse
+the string. Otherwise, will create an empty document object. Arguments:
+
+=over
+
+=item * from_string
+
+String. String to parse into document object tree content.
+
+=back
 
 =head2 load_element_modules()
 
