@@ -30,8 +30,8 @@ test_parse(
 * inactive timestamps
   - [2011-03-23 ]
   - [2011-03-23]
-  - [2011-03-23 Wed]
-  - [2011-03-23 Wed 01:23]
+  - [2011-03-23 mer]
+  - [2011-03-23 Mi 01:23]
   - [2011-03-23 01:23]
 
 * additional tests
@@ -52,14 +52,14 @@ _
         is( $elems->[1]->as_string, "<2011-03-23>");
         is( $elems->[2]->as_string, "<2011-03-23 11:59 >");
         is( $elems->[3]->as_string, "<2011-03-23 11:59>");
-        is( $elems->[4]->as_string, "<2011-03-16 Wed>");
-        is( $elems->[5]->as_string, "<2011-03-16 Wed 01:23>");
+        is( $elems->[4]->as_string, "<2011-03-16 Wed>"); # french dow name
+        is( $elems->[5]->as_string, "<2011-03-16 Wed 01:23>"); # german dow name
 
         # inactive
         is( $elems->[6]->as_string, "[2011-03-23 ]");
         is( $elems->[7]->as_string, "[2011-03-23]");
-        is( $elems->[8]->as_string, "[2011-03-23 Wed]");
-        is( $elems->[9]->as_string, "[2011-03-23 Wed 01:23]");
+        is( $elems->[8]->as_string, "[2011-03-23 mer]");
+        is( $elems->[9]->as_string, "[2011-03-23 Mi 01:23]");
         is( $elems->[10]->as_string, "[2011-03-23 01:23]");
 
         ok( $elems->[0]->is_active);
