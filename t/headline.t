@@ -3,13 +3,13 @@
 use 5.010;
 use strict;
 use warnings;
-
+use utf8;
 use FindBin '$Bin';
 use lib $Bin, "$Bin/t";
+use Test::More 0.98;
 
 #use Org::Dump;
 use Org::Parser;
-use Test::More 0.96;
 require "testlib.pl";
 
 test_parse(
@@ -195,6 +195,28 @@ _
         is_deeply($tags, [qw/t4 t3 t1 t2/], "get_tags 1") or diag explain $tags;
         $tags = [$elems->[2]->get_tags];
         is_deeply($tags, [qw/t1 t2/], "get_tags 2") or diag explain $tags;
+    },
+);
+
+test_parse(
+    name => 'get_tags() (non-latin letters/numbers)',
+    filter_elements => 'Org::Element::Headline',
+    doc  => <<'_',
+* a      :ü一:
+* b      :ü二:
+* c      :ü一:ü二:
+_
+    num => 3,
+    test_after_parse => sub {
+        my (%args) = @_;
+        my $elems = $args{elements};
+        my $tags;
+        $tags = [$elems->[0]->get_tags];
+        is_deeply($tags, [qw/ü一/], "get_tags 0") or diag explain $tags;
+        $tags = [$elems->[1]->get_tags];
+        is_deeply($tags, [qw/ü二/], "get_tags 1") or diag explain $tags;
+        $tags = [$elems->[2]->get_tags];
+        is_deeply($tags, [qw/ü一 ü二/], "get_tags 3") or diag explain $tags;
     },
 );
 
