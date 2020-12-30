@@ -90,7 +90,7 @@ sub _parse_timestamp {
     my $num_re = qr/\d+(?:\.\d+)?/;
 
     my $dow_re = qr/\w{1,3} |     # common, chinese 四, english thu
-                    \w{3}\.       # french, e.g. mer.
+                    \w{2,3}\.     # french mer., german Mi.
                    /x;
 
     $str =~ /^(?<open_bracket> \[|<)

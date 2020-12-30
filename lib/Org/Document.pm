@@ -181,7 +181,7 @@ sub BUILD {
 }
 
 # parse blocky elements: setting, blocks, headline, drawer
-sub_ parse {
+sub _parse {
     my ($self, $str, $pass) = @_;
     log_trace('-> _parse(%s, pass=%d)', $str, $pass);
     my $t0 = [gettimeofday];
