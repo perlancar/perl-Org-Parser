@@ -28,7 +28,7 @@ has time_zone               => (is => 'rw');
 
 has ignore_unknown_settings => (is => 'rw');
 
-our $tags_re       = qr/:(?:[A-Za-z0-9_@#%]+:)+/;
+our $tags_re       = qr/:(?:[\w@]+:)+/u;
 my  $ls_re         = qr/(?:(?<=[\015\012])|\A)/; # line start
 my  $le_re         = qr/(?:\R|\z)/;              # line end
 our $arg_re        = qr/(?: '(?<squote> [^']*)' |
