@@ -1,3 +1,12 @@
+0.554   2020-12-30  Released-By: PERLANCAR; Urgency: medium
+
+	- [compliance] Accept non-latin numbers/letters as per orgmode doc:
+	  'Tags are normal words containing letters, numbers, ‘_’, and
+	  ‘@’. (thanks Bernhard Graf!)
+
+	- Parse German timestamps (thanks Tekki).
+
+
 0.553   2020-09-17  Released-By: PERLANCAR; Urgency: medium
 
 	- [INCOMPATIBLE CHANGE] Drawer: properties() now returns unparsed
