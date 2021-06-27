@@ -1,6 +1,8 @@
-package Org::Element::TableVLine;
+package Org::Element::TableHLine;
 
+# AUTHORITY
 # DATE
+# DIST
 # VERSION
 
 use 5.010;
@@ -15,7 +17,7 @@ sub as_string {
 }
 
 1;
-#ABSTRACT: Represent Org table vertical line
+#ABSTRACT: Represent Org table horizontal line
 
 =head1 DESCRIPTION
 

@@ -40,7 +40,7 @@ _
         my $t = $elems->[0];
         my ($r1, $r2, $r3, $r4, $r5) = @{ $t->children };
         isa_ok($r1, "Org::Element::TableRow");
-        isa_ok($r2, "Org::Element::TableVLine");
+        isa_ok($r2, "Org::Element::TableHLine");
         isa_ok($r3, "Org::Element::TableRow");
         isa_ok($r4, "Org::Element::TableRow");
 
@@ -75,4 +75,3 @@ _
 );
 
 done_testing();
-

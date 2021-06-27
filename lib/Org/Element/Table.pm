@@ -1,6 +1,8 @@
 package Org::Element::Table;
 
+# AUTHORITY
 # DATE
+# DIST
 # VERSION
 
 use 5.010;
@@ -15,7 +17,7 @@ has _dummy => (is => 'rw'); # workaround Moo bug
 
 sub BUILD {
     require Org::Element::TableRow;
-    require Org::Element::TableVLine;
+    require Org::Element::TableHLine;
     require Org::Element::TableCell;
     my ($self, $args) = @_;
     my $pass = $args->{pass} // 1;
@@ -36,7 +38,7 @@ sub BUILD {
             next unless $row0 =~ /\S/;
             my $row;
             if ($row0 =~ /^\s*\|--+(?:\+--+)*\|?\s*$/) {
-                $row = Org::Element::TableVLine->new(parent => $self);
+                $row = Org::Element::TableHLine->new(parent => $self);
             } elsif ($row0 =~ /^\s*\|\s*(.+?)\s*\|?\s*$/) {
                 my $s = $1;
                 $row = Org::Element::TableRow->new(
@@ -116,7 +118,7 @@ sub as_aoa {
 =head1 DESCRIPTION
 
 Derived from L<Org::Element>. Must have L<Org::Element::TableRow> or
-L<Org::Element::TableVLine> instances as its children.
+L<Org::Element::TableHLine> instances as its children.
 
 
 =head1 ATTRIBUTES
@@ -131,7 +133,7 @@ Return the rows of the table.
 =head2 $table->as_aoa() => ARRAY
 
 Return the rows of the table, each row already an arrayref of cells produced
-using as_array() method. Vertical lines will be skipped/ignored.
+using as_array() method. Horizontal lines will be skipped/ignored.
 
 =head2 $table->row_count() => INT
 
