@@ -1,3 +1,9 @@
+0.555   2021-06-27  Released-By: PERLANCAR; Urgency: medium; Backward-Incompatible: yes
+
+	- [incompatible change] Rename Org::Element::Table{V,H}Line (thanks
+          William Lindley).
+
+
 0.554   2020-12-30  Released-By: PERLANCAR; Urgency: medium
 
 	- [compliance] Accept non-latin numbers/letters as per orgmode doc:
