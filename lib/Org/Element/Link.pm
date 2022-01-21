@@ -1,14 +1,16 @@
 package Org::Element::Link;
 
-# DATE
-# VERSION
-
 use 5.010;
 use locale;
 use Moo;
 extends 'Org::Element';
 with 'Org::Element::Role';
 with 'Org::Element::InlineRole';
+
+# AUTHORITY
+# DATE
+# DIST
+# VERSION
 
 has link => (is => 'rw');
 has description => (is => 'rw');

@@ -1,12 +1,14 @@
 package Org::Element::InlineRole;
 
-# DATE
-# VERSION
-
 use 5.010;
 use Moo::Role;
 
 requires 'as_text';
+
+# AUTHORITY
+# DATE
+# DIST
+# VERSION
 
 sub is_block { 0 }
 

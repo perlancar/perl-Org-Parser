@@ -1,13 +1,15 @@
 package Org::Element;
 
-# DATE
-# VERSION
-
 use 5.010;
 use locale;
 use Log::ger;
 use Moo;
 use Scalar::Util qw(refaddr);
+
+# AUTHORITY
+# DATE
+# DIST
+# VERSION
 
 has document => (is => 'rw');
 has parent => (is => 'rw');
@@ -43,14 +45,14 @@ sub seniority {
     for (my $i=0; $i < @$c; $i++) {
         return $i if refaddr($c->[$i]) == $addr;
     }
-    return undef;
+    return undef; ## no critic: Subroutines::ProhibitExplicitReturnUndef
 }
 
 sub prev_sibling {
     my ($self) = @_;
 
     my $sen = $self->seniority;
-    return undef unless defined($sen) && $sen > 0;
+    return undef unless defined($sen) && $sen > 0; ## no critic: Subroutines::ProhibitExplicitReturnUndef
     my $c = $self->parent->children;
     $c->[$sen-1];
 }
@@ -59,9 +61,9 @@ sub next_sibling {
     my ($self) = @_;
 
     my $sen = $self->seniority;
-    return undef unless defined($sen);
+    return undef unless defined($sen); ## no critic: Subroutines::ProhibitExplicitReturnUndef
     my $c = $self->parent->children;
-    return undef unless $sen < @$c-1;
+    return undef unless $sen < @$c-1; ## no critic: Subroutines::ProhibitExplicitReturnUndef
     $c->[$sen+1];
 }
 

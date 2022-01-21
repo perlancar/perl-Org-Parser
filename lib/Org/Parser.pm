@@ -1,15 +1,15 @@
 package Org::Parser;
 
-# AUTHORITY
-# DATE
-# DIST
-# VERSION
-
 use 5.010001;
 use Moo;
 
 use Org::Document;
 use Scalar::Util qw(blessed);
+
+# AUTHORITY
+# DATE
+# DIST
+# VERSION
 
 sub parse {
     my ($self, $arg, $opts) = @_;

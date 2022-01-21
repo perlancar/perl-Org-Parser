@@ -1,14 +1,14 @@
 package Org::Element::TableHLine;
 
-# AUTHORITY
-# DATE
-# DIST
-# VERSION
-
 use 5.010;
 use locale;
 use Moo;
 extends 'Org::Element';
+
+# AUTHORITY
+# DATE
+# DIST
+# VERSION
 
 sub as_string {
     my ($self) = @_;

@@ -1,8 +1,5 @@
 package Org::Element::Headline;
 
-# DATE
-# VERSION
-
 use 5.010;
 use locale;
 use Log::ger;
@@ -11,6 +8,11 @@ use experimental 'smartmatch';
 extends 'Org::Element';
 with 'Org::Element::Role';
 with 'Org::Element::BlockRole';
+
+# AUTHORITY
+# DATE
+# DIST
+# VERSION
 
 has level => (is => 'rw');
 has title => (is => 'rw');

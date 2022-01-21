@@ -1,10 +1,5 @@
 package Org::Element::Drawer;
 
-# AUTHORITY
-# DATE
-# DIST
-# VERSION
-
 use 5.010;
 use locale;
 use Moo;
@@ -12,6 +7,11 @@ use experimental 'smartmatch';
 extends 'Org::Element';
 with 'Org::Element::Role';
 with 'Org::Element::BlockRole';
+
+# AUTHORITY
+# DATE
+# DIST
+# VERSION
 
 has name => (is => 'rw');
 has properties => (is => 'rw');

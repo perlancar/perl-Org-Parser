@@ -1,10 +1,5 @@
 package Org::Element::Table;
 
-# AUTHORITY
-# DATE
-# DIST
-# VERSION
-
 use 5.010;
 use locale;
 use Log::ger;
@@ -12,6 +7,11 @@ use Moo;
 extends 'Org::Element';
 with 'Org::Element::Role';
 with 'Org::Element::BlockRole';
+
+# AUTHORITY
+# DATE
+# DIST
+# VERSION
 
 has _dummy => (is => 'rw'); # workaround Moo bug
 

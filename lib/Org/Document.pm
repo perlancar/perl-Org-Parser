@@ -1,10 +1,5 @@
 package Org::Document;
 
-# AUTHORITY
-# DATE
-# DIST
-# VERSION
-
 use 5.010001;
 use locale;
 use Log::ger;
@@ -15,6 +10,11 @@ extends 'Org::Element';
 
 use List::MoreUtils qw(firstidx);
 use Time::HiRes qw(gettimeofday tv_interval);
+
+# AUTHORITY
+# DATE
+# DIST
+# VERSION
 
 has tags                    => (is => 'rw');
 has todo_states             => (is => 'rw');
@@ -787,9 +787,9 @@ sub cmp_priorities {
 
     my $pp = $self->priorities;
     my $pos1 = firstidx {$_ eq $p1} @$pp;
-    return undef unless $pos1 >= 0;
+    return undef unless $pos1 >= 0; ## no critic: Subroutines::ProhibitExplicitReturnUndef
     my $pos2 = firstidx {$_ eq $p2} @$pp;
-    return undef unless $pos2 >= 0;
+    return undef unless $pos2 >= 0; ## no critic: Subroutines::ProhibitExplicitReturnUndef
     $pos1 <=> $pos2;
 }
 

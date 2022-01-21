@@ -1,8 +1,5 @@
 package Org::Element::Footnote;
 
-# DATE
-# VERSION
-
 use 5.010;
 use locale;
 use Log::ger;
@@ -10,6 +7,11 @@ use Moo;
 extends 'Org::Element';
 with 'Org::Element::Role';
 with 'Org::Element::InlineRole';
+
+# AUTHORITY
+# DATE
+# DIST
+# VERSION
 
 has name => (is => 'rw');
 has is_ref => (is => 'rw');

@@ -1,8 +1,5 @@
 package Org::Element::Timestamp;
 
-# DATE
-# VERSION
-
 use 5.010;
 use locale;
 use utf8;
@@ -11,6 +8,11 @@ no if $] >= 5.021_006, warnings => "locale";
 extends 'Org::Element';
 with 'Org::Element::Role';
 with 'Org::Element::InlineRole';
+
+# AUTHORITY
+# DATE
+# DIST
+# VERSION
 
 my @attrs = (qw/datetime has_time event_duration recurrence is_active/);
 for (@attrs) {
