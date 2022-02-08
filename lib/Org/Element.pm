@@ -142,6 +142,21 @@ sub headlines {
     @res;
 }
 
+sub settings {
+    my ($self, $criteria) = @_;
+
+    my @settings = grep { $_->isa("Org::Element::Setting") }
+        @{ $self->children };
+    if ($criteria) {
+        if (ref $criteria eq 'CODE') {
+            @settings = grep { $criteria->($_) } @settings;
+        } else {
+            @settings = grep { $_->name eq $criteria } @settings;
+        }
+    }
+    @settings;
+}
+
 sub field_name {
     my ($self) = @_;
 
@@ -253,6 +268,19 @@ Get current headline. Return undef if element is not under any headline.
 Get current headline (in the first element of the result list), its parent, its
 parent's parent, and so on until the topmost headline. Return empty list if
 element is not under any headline.
+
+=head2 $el->settings(CRITERIA) => ELEMENTS
+
+Get L<Org::Element::Setting> nodes directly under the element. Equivalent to:
+
+ my @settings = grep { $_->isa("Org::Element::Setting") } @{ $el->children };
+
+If CRITERIA is specified, will filter based on some criteria. CRITERIA can be a
+coderef, or a string to filter by setting's name, example:
+
+ my ($doc_title) = $doc->settings('TITLE');
+
+Take note of the list operator on the left because C<settings()> return a list.
 
 =head2 $el->field_name() => STR
 
