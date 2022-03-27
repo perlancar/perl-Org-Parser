@@ -1,3 +1,9 @@
+0.557   2022-03-27  Released-By: PERLANCAR; Urgency: medium
+
+        - Bump minimum perl version to 5.014 due to compilation failures in
+          older perls (RT#141560).
+
+
 0.556   2022-02-08  Released-By: PERLANCAR; Urgency: medium
 
         - [class Org::Element] Add method settings().
