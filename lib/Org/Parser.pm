@@ -1,6 +1,6 @@
 package Org::Parser;
 
-use 5.010001;
+use 5.014; # compilation failure in older perls, RT#141560
 use Moo;
 
 use Org::Document;
