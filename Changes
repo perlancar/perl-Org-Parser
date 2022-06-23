@@ -1,3 +1,14 @@
+0.558   2022-06-23  Released-By: PERLANCAR; Urgency: medium
+
+        - [bugfix] The parent of a more-indented list should be *the last
+          listitem* of a lesser-indented list, not the lesser-indented list
+          itself.
+
+        - Rename Org::Element::Role -> Org::ElementRole,
+          Org::Element::{Block,Inline}Role -> Org::ElementRole::{Block,Inline}
+          so that Org::Element:: namespace is purely for element objects.
+
+
 0.557   2022-03-27  Released-By: PERLANCAR; Urgency: medium
 
         - Bump minimum perl version to 5.014 due to compilation failures in
