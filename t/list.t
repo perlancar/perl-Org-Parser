@@ -22,6 +22,11 @@ test_parse(
 
         is($elems->[19]->indent, "  ");
         is(ref($elems->[18]->parent), "Org::Element::Headline");
+
+        # the parent of a more-indented list is the last list item of a
+        # lesser-indented list
+        is(ref($elems->[3]->parent), "Org::Element::ListItem");
+        is($elems->[3]->parent->header_as_string, "  - ");
     },
 );
 

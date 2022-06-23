@@ -339,18 +339,19 @@ sub _parse {
                 $bullet =~ /^\d+\./ ? 'O' : 'U';
             my $bstyle  = $type eq 'O' ? '<N>.' : $bullet;
 
-            # parent for list is lesser-indented list (or last headline)
+            # parent for list is the last listitem of a lesser-indented list (or
+            # last headline, or document)
             $parent = $last_headline // $self;
             for (my $i=$level-1; $i>=0; $i--) {
                 if ($last_lists->[$i]) {
-                    $parent = $last_lists->[$i];
+                    $parent = $last_lists->[$i]->children->[-1];
                     last;
                 }
             }
 
             my $list = $last_lists->[$level];
             if (!$list || $list->type ne $type ||
-                    $list->bullet_style ne $bstyle) {
+                $list->bullet_style ne $bstyle) {
                 $list = Org::Element::List->new(
                     document => $self, parent => $parent,
                     indent=>$indent, type=>$type, bullet_style=>$bstyle,
