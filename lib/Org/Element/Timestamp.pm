@@ -262,7 +262,7 @@ From L<Org::Element>.
 
 =head2 as_text => str
 
-From L<Org::Element::InlineRole>.
+From L<Org::ElementRole::Inline>.
 
 
 =head1 BUGS AND LIMITATIONS

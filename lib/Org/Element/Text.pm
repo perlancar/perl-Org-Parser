@@ -75,7 +75,7 @@ C=code
 
 =head2 as_text => str
 
-From L<Org::Element::InlineRole>.
+From L<Org::ElementRole::Inline>.
 
 =head2 as_string => str
 

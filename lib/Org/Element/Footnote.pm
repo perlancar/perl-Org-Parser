@@ -5,8 +5,8 @@ use locale;
 use Log::ger;
 use Moo;
 extends 'Org::Element';
-with 'Org::Element::Role';
-with 'Org::Element::InlineRole';
+with 'Org::ElementRole';
+with 'Org::ElementRole::Inline';
 
 # AUTHORITY
 # DATE
@@ -69,4 +69,4 @@ From L<Org::Element>.
 
 =head2 as_text => str
 
-From L<Org::Element::InlineRole>.
+From L<Org::ElementRole::Inline>.
