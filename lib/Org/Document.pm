@@ -225,19 +225,19 @@ sub _parse {
                     my ($firstline, $restlines) = $text =~ /(.*?\r?\n)(.+)/s;
                     if ($restlines) {
                         $restlines =~ /\A([ \t]*)/;
-                        my $rllevel = length($1);
+                        my $restlineslevel = length($1);
                         my $listlevel = length($last_el->parent->indent);
-                        if ($rllevel <= $listlevel) {
+                        if ($restlineslevel <= $listlevel) {
                             my $origparent = $parent;
                             # find lesser-indented list
                             $parent = $last_headline // $self;
-                            for (my $i=$rllevel-1; $i>=0; $i--) {
+                            for (my $i=$restlineslevel-1; $i>=0; $i--) {
                                 if ($last_lists->[$i]) {
                                     $parent = $last_lists->[$i];
                                     last;
                                 }
                             }
-                            splice @$last_lists, $rllevel;
+                            splice @$last_lists, $restlineslevel;
                             $self->_add_text($firstline, $origparent, $pass);
                             $self->_add_text($restlines, $parent, $pass);
                             goto SKIP1;
