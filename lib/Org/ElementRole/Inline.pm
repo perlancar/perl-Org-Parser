@@ -1,4 +1,4 @@
-package Org::Element::InlineRole;
+package Org::ElementRole::Inline;
 
 use 5.010;
 use Moo::Role;

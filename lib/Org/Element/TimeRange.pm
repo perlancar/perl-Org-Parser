@@ -4,8 +4,8 @@ use 5.010;
 use locale;
 use Moo;
 extends 'Org::Element';
-with 'Org::Element::Role';
-with 'Org::Element::InlineRole';
+with 'Org::ElementRole';
+with 'Org::ElementRole::Inline';
 
 # AUTHORITY
 # DATE

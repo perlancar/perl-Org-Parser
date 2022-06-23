@@ -6,8 +6,8 @@ use utf8;
 use Moo;
 no if $] >= 5.021_006, warnings => "locale";
 extends 'Org::Element';
-with 'Org::Element::Role';
-with 'Org::Element::InlineRole';
+with 'Org::ElementRole';
+with 'Org::ElementRole::Inline';
 
 # AUTHORITY
 # DATE

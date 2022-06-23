@@ -1,4 +1,4 @@
-package Org::Element::BlockRole;
+package Org::ElementRole::Block;
 
 use 5.010;
 use Moo::Role;
