@@ -1,3 +1,11 @@
+0.559   2023-07-12  Released-By: PERLANCAR; Urgency: medium
+
+        - No functional changes.
+
+        - Remove usage of smartmatch to avoid deprecation warning under
+          perl 5.38.
+
+
 0.558   2022-06-23  Released-By: PERLANCAR; Urgency: medium
 
         - [bugfix] The parent of a more-indented list should be *the last
