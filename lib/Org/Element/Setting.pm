@@ -2,8 +2,8 @@ package Org::Element::Setting;
 
 use 5.010001;
 use locale;
+
 use Moo;
-use experimental 'smartmatch';
 extends 'Org::Element';
 with 'Org::ElementRole';
 with 'Org::ElementRole::Block';
@@ -124,9 +124,9 @@ sub BUILD {
     my $args = $self->args;
     if ($name eq 'DRAWERS') {
         if ($pass == 1) {
-            for (@$args) {
-                push @{ $doc->drawer_names }, $_
-                    unless $_ ~~ @{ $doc->drawer_names };
+            for my $arg (@$args) {
+                push @{ $doc->drawer_names }, $arg
+                    unless grep { $_ eq $arg } @{ $doc->drawer_names };
             }
         }
     } elsif ($name eq 'FILETAGS') {
@@ -134,10 +134,10 @@ sub BUILD {
             no warnings 'once';
             $args->[0] =~ /^$Org::Document::tags_re$/ or
                 die "Invalid argument for FILETAGS: $args->[0]";
-            for (split /:/, $args->[0]) {
-                next unless length;
-                push @{ $doc->tags }, $_
-                    unless $_ ~~ @{ $doc->tags };
+            for my $tag (split /:/, $args->[0]) {
+                next unless length $tag;
+                push @{ $doc->tags }, $tag
+                    unless grep { $_ eq $tag } @{ $doc->tags };
             }
         }
     } elsif ($name eq 'PRIORITIES') {
@@ -160,12 +160,12 @@ sub BUILD {
                 if ($arg eq '|') { $done++; next }
                 $done++ if !$done && @$args > 1 && $i == @$args-1;
                 my $ary = $done ? $doc->done_states : $doc->todo_states;
-                push @$ary, $arg unless $arg ~~ @$ary;
+                push @$ary, $arg unless grep { $_ eq $arg } @$ary;
             }
         }
     } else {
         unless ($self->document->ignore_unknown_settings) {
-            die "Unknown setting $name" unless $name ~~ @known_settings;
+            die "Unknown setting $name" unless grep { $_ eq $name } @known_settings;
         }
     }
 }

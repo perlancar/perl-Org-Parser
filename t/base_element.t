@@ -133,7 +133,7 @@ _
 
         {
             my @res = $d->headlines;
-            is(~~@res, 3, "headlines() count");
+            is(scalar(@res), 3, "headlines() count");
             is($res[0]->title->as_string, "c", "headlines() 1");
             is($res[1]->title->as_string, "b", "headlines() 2");
             is($res[2]->title->as_string, "a", "headlines() 3");

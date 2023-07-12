@@ -4,7 +4,6 @@ use 5.010001;
 use locale;
 use Log::ger;
 use Moo;
-use experimental 'smartmatch';
 no if $] >= 5.021_006, warnings => "locale";
 extends 'Org::Element';
 
@@ -267,9 +266,10 @@ sub _parse {
         } elsif ($m{setting}) {
 
             require Org::Element::Setting;
+            my $uc_setting_name = uc($m{setting_name});
             if ($m{setting_indent} &&
-                    !(uc($m{setting_name}) ~~
-                          @{Org::Element::Setting->indentable_settings})) {
+                    !(grep { $_ eq $uc_setting_name }
+                      @{Org::Element::Setting->indentable_settings})) {
                 push @text, $m{setting};
                 next;
             } else {
@@ -405,7 +405,7 @@ sub _parse {
                 $title =~ s/^\s+//;
                 $el->is_todo(1);
                 $el->todo_state($state);
-                $el->is_done($state ~~ @{ $self->done_states } ? 1:0);
+                $el->is_done((grep { $_ eq $state } @{ $self->done_states }) ? 1:0);
             }
 
             # recognize priority cookie
