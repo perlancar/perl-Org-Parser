@@ -15,6 +15,7 @@ use Time::HiRes qw(gettimeofday tv_interval);
 # DIST
 # VERSION
 
+has _srclabel               => (is => 'rw');
 has tags                    => (is => 'rw');
 has todo_states             => (is => 'rw');
 has done_states             => (is => 'rw');

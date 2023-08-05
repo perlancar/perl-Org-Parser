@@ -50,7 +50,7 @@ sub BUILD {
                     push @{ $row->children }, $cell;
                 }
             } else {
-                die "Invalid line in table: $row0";
+                $self->die("Invalid line in table: $row0");
             }
             push @{$self->children}, $row;
         }

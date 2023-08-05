@@ -133,7 +133,7 @@ sub BUILD {
         if ($pass == 1) {
             no warnings 'once';
             $args->[0] =~ /^$Org::Document::tags_re$/ or
-                die "Invalid argument for FILETAGS: $args->[0]";
+                $self->die("Invalid argument for FILETAGS: $args->[0]");
             for my $tag (split /:/, $args->[0]) {
                 next unless length $tag;
                 push @{ $doc->tags }, $tag
@@ -148,7 +148,7 @@ sub BUILD {
         }
     } elsif ($name eq 'PROPERTY') {
         if ($pass == 1) {
-            @$args >= 2 or die "Not enough argument for PROPERTY, minimum 2";
+            @$args >= 2 or $self->die("Not enough argument for PROPERTY, minimum 2");
             my $name = shift @$args;
             $doc->properties->{$name} = @$args > 1 ? [@$args] : $args->[0];
         }
@@ -165,7 +165,7 @@ sub BUILD {
         }
     } else {
         unless ($self->document->ignore_unknown_settings) {
-            die "Unknown setting $name" unless grep { $_ eq $name } @known_settings;
+            $self->die("Unknown setting $name") unless grep { $_ eq $name } @known_settings;
         }
     }
 }

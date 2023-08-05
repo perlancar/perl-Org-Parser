@@ -28,7 +28,7 @@ sub BUILD {
     my ($self, $args) = @_;
     $self->name(uc $self->name);
     (grep { $_ eq $self->name } @known_blocks)
-        or die "Unknown block name: ".$self->name;
+        or $self->die("Unknown block name: ".$self->name);
 }
 
 sub element_as_string {

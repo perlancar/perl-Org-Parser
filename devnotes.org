@@ -1,2 +1,6 @@
-Build with PERL_POD_WEAVER_PLUGIN_RINCI_FORCE_RELOAD set to 0 since reloading
-Org/Document.pm will result in Moo error.
+
+- log ::
+  + [2023-08-05 Sat] :: "Build with PERL_POD_WEAVER_PLUGIN_RINCI_FORCE_RELOAD
+    set to 0 since reloading Org/Document.pm will result in Moo error." this no
+    longer works, so currently I use the Pod::Weaver bundle
+    Author::PERLANCAR::NoRinci.

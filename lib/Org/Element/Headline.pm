@@ -116,7 +116,7 @@ sub promote_node {
     my ($self, $num_levels) = @_;
     $num_levels //= 1;
     return if $num_levels == 0;
-    die "Please specify a positive number of levels" if $num_levels < 0;
+    $self->die("Please specify a positive number of levels") if $num_levels < 0;
 
     for my $i (1..$num_levels) {
 
@@ -159,7 +159,7 @@ sub demote_node {
     my ($self, $num_levels) = @_;
     $num_levels //= 1;
     return if $num_levels == 0;
-    die "Please specify a positive number of levels" if $num_levels < 0;
+    $self->die("Please specify a positive number of levels") if $num_levels < 0;
 
     for my $i (1..$num_levels) {
 
@@ -185,7 +185,7 @@ sub promote_branch {
     my ($self, $num_levels) = @_;
     $num_levels //= 1;
     return if $num_levels == 0;
-    die "Please specify a positive number of levels" if $num_levels < 0;
+    $self->die("Please specify a positive number of levels") if $num_levels < 0;
 
     for my $i (1..$num_levels) {
         last if $self->level <= 1;
@@ -197,7 +197,7 @@ sub demote_branch {
     my ($self, $num_levels) = @_;
     $num_levels //= 1;
     return if $num_levels == 0;
-    die "Please specify a positive number of levels" if $num_levels < 0;
+    $self->die("Please specify a positive number of levels") if $num_levels < 0;
 
     for my $i (1..$num_levels) {
         $_->demote_node() for $self->find('Headline');

@@ -18,24 +18,30 @@ sub parse {
     $opts //= {};
 
     my $str;
+    my $srclabel = $opts->{_srclabel};
     my $r = ref($arg);
     if (!$r) {
         $str = $arg;
+        $srclabel //= "string";
     } elsif ($r eq 'ARRAY') {
         $str = join "", @$arg;
+        $srclabel //= "arrayref";
     } elsif ($r eq 'GLOB' || blessed($arg) && $arg->isa('IO::Handle')) {
         $str = join "", <$arg>;
+        $srclabel //= "filehandle";
     } elsif ($r eq 'CODE') {
         my @chunks;
         while (defined(my $chunk = $arg->())) {
             push @chunks, $chunk;
         }
         $str = join "", @chunks;
+        $srclabel //= "code";
     } else {
         die "Invalid argument, please supply a ".
             "string|arrayref|coderef|filehandle\n";
     }
     Org::Document->new(
+        _srclabel=>$srclabel,
         from_string=>$str,
         time_zone=>$opts->{time_zone},
         ignore_unknown_settings=>$opts->{ignore_unknown_settings},
@@ -45,11 +51,13 @@ sub parse {
 sub parse_file {
     require File::Slurper;
     my ($self, $filename, $opts) = @_;
+    $opts = {%$opts} if $opts; # shallow copy
     $opts //= {};
 
     state $loaded;
 
     my $content = File::Slurper::read_text($filename);
+    $opts->{_srclabel} = "file:$filename";
 
     my $cf = $opts->{cache_file}; # old option, new option is 'cache' (automatic setting of cache file)
     my $doc;
@@ -75,6 +83,7 @@ sub parse_file {
             eval {
                 $doc = Storable::retrieve($cf);
                 $doc->load_element_modules unless $loaded++;
+                $doc->{_srclabel} = " (from cached file:$cf)";
             };
             if ($@) {
                 warn "Failed retrieving document from cache: $@, reparsing ...";

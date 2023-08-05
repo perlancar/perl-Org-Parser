@@ -20,6 +20,13 @@ has children => (is => 'rw');
 has _str => (is => 'rw');
 has _str_include_children => (is => 'rw');
 
+sub die {
+    my ($self, $msg) = @_;
+    die $msg .
+        " (element: ".ref($self).
+        ", document: ".($self->document && $self->document->_srclabel ? $self->document->_srclabel : "-").")";
+}
+
 sub children_as_string {
     my ($self) = @_;
     return "" unless $self->children;
