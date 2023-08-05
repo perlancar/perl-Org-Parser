@@ -303,4 +303,8 @@ or a description term in a description list:
 
 Remove element from the tree. Basically just remove the element from its parent.
 
+=head2 $el->die(STR)
+
+Utility method to format C<die> message.
+
 =cut
