@@ -3,8 +3,8 @@ package Org::Element::Headline;
 use 5.010;
 use locale;
 use Log::ger;
+
 use Moo;
-use experimental 'smartmatch';
 extends 'Org::Element';
 with 'Org::ElementRole';
 with 'Org::ElementRole::Block';
@@ -59,14 +59,14 @@ sub get_tags {
             my ($el, $parent) = @_;
             return 1 unless $parent->isa('Org::Element::Headline');
             if ($parent->tags) {
-                for (@{ $parent->tags }) {
-                    push @res, $_ unless $_ ~~ @res;
+                for my $tag (@{ $parent->tags }) {
+                    push @res, $tag unless grep { $_ eq $tag } @res;
                 }
             }
             1;
         });
-    for (@{ $self->document->tags }) {
-        push @res, $_ unless $_ ~~ @res;
+    for my $tag (@{ $self->document->tags }) {
+        push @res, $tag unless grep { $_ eq $tag } @res;
     }
     @res;
 }

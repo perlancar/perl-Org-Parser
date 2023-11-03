@@ -2,8 +2,8 @@ package Org::Element::Drawer;
 
 use 5.010;
 use locale;
+
 use Moo;
-use experimental 'smartmatch';
 extends 'Org::Element';
 with 'Org::ElementRole';
 with 'Org::ElementRole::Block';
@@ -23,7 +23,7 @@ sub BUILD {
 
     if ($pass == 2) {
         die "Unknown drawer name: ".$self->name
-            unless $self->name ~~ @{$doc->drawer_names};
+            unless grep { $_ eq $self->name } @{$doc->drawer_names};
     }
 }
 

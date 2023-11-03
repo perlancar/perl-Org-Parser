@@ -2,8 +2,8 @@ package Org::Element::Block;
 
 use 5.010;
 use locale;
+
 use Moo;
-use experimental 'smartmatch';
 extends 'Org::Element';
 with 'Org::ElementRole';
 with 'Org::ElementRole::Block';
@@ -27,7 +27,8 @@ my @known_blocks = qw(
 sub BUILD {
     my ($self, $args) = @_;
     $self->name(uc $self->name);
-    $self->name ~~ @known_blocks or die "Unknown block name: ".$self->name;
+    (grep { $_ eq $self->name } @known_blocks)
+        or die "Unknown block name: ".$self->name;
 }
 
 sub element_as_string {
