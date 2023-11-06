@@ -1,3 +1,10 @@
+0.561   2023-11-06  Released-By: PERLANCAR; Urgency: low
+
+        - No functional changes.
+
+        - [doc] Typo in heading numbering (thanks William Lindley).
+
+
 0.560   2023-08-05  Released-By: PERLANCAR; Urgency: medium
 
         - [ux] In error message, show filename to ease debugging.
