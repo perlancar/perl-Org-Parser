@@ -45,6 +45,7 @@ sub parse {
         from_string=>$str,
         time_zone=>$opts->{time_zone},
         ignore_unknown_settings=>$opts->{ignore_unknown_settings},
+        ignore_unknown_drawers =>$opts->{ignore_unknown_drawers},
     );
 }
 
