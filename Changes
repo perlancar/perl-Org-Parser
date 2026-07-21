@@ -1,3 +1,8 @@
+0.562   2026-07-21  Released-By: PERLANCAR; Urgency: medium
+
+        - Add document attribute: ignore_unknown_drawers.
+
+
 0.561   2023-11-06  Released-By: PERLANCAR; Urgency: low
 
         - No functional changes.
