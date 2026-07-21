@@ -1,3 +1,8 @@
+0.563   2026-07-21  Released-By: PERLANCAR; Urgency: medium
+
+        - [bugfix] Forgot to pass ignore_unknown_drawers to Org::Document.
+
+
 0.562   2026-07-21  Released-By: PERLANCAR; Urgency: medium
 
         - Add document attribute: ignore_unknown_drawers.
