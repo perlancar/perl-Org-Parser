@@ -27,6 +27,7 @@ has radio_targets           => (is => 'rw');
 has time_zone               => (is => 'rw');
 
 has ignore_unknown_settings => (is => 'rw');
+has ignore_unknown_drawers  => (is => 'rw');
 
 our $tags_re       = qr/:(?:[\w@]+:)+/u;
 my  $ls_re         = qr/(?:(?<=[\015\012])|\A)/; # line start
@@ -854,6 +855,10 @@ If set, will be passed to DateTime->new() (e.g. by L<Org::Element::Timestamp>).
 =head2 ignore_unknown_settings => bool
 
 If set to true, unknown settings will not cause a parse failure.
+
+=head2 ignore_unknown_drawers => bool
+
+If set to true, unknown drawer names will not cause a parse failure.
 
 
 =head1 METHODS

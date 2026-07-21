@@ -22,8 +22,10 @@ sub BUILD {
     my $pass = $args->{pass} // 1;
 
     if ($pass == 2) {
-        $self->die("Unknown drawer name: ".$self->name)
-            unless grep { $_ eq $self->name } @{$doc->drawer_names};
+        unless ($self->document->ignore_unknown_drawers) {
+            $self->die("Unknown drawer name: ".$self->name)
+                unless grep { $_ eq $self->name } @{$doc->drawer_names};
+        }
     }
 }
 
